@@ -60,13 +60,15 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                     )}
                     <div className="flex-1">
                         <CardTitle className="font-headline text-xl">{order.companyName}</CardTitle>
-                         {creator && (
+                         {creator ? (
                             <CardDescription className="flex items-center gap-2 text-xs">
                                 <Avatar className="h-4 w-4">
                                     <AvatarFallback><UserCircle /></AvatarFallback>
                                 </Avatar>
                                 Created by {creator.name}
                             </CardDescription>
+                        ) : (
+                           <CardDescription className="text-xs text-muted-foreground">Creator not found</CardDescription>
                         )}
                     </div>
                     {!order.isOpen && <Badge variant="destructive">Closed</Badge>}
@@ -155,3 +157,5 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         </Card>
     );
 }
+
+    

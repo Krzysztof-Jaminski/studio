@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext } from 'react';
@@ -39,7 +40,7 @@ export default function Login() {
                 <Label htmlFor="name">Full Name</Label>
                 <Input 
                   id="name" 
-                  placeholder="e.g. Jane Doe" 
+                  placeholder="e.g. John Doe, Jane Smith, or Admin User" 
                   required 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -49,7 +50,7 @@ export default function Login() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={!name.trim()}>
               Enter
             </Button>
           </CardFooter>
@@ -58,3 +59,5 @@ export default function Login() {
     </div>
   );
 }
+
+    

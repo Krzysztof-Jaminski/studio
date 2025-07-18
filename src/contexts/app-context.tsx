@@ -55,9 +55,10 @@ export const AppContext = createContext<AppContextType>({
   toggleOrderState: () => {},
 });
 
-const MOCK_USER_BASE: Omit<User, 'id' | 'name' | 'role'> = { email: "john.doe@example.com" };
+const MOCK_USER_BASE: Omit<User, 'id' | 'name' | 'role' | 'email'> = {};
 
-const MOCK_USERS: User[] = [
+const INITIAL_USERS: User[] = [
+    { id: "user-1", name: "John Doe", email: "john.doe@example.com", role: "user" },
     { id: "user-2", name: "Jane Smith", email: "jane.smith@example.com", role: "user" },
     { id: "user-3", name: "Peter Jones", email: "peter.jones@example.com", role: "user" },
     { id: "user-4", name: "Mary Williams", email: "mary.williams@example.com", role: "user" },
@@ -65,7 +66,7 @@ const MOCK_USERS: User[] = [
 ];
 
 const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
-    "user-1": [ // Main user's portfolio
+    "user-1": [
         {
             id: 'status-1', type: 'status', title: 'Status Update', weekOf: startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString(),
             description: 'This week I focused on learning the basics of Next.js and state management with React Context. It was challenging but rewarding. I also built out the initial reservation calendar UI.',
@@ -135,16 +136,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [showStatusPrompt, setShowStatusPrompt] = useState(false);
   const [foodOrders, setFoodOrders] = useState<FoodOrder[]>(MOCK_FOOD_ORDERS);
   
-  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>(INITIAL_USERS);
+  const [userPortfolios, setUserPortfolios] = useState<Record<string, PortfolioItem[]>>(MOCK_PORTFOLIOS);
 
-  useEffect(() => {
-    // On mount, load all users. In a real app, this would be a fetch.
-    if (user) {
-        setAllUsers([user, ...MOCK_USERS.filter(u => u.id !== user.id)]);
-    } else {
-        setAllUsers([]);
-    }
-  }, [user]);
 
   useEffect(() => {
     const checkDate = () => {
@@ -165,27 +159,30 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
 
   const login = (name: string) => {
-    const isAdmin = name.toLowerCase() === 'admin1';
-    const userId = isAdmin ? 'admin1' : 'user-1';
-    const userRole = isAdmin ? 'admin' : 'user';
+    // Find user from the persistent list or create a new one for the demo
+    let potentialUser = allUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
 
-    const existingUser = MOCK_USERS.find(u => u.id === userId);
-    const newUser = { 
-        ...MOCK_USER_BASE, 
-        id: userId, 
-        name: existingUser?.name || name,
-        email: existingUser?.email || `${name.replace(' ','_')}@example.com`,
-        role: userRole,
-    };
+    if (!potentialUser) {
+        // In a real app, this would be a registration flow.
+        // Here, we create a new user for the session to ensure data persistence.
+        const newUser: User = {
+            id: `user-${Date.now()}`,
+            name: name,
+            email: `${name.replace(/\s+/g, '.').toLowerCase()}@example.com`,
+            role: 'user'
+        };
+        setAllUsers(prev => [...prev, newUser]);
+        potentialUser = newUser;
+    }
 
-    setUser(newUser);
+    setUser(potentialUser);
     const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
     setWeeklyStatus({ week: currentWeek, content: '', status: 'draft' });
-    setPortfolio(MOCK_PORTFOLIOS[userId] || []);
-    setAllUsers([newUser, ...MOCK_USERS.filter(u => u.id !== userId)]);
+    setPortfolio(userPortfolios[potentialUser.id] || []);
+    
     toast({
       title: "Logged in",
-      description: `Welcome back, ${newUser.name}!`,
+      description: `Welcome back, ${potentialUser.name}!`,
     });
   };
 
@@ -193,7 +190,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setWeeklyStatus(null);
     setPortfolio([]);
-    setAllUsers([]);
     setReservations([]);
   };
 
@@ -258,7 +254,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   const publishStatus = () => {
-    if (!weeklyStatus) return;
+    if (!weeklyStatus || !user) return;
     const content = weeklyStatus.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus.content;
     const weekOf = startOfWeek(new Date(), { weekStartsOn: 1 });
 
@@ -267,7 +263,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       description: content, date: new Date().toISOString(), weekOf: weekOf.toISOString(), isVisible: true,
     };
 
-    setPortfolio(prev => [newPortfolioItem, ...prev.filter(p => p.id !== newPortfolioItem.id)]);
+    const updatedPortfolio = [newPortfolioItem, ...portfolio.filter(p => p.id !== newPortfolioItem.id)];
+    setPortfolio(updatedPortfolio);
+    setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
     setWeeklyStatus(prev => prev ? { ...prev, status: 'published' } : null);
     
     toast({
@@ -281,7 +279,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const newStatus = { ...weeklyStatus, content, status: weeklyStatus.status };
 
     if (status === 'published') {
-        setWeeklyStatus({ ...newStatus, status: 'published' });
         publishStatus();
     } else {
         setWeeklyStatus(newStatus);
@@ -291,35 +288,39 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
 
   const upsertPortfolioItem = (item: PortfolioItem) => {
-    setPortfolio(prev => {
-        const existing = prev.find(p => p.id === item.id);
+    if (!user) return;
+    const updatedPortfolio = (() => {
+        const existing = portfolio.find(p => p.id === item.id);
         if (existing) {
-            return prev.map(p => p.id === item.id ? item : p);
+            return portfolio.map(p => p.id === item.id ? item : p);
         }
-        return [item, ...prev];
-    });
+        return [item, ...portfolio];
+    })();
+    setPortfolio(updatedPortfolio);
+    setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
     toast({ title: "Portfolio Updated", description: `"${item.title}" has been saved.` });
   };
 
   const removePortfolioItem = (itemId: string) => {
-    setPortfolio(prev => prev.filter(p => p.id !== itemId));
+    if (!user) return;
+    const updatedPortfolio = portfolio.filter(p => p.id !== itemId);
+    setPortfolio(updatedPortfolio);
+    setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
     toast({ variant: 'destructive', title: "Item Removed", description: "The item has been removed from your portfolio." });
   };
   
   const togglePortfolioItemVisibility = (itemId: string) => {
-    setPortfolio(prev =>
-        prev.map(p =>
-            p.id === itemId ? { ...p, isVisible: !p.isVisible } : p
-        )
+    if (!user) return;
+    const updatedPortfolio = portfolio.map(p =>
+        p.id === itemId ? { ...p, isVisible: !p.isVisible } : p
     );
+    setPortfolio(updatedPortfolio);
+    setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
   };
   
   const getUserById = (userId: string) => {
     const foundUser = allUsers.find(u => u?.id === userId);
-    if (userId === user?.id) {
-        return { user: foundUser || null, portfolio: portfolio };
-    }
-    const userPortfolio = MOCK_PORTFOLIOS[userId] || [];
+    const userPortfolio = userPortfolios[userId] || [];
     return { user: foundUser || null, portfolio: userPortfolio };
   };
 
@@ -339,7 +340,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   const removeFoodOrder = (orderId: string) => {
-    if (user?.role !== 'admin') return;
+    if (user?.role !== 'admin') {
+      toast({ variant: 'destructive', title: 'Permission Denied', description: 'Only an admin can delete an order event.' });
+      return;
+    }
     setFoodOrders(prev => prev.filter(order => order.id !== orderId));
     toast({ variant: 'destructive', title: "Order Event Removed", description: "The entire food order event has been deleted." });
   };
@@ -382,7 +386,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId) {
               if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Permission Denied" });
+                  toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can manage payments." });
                   return order;
               }
               const newOrders = order.orders.map(item => {
@@ -404,7 +408,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId) {
                if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Permission Denied" });
+                  toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can close the order." });
                   return order;
               }
               return { ...order, isOpen: !order.isOpen };
@@ -445,3 +449,5 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
+    
