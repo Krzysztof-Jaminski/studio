@@ -27,7 +27,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
     return (
         <div className={cn(
             "flex items-center gap-3 p-2 rounded-md transition-colors",
-            item.isPaid ? 'bg-green-50' : 'bg-card'
+            item.isPaid ? 'bg-green-100' : 'bg-card'
         )}>
             <Avatar className="h-8 w-8">
                 <AvatarFallback><UserCircle /></AvatarFallback>
@@ -35,7 +35,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
             <div className="flex-1">
                 <div className="flex justify-between items-start">
                     <p className="font-semibold text-sm">{itemUser?.name || 'Unknown User'}</p>
-                    <p className="font-bold text-sm">${item.price.toFixed(2)}</p>
+                    <p className="font-bold text-sm text-orange-700">${item.price.toFixed(2)}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">{item.name}</p>
                 {item.details && <p className="text-xs text-muted-foreground">↳ {item.details}</p>}
@@ -46,7 +46,10 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                     <Button 
                         size="icon" 
                         variant={item.isPaid ? "default" : "outline"} 
-                        className="h-7 w-7"
+                        className={cn(
+                            "h-7 w-7",
+                            item.isPaid && "bg-green-500 hover:bg-green-600"
+                        )}
                         onClick={() => togglePaidStatus(orderId, item.id)}
                     >
                         {item.isPaid ? <X /> : <Check />}

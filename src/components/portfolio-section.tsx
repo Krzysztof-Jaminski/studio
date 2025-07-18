@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext } from 'react';
@@ -11,6 +12,7 @@ import { format, parseISO } from 'date-fns';
 import { FileText, Link, PlusCircle, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import PortfolioItemForm from './portfolio-item-form';
 import { Separator } from './ui/separator';
+import { cn } from '@/lib/utils';
 
 export default function PortfolioSection() {
     const { user, portfolio, upsertPortfolioItem, removePortfolioItem, togglePortfolioItemVisibility } = useContext(AppContext);
@@ -40,17 +42,17 @@ export default function PortfolioSection() {
     }
 
     const renderItem = (item: PortfolioItem) => (
-        <Card key={item.id} className="flex flex-col">
-            <CardHeader>
+        <Card key={item.id} className={cn("flex flex-col", item.type === 'status' ? "border-green-200" : "border-zinc-200")}>
+            <CardHeader className={cn(item.type === 'status' ? "bg-green-50" : "bg-zinc-50")}>
                  <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="font-headline text-lg">{item.title}</CardTitle>
+                        <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-900" : "text-zinc-900")}>{item.title}</CardTitle>
                         <CardDescription>
                             {item.type === 'status' && `Status for week of ${format(parseISO(item.weekOf!), 'MMMM d, yyyy')}`}
                             {item.type === 'project' && `Added on ${format(parseISO(item.date), 'MMMM d, yyyy')}`}
                         </CardDescription>
                     </div>
-                    <Badge variant={item.type === 'status' ? 'secondary' : 'default'}>{item.type}</Badge>
+                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600")}>{item.type}</Badge>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow">
@@ -121,7 +123,7 @@ export default function PortfolioSection() {
 
             {/* Weekly Statuses */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold font-headline">Weekly Statuses</h3>
+                <h3 className="text-xl font-bold font-headline text-green-800">Weekly Statuses</h3>
                 {statuses.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-1">
                         {statuses.map(renderItem)}

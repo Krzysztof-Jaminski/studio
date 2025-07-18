@@ -30,7 +30,7 @@ export default function Header() {
                 </Link>
                 <Link href="/food-orders" className="text-muted-foreground transition-colors hover:text-foreground">
                     <Button variant="ghost">
-                        <ShoppingCart className="mr-2" />
+                        <ShoppingCart className="mr-2 text-orange-500" />
                         Food Orders
                     </Button>
                 </Link>

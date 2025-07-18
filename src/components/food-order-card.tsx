@@ -16,6 +16,7 @@ import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder } = useContext(AppContext);
@@ -45,8 +46,8 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const totalAmount = order.orders.reduce((sum, item) => sum + item.price, 0);
 
     return (
-        <Card className="flex flex-col">
-            <CardHeader>
+        <Card className="flex flex-col border-orange-200">
+            <CardHeader className="bg-orange-50 rounded-t-lg">
                 <div className="flex items-start gap-4">
                     {order.imageUrl && (
                          <Image
@@ -59,7 +60,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                         />
                     )}
                     <div className="flex-1">
-                        <CardTitle className="font-headline text-xl">{order.companyName}</CardTitle>
+                        <CardTitle className="font-headline text-xl text-orange-900">{order.companyName}</CardTitle>
                          {creator ? (
                             <CardDescription className="flex items-center gap-2 text-xs">
                                 <Avatar className="h-4 w-4">
@@ -95,7 +96,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
 
             <CardFooter className="flex flex-col items-start gap-3">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
-                    <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary">
+                    <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-orange-600">
                         <LinkIcon /> Menu Link
                     </a>
                     <span className="flex items-center gap-1">
@@ -106,7 +107,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 {order.isOpen && (
                     <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="w-full"><ShoppingCart className="mr-2" /> Add Your Order</Button>
+                            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white"><ShoppingCart className="mr-2" /> Add Your Order</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
@@ -125,7 +126,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                                     <Label htmlFor="item-price">Price</Label>
                                     <Input id="item-price" type="number" step="0.01" value={newItem.price} onChange={e => setNewItem(prev => ({ ...prev, price: e.target.value }))} required />
                                 </div>
-                                <Button type="submit" className="w-full">Add Order Item</Button>
+                                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">Add Order Item</Button>
                             </form>
                         </DialogContent>
                     </Dialog>

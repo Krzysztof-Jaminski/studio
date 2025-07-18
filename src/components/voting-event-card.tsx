@@ -46,7 +46,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
             <div className="flex items-start gap-3 flex-grow">
                 <Image src={option.imageUrl || 'https://placehold.co/64x64.png'} alt={option.name} width={48} height={48} className="rounded-md border h-12 w-12 object-cover" data-ai-hint="logo" />
                 <div className="flex-1">
-                    <a href={option.link} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline">{option.name}</a>
+                    <a href={option.link} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline text-orange-800">{option.name}</a>
                     <p className="text-sm text-muted-foreground">{option.votes.length} vote(s)</p>
                 </div>
                 <Popover>
@@ -59,9 +59,9 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
                     </PopoverContent>
                 </Popover>
             </div>
-            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner && "bg-yellow-400")} />}
+            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-orange-400")} />}
             {!isClosed && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className="w-full mt-auto" variant={hasVoted ? "default" : "outline"}>
+                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto", hasVoted && "bg-orange-500 hover:bg-orange-600")} variant={hasVoted ? "default" : "outline"}>
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Voted' : 'Vote'}
                 </Button>
@@ -91,11 +91,11 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     }, [event.isOpen, event.votingOptions]);
     
     return (
-        <Card className="flex flex-col">
-            <CardHeader>
+        <Card className="flex flex-col border-orange-200">
+            <CardHeader className="bg-orange-50 rounded-t-lg">
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="font-headline text-xl">{event.companyName}</CardTitle>
+                        <CardTitle className="font-headline text-xl text-orange-900">{event.companyName}</CardTitle>
                         {creator && (
                             <CardDescription className="flex items-center gap-2 text-xs">
                                 <Avatar className="h-4 w-4"><AvatarFallback><UserCircle /></AvatarFallback></Avatar>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext, useEffect } from 'react';
@@ -38,9 +39,9 @@ export default function WeeklyStatus() {
   const weekNumber = differenceInWeeks(startOfThisWeek, startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 })) + 1;
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="font-headline text-2xl">Weekly Status - Week {weekNumber}</CardTitle>
+    <Card className="w-full border-green-200">
+      <CardHeader className="bg-green-50 rounded-t-lg">
+        <CardTitle className="font-headline text-2xl text-green-900">Weekly Status - Week {weekNumber}</CardTitle>
         <CardDescription>
           {isPublished 
             ? "Your status for this week has been published."
@@ -50,7 +51,7 @@ export default function WeeklyStatus() {
       </CardHeader>
       <CardContent>
         {isPublished ? (
-           <Alert variant="default" className="bg-green-50 border-green-200">
+           <Alert variant="default" className="bg-green-100 border-green-300">
              <CheckCircle className="h-4 w-4 !text-green-600" />
              <AlertTitle className="text-green-800">Status Published!</AlertTitle>
              <AlertDescription className="text-green-700">
@@ -81,7 +82,7 @@ export default function WeeklyStatus() {
             <Button variant="outline" onClick={handleSave}>
               <Clock className="mr-2" /> Save Draft
             </Button>
-            <Button onClick={handlePublish}>
+            <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 text-white">
               <CheckCircle className="mr-2" /> Publish Now
             </Button>
         </CardFooter>
