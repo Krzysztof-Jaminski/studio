@@ -42,17 +42,17 @@ export default function PortfolioSection() {
     }
 
     const renderItem = (item: PortfolioItem) => (
-        <Card key={item.id} className={cn("flex flex-col", item.type === 'status' ? "border-green-200" : "border-zinc-200")}>
-            <CardHeader className={cn(item.type === 'status' ? "bg-green-50" : "bg-zinc-50")}>
+        <Card key={item.id} className={cn("flex flex-col", item.type === 'status' ? "border-green-200" : "border-green-200")}>
+            <CardHeader className={cn(item.type === 'status' ? "bg-green-50" : "bg-green-50")}>
                  <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-900" : "text-zinc-900")}>{item.title}</CardTitle>
+                        <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-900" : "text-green-900")}>{item.title}</CardTitle>
                         <CardDescription>
                             {item.type === 'status' && `Status for week of ${format(parseISO(item.weekOf!), 'MMMM d, yyyy')}`}
                             {item.type === 'project' && `Added on ${format(parseISO(item.date), 'MMMM d, yyyy')}`}
                         </CardDescription>
                     </div>
-                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600")}>{item.type}</Badge>
+                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600 text-white")}>{item.type}</Badge>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow">
@@ -78,7 +78,7 @@ export default function PortfolioSection() {
                         {item.isVisible ? <Eye /> : <EyeOff />}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}><Pencil /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
+                    <Button variant="ghost" size="icon" className="hover:bg-red-100 hover:text-red-600" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
                 </div>
             </CardFooter>
         </Card>
@@ -91,10 +91,10 @@ export default function PortfolioSection() {
             {/* Projects Portfolio */}
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold font-headline">Projects Portfolio</h3>
+                    <h3 className="text-xl font-bold font-headline text-green-800">Projects Portfolio</h3>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
-                            <Button onClick={handleAddNew}>
+                            <Button onClick={handleAddNew} className="bg-green-600 hover:bg-green-700 text-white">
                                 <PlusCircle className="mr-2" /> Add Project
                             </Button>
                         </DialogTrigger>

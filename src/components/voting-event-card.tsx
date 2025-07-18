@@ -13,7 +13,7 @@ import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
-import { ScrollArea } from './ui/scroll-area';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 
 const UserList = ({ users }: { users: User[] }) => (
     <div className="space-y-2">
@@ -61,7 +61,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
             </div>
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-orange-400")} />}
             {!isClosed && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto", hasVoted && "bg-orange-600 hover:bg-orange-700")} variant={hasVoted ? "default" : "outline"}>
+                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white", hasVoted ? "bg-orange-600 hover:bg-orange-700" : "bg-orange-500 hover:bg-orange-600")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Voted' : 'Vote'}
                 </Button>
@@ -111,24 +111,22 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                 </div>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col min-h-0 p-4">
-                 <ScrollArea className="flex-grow pr-4 -mr-4">
-                    <div className="space-y-3">
-                         {event.votingOptions.length > 0 ? (
-                            event.votingOptions.map((opt) => (
-                                <VotingOptionCard
-                                    key={opt.id}
-                                    option={opt}
-                                    eventId={event.id}
-                                    totalVotes={totalVotes}
-                                    isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
-                                    isClosed={!event.isOpen}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
-                        )}
-                    </div>
-                </ScrollArea>
+                <div className="space-y-3">
+                        {event.votingOptions.length > 0 ? (
+                        event.votingOptions.map((opt) => (
+                            <VotingOptionCard
+                                key={opt.id}
+                                option={opt}
+                                eventId={event.id}
+                                totalVotes={totalVotes}
+                                isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
+                                isClosed={!event.isOpen}
+                            />
+                        ))
+                    ) : (
+                        <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
+                    )}
+                </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4">
                  {(isCreator || isAdmin) && (
@@ -140,9 +138,9 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                      </div>
                 )}
                  {isAdmin && (
-                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-red-500">
-                        <p className="text-xs font-semibold text-red-500 flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
-                        <Button variant="destructive" className="w-full" onClick={() => removeFoodOrder(event.id)}>
+                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-orange-500">
+                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => removeFoodOrder(event.id)}>
                             <Trash2 className="mr-2" /> Delete Entire Event
                         </Button>
                     </div>

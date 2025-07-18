@@ -73,8 +73,8 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
             <Badge 
                 variant={isBookedByUser === 'office' ? 'default' : 'secondary'} 
                 className={cn(
-                    "w-full justify-center",
-                    isBookedByUser === 'office' && 'bg-primary/90'
+                    "w-full justify-center text-white",
+                    isBookedByUser === 'office' ? 'bg-blue-600' : 'bg-blue-500'
                 )}
             >
                 {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}
@@ -118,8 +118,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
       <CardFooter className="flex flex-col gap-2">
         {isBookedByUser ? (
             <Button
-                className="w-full"
-                variant="destructive"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={handleCancel}
                 disabled={isPast || !isReservable}
             >

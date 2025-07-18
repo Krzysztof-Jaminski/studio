@@ -147,9 +147,9 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                      </div>
                 )}
                 {isAdmin && (
-                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-red-500">
-                        <p className="text-xs font-semibold text-red-500 flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
-                        <Button variant="destructive" className="w-full" onClick={() => removeFoodOrder(order.id)}>
+                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-orange-500">
+                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => removeFoodOrder(order.id)}>
                             <Trash2 className="mr-2" /> Delete Entire Event
                         </Button>
                     </div>

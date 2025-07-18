@@ -13,6 +13,7 @@ import { PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Card } from "./ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     type: z.enum(['order', 'voting'], { required_error: "You must select an event type."}),
@@ -190,7 +191,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                                                 )}
                                             />
                                             {fields.length > 1 && (
-                                                <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => remove(index)}>
+                                                <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-orange-100 hover:text-orange-600" onClick={() => remove(index)}>
                                                     <Trash2 />
                                                 </Button>
                                             )}
@@ -217,7 +218,12 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                 <Separator />
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit" className={eventType === 'order' ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-primary text-white"}>Create Event</Button>
+                    <Button type="submit" className={cn(
+                        "text-white",
+                        eventType === 'order' ? "bg-orange-500 hover:bg-orange-600" : "bg-orange-500 hover:bg-orange-600"
+                    )}>
+                        Create Event
+                    </Button>
                 </div>
             </form>
         </Form>

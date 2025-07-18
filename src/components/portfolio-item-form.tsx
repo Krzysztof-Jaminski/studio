@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -132,7 +133,7 @@ export default function PortfolioItemForm({ item, onSubmit, onCancel }: Portfoli
         />
         <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button type="submit">Save Project</Button>
+            <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Save Project</Button>
         </div>
       </form>
     </Form>
