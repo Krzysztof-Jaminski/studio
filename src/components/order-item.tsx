@@ -27,7 +27,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
     return (
         <div className={cn(
             "flex items-center gap-3 p-2 rounded-md transition-colors",
-            item.isPaid ? 'bg-green-100' : 'bg-card'
+            item.isPaid ? 'bg-orange-100' : 'bg-card'
         )}>
             <Avatar className="h-8 w-8">
                 <AvatarFallback><UserCircle /></AvatarFallback>
@@ -48,7 +48,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                         variant={item.isPaid ? "default" : "outline"} 
                         className={cn(
                             "h-7 w-7",
-                            item.isPaid ? "bg-green-500 hover:bg-green-600" : "hover:bg-gray-100"
+                            item.isPaid ? "bg-orange-500 hover:bg-orange-600 text-white" : "hover:bg-gray-100"
                         )}
                         onClick={() => togglePaidStatus(orderId, item.id)}
                     >

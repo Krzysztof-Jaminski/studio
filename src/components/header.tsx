@@ -24,7 +24,7 @@ export default function Header() {
             <nav className="flex items-center gap-1 text-sm">
                 <Link href="/users" className="text-muted-foreground transition-colors hover:text-foreground">
                     <Button variant="ghost">
-                        <Users className="mr-2" />
+                        <Users className="mr-2 text-green-600" />
                         Users
                     </Button>
                 </Link>

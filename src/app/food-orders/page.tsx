@@ -38,7 +38,7 @@ export default function FoodOrdersPage() {
                     </div>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
-                            <Button>
+                            <Button className="bg-orange-500 hover:bg-orange-600 text-white">
                                 <PlusCircle className="mr-2" /> Create Event
                             </Button>
                         </DialogTrigger>
