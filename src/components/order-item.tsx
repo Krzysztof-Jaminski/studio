@@ -48,7 +48,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                         variant={item.isPaid ? "default" : "outline"} 
                         className={cn(
                             "h-7 w-7",
-                            item.isPaid && "bg-green-500 hover:bg-green-600"
+                            item.isPaid ? "bg-green-500 hover:bg-green-600" : "hover:bg-gray-100"
                         )}
                         onClick={() => togglePaidStatus(orderId, item.id)}
                     >
