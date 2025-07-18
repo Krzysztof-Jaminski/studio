@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info, CheckCircle, Clock } from 'lucide-react';
-import { getWeek } from 'date-fns';
+import { differenceInWeeks, startOfWeek } from 'date-fns';
+
+const INTERNSHIP_START_DATE = new Date('2025-07-07');
 
 export default function WeeklyStatus() {
   const { user, weeklyStatus, updateWeeklyStatus, showStatusPrompt } = useContext(AppContext);
@@ -32,7 +34,8 @@ export default function WeeklyStatus() {
   }
 
   const isPublished = weeklyStatus?.status === 'published';
-  const weekNumber = getWeek(new Date(), { weekStartsOn: 1 });
+  const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const weekNumber = differenceInWeeks(startOfThisWeek, startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 })) + 1;
 
   return (
     <Card className="w-full">

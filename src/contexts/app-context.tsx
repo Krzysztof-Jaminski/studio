@@ -3,7 +3,7 @@
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData, type VotingOption } from "@/lib/types";
-import { format, getWeek, isFriday, startOfWeek, getDay, isAfter, endOfDay } from "date-fns";
+import { format, startOfWeek, getDay, isAfter, endOfDay, differenceInWeeks } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { MAX_SPOTS } from "@/lib/utils";
 
@@ -57,7 +57,7 @@ export const AppContext = createContext<AppContextType>({
   toggleVote: () => {},
 });
 
-const MOCK_USER_BASE: Omit<User, 'id' | 'name' | 'role' | 'email'> = {};
+const INTERNSHIP_START_DATE = new Date('2025-07-07');
 
 const INITIAL_USERS: User[] = [
     { id: "user-1", name: "John Doe", email: "john.doe@example.com", role: "user" },
@@ -70,7 +70,7 @@ const INITIAL_USERS: User[] = [
 const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
     "user-1": [
         {
-            id: 'status-1', type: 'status', title: 'Status Update', weekOf: startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString(),
+            id: 'status-1', type: 'status', title: 'Status Update', weekOf: startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 }).toISOString(),
             description: 'This week I focused on learning the basics of Next.js and state management with React Context. It was challenging but rewarding. I also built out the initial reservation calendar UI.',
             date: new Date().toISOString(), isVisible: true
         },
@@ -88,7 +88,7 @@ const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
             date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), isVisible: true
         },
          {
-            id: 'status-jane-1', type: 'status', title: 'Status - Week 28', weekOf: startOfWeek(new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), { weekStartsOn: 1 }).toISOString(),
+            id: 'status-jane-1', type: 'status', title: 'Status - Week 2', weekOf: startOfWeek(new Date(INTERNSHIP_START_DATE.getTime() + 1000 * 60 * 60 * 24 * 7), { weekStartsOn: 1 }).toISOString(),
             description: 'Finalized the data parsing module and started working on the chart components. Faced some issues with responsive scaling.',
             date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), isVisible: true
         }
@@ -168,8 +168,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         }
         
         // Auto-publish logic
-        const currentWeek = getWeek(now, { weekStartsOn: 1 });
-        const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfWeek(now, { weekStartsOn: 1 }).toISOString());
+        const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+        const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfThisWeek.toISOString());
 
         // Auto-publish on Saturday morning if draft exists
         if (getDay(now) === 6 && weeklyStatus?.status === 'draft' && !statusForCurrentWeekExists) {
@@ -198,22 +198,25 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     }
 
     setUser(potentialUser);
-    const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
     const userPortfolio = userPortfolios[potentialUser.id] || [];
     setPortfolio(userPortfolio);
     
     // Check for existing status for the current week
     const weekStartISO = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
     const existingStatus = userPortfolio.find(item => item.type === 'status' && item.weekOf === weekStartISO);
+    
+    const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const currentWeekNumber = differenceInWeeks(startOfThisWeek, startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 })) + 1;
+
 
     if (existingStatus) {
         setWeeklyStatus({
-            week: currentWeek,
+            week: currentWeekNumber,
             content: existingStatus.description,
             status: 'published'
         });
     } else {
-        setWeeklyStatus({ week: currentWeek, content: '', status: 'draft' });
+        setWeeklyStatus({ week: currentWeekNumber, content: '', status: 'draft' });
     }
     
     toast({
@@ -320,14 +323,14 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
   const publishStatus = () => {
     if (!user) return;
-    const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
-    const weekOf = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const weekNumber = differenceInWeeks(weekStart, startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 })) + 1;
     
     const content = weeklyStatus?.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus?.content || "Brak statusu na dany tydzień.";
 
     const newPortfolioItem: PortfolioItem = {
-      id: `status-${user.id}-${weekOf.toISOString()}`, type: 'status', title: `Status - Week ${currentWeek}`,
-      description: content, date: new Date().toISOString(), weekOf: weekOf.toISOString(), isVisible: true,
+      id: `status-${user.id}-${weekStart.toISOString()}`, type: 'status', title: `Status - Week ${weekNumber}`,
+      description: content, date: new Date().toISOString(), weekOf: weekStart.toISOString(), isVisible: true,
     };
 
     upsertPortfolioItem(newPortfolioItem);
@@ -341,23 +344,23 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
   const updateWeeklyStatus = (content: string, status: 'draft' | 'published') => {
     if (!user) return;
-    const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
     const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const weekNumber = differenceInWeeks(weekStart, startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 })) + 1;
 
     if (status === 'published') {
         const newPortfolioItem: PortfolioItem = {
             id: `status-${user.id}-${weekStart.toISOString()}`,
             type: 'status',
-            title: `Status - Week ${currentWeek}`,
+            title: `Status - Week ${weekNumber}`,
             description: content,
             date: new Date().toISOString(),
             weekOf: weekStart.toISOString(),
             isVisible: true,
         };
         upsertPortfolioItem(newPortfolioItem);
-        setWeeklyStatus({ week: currentWeek, content, status: 'published' });
+        setWeeklyStatus({ week: weekNumber, content, status: 'published' });
     } else {
-        setWeeklyStatus({ week: currentWeek, content, status: 'draft' });
+        setWeeklyStatus({ week: weekNumber, content, status: 'draft' });
         toast({ title: "Draft Saved", description: "Your status has been saved as a draft." });
     }
   };

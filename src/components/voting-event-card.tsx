@@ -9,12 +9,11 @@ import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, User, VotingOption } from '@/lib/types';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users } from 'lucide-react';
-import { Separator } from './ui/separator';
 import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
-import { ScrollArea } from './ui/scroll-area';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel';
 
 const UserList = ({ users }: { users: User[] }) => (
     <div className="space-y-2">
@@ -38,13 +37,13 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
     const votePercentage = totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0;
 
     return (
-        <div className="rounded-lg border p-3 space-y-3 relative">
+        <div className="flex flex-col rounded-lg border p-3 space-y-3 relative h-full">
              {isWinner && (
                 <div className="absolute -top-3 -right-3 bg-yellow-400 p-1 rounded-full z-10">
                     <Trophy className="h-5 w-5 text-white" />
                 </div>
             )}
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 flex-grow">
                 <Image src={option.imageUrl || 'https://placehold.co/64x64.png'} alt={option.name} width={48} height={48} className="rounded-md border h-12 w-12 object-cover" data-ai-hint="logo" />
                 <div className="flex-1">
                     <a href={option.link} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline">{option.name}</a>
@@ -62,7 +61,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
             </div>
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner && "bg-yellow-400")} />}
             {!isClosed && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className="w-full" variant={hasVoted ? "default" : "outline"}>
+                <Button onClick={() => toggleVote(eventId, option.id)} className="w-full mt-auto" variant={hasVoted ? "default" : "outline"}>
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Voted' : 'Vote'}
                 </Button>
@@ -111,21 +110,35 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                     )}
                 </div>
             </CardHeader>
-            <CardContent className="flex-grow space-y-3 flex flex-col min-h-0">
-                <ScrollArea className="flex-grow pr-4 -mr-4">
-                    <div className="space-y-3">
-                        {event.votingOptions.map(opt => (
-                            <VotingOptionCard 
-                                key={opt.id} 
-                                option={opt} 
-                                eventId={event.id}
-                                totalVotes={totalVotes}
-                                isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
-                                isClosed={!event.isOpen}
-                            />
-                        ))}
-                    </div>
-                </ScrollArea>
+            <CardContent className="flex-grow flex flex-col min-h-0 py-4">
+                {event.votingOptions.length > 0 ? (
+                    <Carousel
+                        opts={{
+                            align: "start",
+                        }}
+                        className="w-full"
+                    >
+                        <CarouselContent className="-ml-4">
+                            {event.votingOptions.map((opt) => (
+                                <CarouselItem key={opt.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
+                                    <div className="p-1 h-full">
+                                        <VotingOptionCard
+                                            option={opt}
+                                            eventId={event.id}
+                                            totalVotes={totalVotes}
+                                            isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
+                                            isClosed={!event.isOpen}
+                                        />
+                                    </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
+                ) : (
+                    <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
+                )}
             </CardContent>
             <CardFooter className="flex flex-col gap-2 border-t pt-4">
                  {(isCreator || isAdmin) && (
