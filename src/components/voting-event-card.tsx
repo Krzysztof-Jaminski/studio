@@ -14,6 +14,7 @@ import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
+import { ScrollArea } from './ui/scroll-area';
 
 const UserList = ({ users }: { users: User[] }) => (
     <div className="space-y-2">
@@ -111,16 +112,20 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                 </div>
             </CardHeader>
             <CardContent className="flex-grow space-y-3">
-                {event.votingOptions.map(opt => (
-                    <VotingOptionCard 
-                        key={opt.id} 
-                        option={opt} 
-                        eventId={event.id}
-                        totalVotes={totalVotes}
-                        isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
-                        isClosed={!event.isOpen}
-                    />
-                ))}
+                <ScrollArea className="h-64 pr-4">
+                    <div className="space-y-3">
+                        {event.votingOptions.map(opt => (
+                            <VotingOptionCard 
+                                key={opt.id} 
+                                option={opt} 
+                                eventId={event.id}
+                                totalVotes={totalVotes}
+                                isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
+                                isClosed={!event.isOpen}
+                            />
+                        ))}
+                    </div>
+                </ScrollArea>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 border-t pt-4">
                  {(isCreator || isAdmin) && (
