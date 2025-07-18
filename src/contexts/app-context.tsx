@@ -2,8 +2,8 @@
 "use client";
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
-import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData } from "@/lib/types";
-import { format, getWeek, isFriday, startOfWeek, getDay } from "date-fns";
+import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData, type VotingOption } from "@/lib/types";
+import { format, getWeek, isFriday, startOfWeek, getDay, isAfter, endOfDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { MAX_SPOTS } from "@/lib/utils";
 
@@ -23,12 +23,13 @@ type AppContextType = {
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
-  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'>) => void;
+  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link: string, imageUrl?: string }[] }) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
   togglePaidStatus: (orderId: string, itemId: string | 'all') => void;
   toggleOrderState: (orderId: string) => void;
+  toggleVote: (eventId: string, optionId: string) => void;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -53,6 +54,7 @@ export const AppContext = createContext<AppContextType>({
   removeOrderItem: () => {},
   togglePaidStatus: () => {},
   toggleOrderState: () => {},
+  toggleVote: () => {},
 });
 
 const MOCK_USER_BASE: Omit<User, 'id' | 'name' | 'role' | 'email'> = {};
@@ -99,6 +101,7 @@ const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
 const MOCK_FOOD_ORDERS: FoodOrder[] = [
     {
         id: 'fo-1',
+        type: 'order',
         creatorId: 'user-2',
         companyName: 'Pizza Heaven',
         link: 'https://example.com',
@@ -112,6 +115,7 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
     },
     {
         id: 'fo-2',
+        type: 'order',
         creatorId: 'user-1',
         companyName: 'Sushi World',
         link: 'https://example.com',
@@ -121,6 +125,18 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
         orders: [
             { id: 'item-3', userId: 'user-1', name: 'California Roll', details: '', price: 8.00, isPaid: true },
             { id: 'item-4', userId: 'user-4', name: 'Spicy Tuna Roll', details: '', price: 9.50, isPaid: true },
+        ]
+    },
+    {
+        id: 'vo-1',
+        type: 'voting',
+        creatorId: 'admin1',
+        companyName: 'Friday Lunch Vote', // Here companyName is used as the voting title
+        isOpen: true,
+        votingOptions: [
+            { id: 'opt-1', name: 'Mexican Grill', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-1', 'user-4'] },
+            { id: 'opt-2', name: 'Italian Pasta', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-2'] },
+            { id: 'opt-3', name: 'Thai Corner', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-1', 'user-2', 'user-3'] },
         ]
     }
 ];
@@ -143,7 +159,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkDate = () => {
         const now = new Date();
-        // getDay() returns 5 for Friday.
+        const endOfFriday = endOfDay(now);
+        // Show prompt all of Friday.
         if (getDay(now) === 5) {
            setShowStatusPrompt(true);
         } else {
@@ -154,7 +171,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         const currentWeek = getWeek(now, { weekStartsOn: 1 });
         const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfWeek(now, { weekStartsOn: 1 }).toISOString());
 
-        if (isFriday(now) && now.getHours() >= 18 && weeklyStatus?.status === 'draft' && !statusForCurrentWeekExists) {
+        // Auto-publish on Saturday morning if draft exists
+        if (getDay(now) === 6 && weeklyStatus?.status === 'draft' && !statusForCurrentWeekExists) {
             publishStatus();
         }
     };
@@ -208,7 +226,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setWeeklyStatus(null);
     setPortfolio([]);
-    setReservations([]);
   };
 
   const toggleReservation = (date: Date, type: 'office' | 'online') => {
@@ -292,7 +309,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           )
         );
     } else {
-        setReservations([...reservations, { date: dateString, ...newReservationData.office, ...newReservationData.online }]);
+        setReservations([...reservations, { date: dateString, office: newReservationData.office, online: newReservationData.online }]);
     }
     
     toast({
@@ -309,7 +326,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const content = weeklyStatus?.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus?.content || "Brak statusu na dany tydzień.";
 
     const newPortfolioItem: PortfolioItem = {
-      id: `status-${currentWeek}`, type: 'status', title: `Status - Week ${currentWeek}`,
+      id: `status-${user.id}-${weekOf.toISOString()}`, type: 'status', title: `Status - Week ${currentWeek}`,
       description: content, date: new Date().toISOString(), weekOf: weekOf.toISOString(), isVisible: true,
     };
 
@@ -325,12 +342,17 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const updateWeeklyStatus = (content: string, status: 'draft' | 'published') => {
     if (!user) return;
     const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
+    const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
 
     if (status === 'published') {
-        const weekOf = startOfWeek(new Date(), { weekStartsOn: 1 });
         const newPortfolioItem: PortfolioItem = {
-            id: `status-${currentWeek}`, type: 'status', title: `Status - Week ${currentWeek}`,
-            description: content, date: new Date().toISOString(), weekOf: weekOf.toISOString(), isVisible: true,
+            id: `status-${user.id}-${weekStart.toISOString()}`,
+            type: 'status',
+            title: `Status - Week ${currentWeek}`,
+            description: content,
+            date: new Date().toISOString(),
+            weekOf: weekStart.toISOString(),
+            isVisible: true,
         };
         upsertPortfolioItem(newPortfolioItem);
         setWeeklyStatus({ week: currentWeek, content, status: 'published' });
@@ -379,18 +401,42 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   // Food Order Functions
-  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'>) => {
+  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link: string, imageUrl?: string }[] }) => {
     if (!user) return;
-    const newOrder: FoodOrder = {
-        ...orderData,
-        id: `fo-${Date.now()}`,
+    
+    let newEvent: FoodOrder;
+    const baseEvent = {
+        id: `evt-${Date.now()}`,
         creatorId: user.id,
-        orders: [],
+        companyName: orderData.companyName,
         isOpen: true,
-        imageUrl: orderData.imageUrl || 'https://placehold.co/100x100.png',
     };
-    setFoodOrders(prev => [newOrder, ...prev]);
-    toast({ title: "Order Created!", description: `The "${orderData.companyName}" order event is now live.` });
+
+    if (orderData.type === 'voting') {
+        newEvent = {
+            ...baseEvent,
+            type: 'voting',
+            votingOptions: orderData.votingOptions?.map((opt, index) => ({
+                id: `opt-${Date.now()}-${index}`,
+                name: opt.name,
+                link: opt.link,
+                imageUrl: opt.imageUrl || 'https://placehold.co/100x100.png',
+                votes: [],
+            }))
+        };
+    } else { // 'order'
+        newEvent = {
+            ...baseEvent,
+            type: 'order',
+            link: orderData.link,
+            creatorPhoneNumber: orderData.creatorPhoneNumber,
+            imageUrl: orderData.imageUrl || 'https://placehold.co/100x100.png',
+            orders: [],
+        };
+    }
+
+    setFoodOrders(prev => [newEvent, ...prev]);
+    toast({ title: "Event Created!", description: `The "${orderData.companyName}" event is now live.` });
   };
 
   const removeFoodOrder = (orderId: string) => {
@@ -399,7 +445,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       return;
     }
     setFoodOrders(prev => prev.filter(order => order.id !== orderId));
-    toast({ variant: 'destructive', title: "Order Event Removed", description: "The entire food order event has been deleted." });
+    toast({ variant: 'destructive', title: "Event Removed", description: "The entire food event has been deleted." });
   };
 
   const addOrderItem = (orderId: string, itemData: OrderItemData) => {
@@ -411,8 +457,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         isPaid: false,
     };
     setFoodOrders(prev => prev.map(order => {
-        if (order.id === orderId) {
-            return { ...order, orders: [...order.orders, newItem] };
+        if (order.id === orderId && order.type === 'order') {
+            return { ...order, orders: [...(order.orders || []), newItem] };
         }
         return order;
     }));
@@ -421,15 +467,15 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
   const removeOrderItem = (orderId: string, itemId: string) => {
     setFoodOrders(prev => prev.map(order => {
-        if (order.id === orderId) {
-            const itemToRemove = order.orders.find(item => item.id === itemId);
+        if (order.id === orderId && order.type === 'order') {
+            const itemToRemove = order.orders?.find(item => item.id === itemId);
             if (!itemToRemove) return order;
             // Admin can remove any, creator can remove any, user can only remove their own
             if (user?.role !== 'admin' && user?.id !== order.creatorId && user?.id !== itemToRemove.userId) {
                 toast({ variant: 'destructive', title: "Permission Denied" });
                 return order;
             }
-            return { ...order, orders: order.orders.filter(item => item.id !== itemId) };
+            return { ...order, orders: order.orders?.filter(item => item.id !== itemId) };
         }
         return order;
     }));
@@ -438,12 +484,12 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   
   const togglePaidStatus = (orderId: string, itemId: string | 'all') => {
       setFoodOrders(prev => prev.map(order => {
-          if (order.id === orderId) {
+          if (order.id === orderId && order.type === 'order') {
               if (user?.id !== order.creatorId && user?.role !== 'admin') {
                   toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can manage payments." });
                   return order;
               }
-              const newOrders = order.orders.map(item => {
+              const newOrders = order.orders?.map(item => {
                   if (itemId === 'all') {
                       return { ...item, isPaid: true };
                   }
@@ -462,15 +508,36 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId) {
                if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can close the order." });
+                  toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can close the event." });
                   return order;
               }
+              toast({ title: "Event State Changed", description: `The event is now ${!order.isOpen ? 'open' : 'closed'}.` });
               return { ...order, isOpen: !order.isOpen };
           }
           return order;
       }));
-      toast({ title: "Order State Changed" });
   };
+
+  const toggleVote = (eventId: string, optionId: string) => {
+      if (!user) return;
+      setFoodOrders(prev => prev.map(event => {
+        if (event.id === eventId && event.type === 'voting' && event.isOpen) {
+            const newOptions = event.votingOptions?.map(opt => {
+                if (opt.id === optionId) {
+                    const hasVoted = opt.votes.includes(user.id);
+                    if (hasVoted) {
+                        return { ...opt, votes: opt.votes.filter(voteId => voteId !== user.id) };
+                    } else {
+                        return { ...opt, votes: [...opt.votes, user.id] };
+                    }
+                }
+                return opt;
+            });
+            return { ...event, votingOptions: newOptions };
+        }
+        return event;
+      }));
+  }
 
 
   return (
@@ -497,6 +564,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         removeOrderItem,
         togglePaidStatus,
         toggleOrderState,
+        toggleVote,
       }}
     >
       {children}

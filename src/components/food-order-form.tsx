@@ -1,23 +1,32 @@
 
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import type { FoodOrder } from "@/lib/types";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { PlusCircle, Trash2 } from "lucide-react";
+import { Separator } from "./ui/separator";
 
 const formSchema = z.object({
-    companyName: z.string().min(2, "Company name must be at least 2 characters."),
-    link: z.string().url("Please enter a valid URL."),
-    creatorPhoneNumber: z.string().min(5, "Please enter a valid phone number."),
+    type: z.enum(['order', 'voting'], { required_error: "You must select an event type."}),
+    companyName: z.string().min(2, "Title must be at least 2 characters."),
+    link: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
+    creatorPhoneNumber: z.string().min(5, "Please enter a valid phone number.").optional().or(z.literal('')),
     imageUrl: z.string().url("Please enter a valid image URL.").optional().or(z.literal('')),
+    votingOptions: z.array(z.object({
+        name: z.string().min(1, "Company name is required."),
+        link: z.string().url("A valid link is required."),
+        imageUrl: z.string().url("A valid image URL is required.").optional().or(z.literal(''))
+    })).optional()
 });
 
 type FoodOrderFormProps = {
-    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'>) => void;
+    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link: string, imageUrl?: string }[] }) => void;
     onCancel: () => void;
 };
 
@@ -25,15 +34,30 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            type: "order",
             companyName: "",
             link: "",
             creatorPhoneNumber: "",
             imageUrl: "",
+            votingOptions: [{ name: '', link: '', imageUrl: '' }],
         },
     });
 
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "votingOptions"
+    });
+
+    const eventType = form.watch("type");
+
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        onSubmit(values);
+        if (values.type === 'order') {
+            const { votingOptions, ...orderData } = values;
+            onSubmit(orderData);
+        } else {
+             const { link, creatorPhoneNumber, imageUrl, ...votingData } = values;
+             onSubmit(votingData);
+        }
     };
 
     return (
@@ -41,53 +65,135 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
-                    name="companyName"
+                    name="type"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Company/Restaurant Name</FormLabel>
-                            <FormControl><Input placeholder="e.g., Pizza Palace" {...field} /></FormControl>
+                        <FormItem className="space-y-3">
+                            <FormLabel>Event Type</FormLabel>
+                            <FormControl>
+                                <RadioGroup
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    className="flex space-x-4"
+                                >
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl><RadioGroupItem value="order" /></FormControl>
+                                        <FormLabel className="font-normal">Direct Order</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-2 space-y-0">
+                                        <FormControl><RadioGroupItem value="voting" /></FormControl>
+                                        <FormLabel className="font-normal">Voting for a Restaurant</FormLabel>
+                                    </FormItem>
+                                </RadioGroup>
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
                 <FormField
                     control={form.control}
-                    name="link"
+                    name="companyName" // Used as a title for both
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Link to Menu</FormLabel>
-                            <FormControl><Input placeholder="https://pizzapalace.com/menu" {...field} /></FormControl>
+                            <FormLabel>{eventType === 'order' ? 'Company/Restaurant Name' : 'Voting Title'}</FormLabel>
+                            <FormControl><Input placeholder={eventType === 'order' ? 'e.g., Pizza Palace' : 'e.g., Lunch for Friday'} {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                 <FormField
-                    control={form.control}
-                    name="creatorPhoneNumber"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Your Phone Number</FormLabel>
-                            <FormControl><Input placeholder="For payment coordination" {...field} /></FormControl>
-                             <FormDescription>Your number will be visible to others in this order.</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="imageUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Logo/Image URL (Optional)</FormLabel>
-                            <FormControl><Input placeholder="https://example.com/logo.png" {...field} /></FormControl>
-                            <FormDescription>A direct link to an image of the company's logo.</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
+                {eventType === 'order' ? (
+                    <>
+                        <FormField
+                            control={form.control}
+                            name="link"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Link to Menu</FormLabel>
+                                    <FormControl><Input placeholder="https://pizzapalace.com/menu" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="creatorPhoneNumber"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Your Phone Number</FormLabel>
+                                    <FormControl><Input placeholder="For payment coordination" {...field} /></FormControl>
+                                     <FormDescription>Your number will be visible to others in this order.</FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="imageUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Logo/Image URL (Optional)</FormLabel>
+                                    <FormControl><Input placeholder="https://example.com/logo.png" {...field} /></FormControl>
+                                    <FormDescription>A direct link to an image of the company's logo.</FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </>
+                ) : (
+                    <div className="space-y-4">
+                        <FormLabel>Voting Options</FormLabel>
+                        {fields.map((field, index) => (
+                             <div key={field.id} className="p-4 border rounded-lg space-y-3 relative">
+                                <FormField
+                                    control={form.control}
+                                    name={`votingOptions.${index}.name`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                             <FormLabel className="text-xs">Option {index + 1}: Name</FormLabel>
+                                             <FormControl><Input placeholder="e.g., Sushi World" {...field} /></FormControl>
+                                             <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                 <FormField
+                                    control={form.control}
+                                    name={`votingOptions.${index}.link`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                             <FormLabel className="text-xs">Menu Link</FormLabel>
+                                             <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
+                                             <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name={`votingOptions.${index}.imageUrl`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                             <FormLabel className="text-xs">Image URL (Optional)</FormLabel>
+                                             <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
+                                             <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => remove(index)}>
+                                    <Trash2 />
+                                </Button>
+                             </div>
+                        ))}
+                        <Button type="button" variant="outline" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
+                            <PlusCircle className="mr-2" /> Add Option
+                        </Button>
+                    </div>
+                )}
+
+
+                <Separator />
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit">Create Order Event</Button>
+                    <Button type="submit">Create Event</Button>
                 </div>
             </form>
         </Form>

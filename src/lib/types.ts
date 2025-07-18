@@ -49,13 +49,25 @@ export type OrderItem = {
 
 export type OrderItemData = Omit<OrderItem, 'id' | 'userId' | 'isPaid'>;
 
+export type VotingOption = {
+    id: string;
+    name: string;
+    link?: string;
+    imageUrl?: string;
+    votes: string[]; // array of user IDs
+};
+
 export type FoodOrder = {
     id: string;
     creatorId: string;
-    companyName: string;
-    link: string;
-    creatorPhoneNumber: string;
-    imageUrl?: string;
+    companyName: string; // Also used for Voting Title
     isOpen: boolean;
-    orders: OrderItem[];
+    type: 'order' | 'voting';
+    // Order specific
+    link?: string;
+    creatorPhoneNumber?: string;
+    imageUrl?: string;
+    orders?: OrderItem[];
+    // Voting specific
+    votingOptions?: VotingOption[];
 };

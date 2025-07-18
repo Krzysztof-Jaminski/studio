@@ -11,8 +11,8 @@ import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 // Define the reservation period
-const RESERVATION_START_DATE = new Date('2024-07-07');
-const RESERVATION_END_DATE = new Date('2024-10-01');
+const RESERVATION_START_DATE = new Date('2025-07-07');
+const RESERVATION_END_DATE = new Date('2025-10-01');
 
 const months = [
     { label: "July", value: 6 },
@@ -29,8 +29,9 @@ export default function WeeklyCalendar() {
 
   useEffect(() => {
     // Ensure the initial view is within the allowed range
-    const initialDate = isWithinInterval(new Date(), { start: RESERVATION_START_DATE, end: RESERVATION_END_DATE }) 
-        ? new Date() 
+    const today = new Date();
+    const initialDate = isWithinInterval(today, { start: RESERVATION_START_DATE, end: RESERVATION_END_DATE }) 
+        ? today 
         : RESERVATION_START_DATE;
     setCurrentDate(initialDate);
   }, []);
@@ -61,28 +62,29 @@ export default function WeeklyCalendar() {
   
   const changeWeek = (direction: 'prev' | 'next') => {
       const newDate = addDays(currentDate, direction === 'prev' ? -7 : 7);
-      if (isWithinInterval(newDate, { start: addDays(RESERVATION_START_DATE, -7), end: addDays(RESERVATION_END_DATE, 7)})) {
+      // Allow navigation slightly outside the edges to see full weeks
+      const navStartDate = startOfWeek(RESERVATION_START_DATE, { weekStartsOn: 1 });
+      const navEndDate = addDays(RESERVATION_END_DATE, 7);
+
+      if (isWithinInterval(newDate, { start: navStartDate, end: navEndDate})) {
           setCurrentDate(newDate);
       }
   };
 
   const handleMonthChange = (monthValue: string) => {
       const monthIndex = parseInt(monthValue, 10);
-      let newDate = setMonth(new Date(RESERVATION_START_DATE), monthIndex);
+      const year = RESERVATION_START_DATE.getFullYear();
+      let newDate = setMonth(new Date(year, 0, 1), monthIndex);
       
-      // If selected month is past, set to first day of that month, else today
-      if (newDate < new Date() && getMonth(new Date()) !== monthIndex) {
-          if (newDate < RESERVATION_START_DATE) newDate = RESERVATION_START_DATE;
+      const today = new Date();
+      // If the selected month is the current month and it's within the valid range, jump to today.
+      if (getMonth(today) === monthIndex && isWithinInterval(today, { start: RESERVATION_START_DATE, end: RESERVATION_END_DATE })) {
+          newDate = today;
       } else {
-          newDate = new Date();
-          if (getMonth(newDate) !== monthIndex) {
-            newDate = setMonth(new Date(), monthIndex);
-            if (newDate < RESERVATION_START_DATE) newDate = RESERVATION_START_DATE;
-            else { // Set to the first day of the future month
-                const firstDayOfMonth = new Date(newDate.getFullYear(), monthIndex, 1);
-                newDate = firstDayOfMonth;
-            }
-          }
+        // Otherwise, jump to the first day of the selected month.
+        if (isBefore(newDate, RESERVATION_START_DATE)) {
+            newDate = RESERVATION_START_DATE;
+        }
       }
       setCurrentDate(newDate);
   }
@@ -120,7 +122,7 @@ export default function WeeklyCalendar() {
           const reservation = reservations.find(r => r.date === format(day.date, "yyyy-MM-dd"));
           const officeUsers = reservation ? getUserDetails(reservation.office) : [];
           const onlineUsers = reservation ? getUserDetails(reservation.online) : [];
-          const reservable = isDateReservable(day.date) && !day.isPast;
+          const reservable = isDateReservable(day.date) && !isBefore(day.date, startOfToday());
 
           let isBookedByUser: 'office' | 'online' | null = null;
           if(reservation) {

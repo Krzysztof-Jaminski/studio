@@ -22,7 +22,7 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
                 <div>
                     <CardTitle className="font-headline text-lg">{item.title}</CardTitle>
                     <CardDescription>
-                        {item.type === 'status' && `Status for week of ${format(parseISO(item.weekOf!), 'MMMM d, yyyy')}`}
+                        {item.type === 'status' && item.weekOf && `Status for week of ${format(parseISO(item.weekOf), 'MMMM d, yyyy')}`}
                         {item.type === 'project' && `Added on ${format(parseISO(item.date), 'MMMM d, yyyy')}`}
                     </CardDescription>
                 </div>
