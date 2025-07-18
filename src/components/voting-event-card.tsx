@@ -13,7 +13,7 @@ import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
+import { ScrollArea } from './ui/scroll-area';
 
 const UserList = ({ users }: { users: User[] }) => (
     <div className="space-y-2">
@@ -37,7 +37,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
     const votePercentage = totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0;
 
     return (
-        <div className="flex flex-col rounded-lg border p-3 space-y-3 relative h-full">
+        <div className="flex flex-col rounded-lg border p-3 space-y-3 relative h-full bg-card">
              {isWinner && (
                 <div className="absolute -top-3 -right-3 bg-yellow-400 p-1 rounded-full z-10">
                     <Trophy className="h-5 w-5 text-white" />
@@ -92,7 +92,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     
     return (
         <Card className="flex flex-col border-orange-200">
-            <CardHeader className="bg-orange-50 rounded-t-lg">
+            <CardHeader className="bg-orange-50 rounded-t-lg p-4">
                 <div className="flex justify-between items-start">
                     <div>
                         <CardTitle className="font-headline text-xl text-orange-900">{event.companyName}</CardTitle>
@@ -111,28 +111,30 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                 </div>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col min-h-0 p-4">
-                <div className="space-y-3">
-                        {event.votingOptions.length > 0 ? (
-                        event.votingOptions.map((opt) => (
-                            <VotingOptionCard
-                                key={opt.id}
-                                option={opt}
-                                eventId={event.id}
-                                totalVotes={totalVotes}
-                                isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
-                                isClosed={!event.isOpen}
-                            />
-                        ))
-                    ) : (
-                        <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
-                    )}
-                </div>
+                 <ScrollArea className="flex-grow pr-4 -mr-4">
+                    <div className="space-y-3">
+                            {event.votingOptions.length > 0 ? (
+                            event.votingOptions.map((opt) => (
+                                <VotingOptionCard
+                                    key={opt.id}
+                                    option={opt}
+                                    eventId={event.id}
+                                    totalVotes={totalVotes}
+                                    isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
+                                    isClosed={!event.isOpen}
+                                />
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
+                        )}
+                    </div>
+                </ScrollArea>
             </CardContent>
-            <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4">
-                 {(isCreator || isAdmin) && (
+            <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4 bg-orange-50/50">
+                 {(isCreator || isAdmin) && event.isOpen && (
                      <div className="w-full space-y-2">
                         <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>
-                        <Button variant="secondary" className="w-full" onClick={() => toggleOrderState(event.id)} disabled={!event.isOpen}>
+                        <Button variant="secondary" className="w-full" onClick={() => toggleOrderState(event.id)}>
                             <X className="mr-2"/> Close Voting
                         </Button>
                      </div>

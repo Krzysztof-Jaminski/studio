@@ -73,8 +73,8 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
             <Badge 
                 variant={isBookedByUser === 'office' ? 'default' : 'secondary'} 
                 className={cn(
-                    "w-full justify-center text-white",
-                    isBookedByUser === 'office' ? 'bg-blue-600' : 'bg-blue-500'
+                    "w-full justify-center",
+                    isBookedByUser === 'office' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'
                 )}
             >
                 {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}

@@ -218,10 +218,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                 <Separator />
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit" className={cn(
-                        "text-white",
-                        eventType === 'order' ? "bg-orange-500 hover:bg-orange-600" : "bg-orange-500 hover:bg-orange-600"
-                    )}>
+                    <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white">
                         Create Event
                     </Button>
                 </div>

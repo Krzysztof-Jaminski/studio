@@ -43,19 +43,19 @@ export default function PortfolioSection() {
 
     const renderItem = (item: PortfolioItem) => (
         <Card key={item.id} className={cn("flex flex-col", item.type === 'status' ? "border-green-200" : "border-green-200")}>
-            <CardHeader className={cn(item.type === 'status' ? "bg-green-50" : "bg-green-50")}>
+            <CardHeader className={cn("p-4", item.type === 'status' ? "bg-green-50" : "bg-green-50")}>
                  <div className="flex justify-between items-start">
                     <div>
                         <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-900" : "text-green-900")}>{item.title}</CardTitle>
                         <CardDescription>
-                            {item.type === 'status' && `Status for week of ${format(parseISO(item.weekOf!), 'MMMM d, yyyy')}`}
+                            {item.type === 'status' && item.weekOf && `Status for week of ${format(parseISO(item.weekOf), 'MMMM d, yyyy')}`}
                             {item.type === 'project' && `Added on ${format(parseISO(item.date), 'MMMM d, yyyy')}`}
                         </CardDescription>
                     </div>
                     <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600 text-white")}>{item.type}</Badge>
                 </div>
             </CardHeader>
-            <CardContent className="flex-grow">
+            <CardContent className="flex-grow p-4">
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.description}</p>
                  {item.technologies && item.technologies.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -63,7 +63,7 @@ export default function PortfolioSection() {
                     </div>
                 )}
             </CardContent>
-            <CardFooter className="flex justify-between items-center">
+            <CardFooter className="flex justify-between items-center p-4 pt-0">
                  <div>
                     {item.link && (
                         <Button variant="link" asChild className="p-0 h-auto">
@@ -78,7 +78,7 @@ export default function PortfolioSection() {
                         {item.isVisible ? <Eye /> : <EyeOff />}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}><Pencil /></Button>
-                    <Button variant="ghost" size="icon" className="hover:bg-red-100 hover:text-red-600" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
+                    <Button variant="ghost" size="icon" className="hover:bg-green-100 hover:text-green-600" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
                 </div>
             </CardFooter>
         </Card>

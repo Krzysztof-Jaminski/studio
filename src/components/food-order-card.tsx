@@ -47,7 +47,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
 
     return (
         <Card className="flex flex-col border-orange-200">
-            <CardHeader className="bg-orange-50 rounded-t-lg">
+            <CardHeader className="bg-orange-50 rounded-t-lg p-4">
                 <div className="flex items-start gap-4">
                     {order.imageUrl && (
                          <Image
@@ -94,7 +94,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 </div>
             </CardContent>
 
-            <CardFooter className="flex flex-col items-start gap-3 border-t p-4">
+            <CardFooter className="flex flex-col items-start gap-3 border-t p-4 bg-orange-50/50">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
                     <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-orange-600">
                         <LinkIcon /> Menu Link
