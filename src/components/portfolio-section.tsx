@@ -10,6 +10,7 @@ import { Badge } from './ui/badge';
 import { format, parseISO } from 'date-fns';
 import { FileText, Link, PlusCircle, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import PortfolioItemForm from './portfolio-item-form';
+import { Separator } from './ui/separator';
 
 export default function PortfolioSection() {
     const { user, portfolio, upsertPortfolioItem, removePortfolioItem, togglePortfolioItemVisibility } = useContext(AppContext);
@@ -83,32 +84,32 @@ export default function PortfolioSection() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold font-headline">Portfolio</h3>
-                <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogTrigger asChild>
-                        <Button onClick={handleAddNew}>
-                            <PlusCircle className="mr-2" /> Add Project
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>{editingItem ? "Edit Project" : "Add New Project"}</DialogTitle>
-                        </DialogHeader>
-                        <PortfolioItemForm
-                          item={editingItem}
-                          onSubmit={handleFormSubmit}
-                          onCancel={() => setIsFormOpen(false)}
-                        />
-                    </DialogContent>
-                </Dialog>
-            </div>
+            <Separator className="my-6" />
 
-            {/* Projects */}
-            <div className="space-y-2">
-                <h4 className="text-lg font-semibold font-headline">Projects</h4>
+            {/* Projects Portfolio */}
+            <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold font-headline">Projects Portfolio</h3>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild>
+                            <Button onClick={handleAddNew}>
+                                <PlusCircle className="mr-2" /> Add Project
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>{editingItem ? "Edit Project" : "Add New Project"}</DialogTitle>
+                            </DialogHeader>
+                            <PortfolioItemForm
+                              item={editingItem}
+                              onSubmit={handleFormSubmit}
+                              onCancel={() => setIsFormOpen(false)}
+                            />
+                        </DialogContent>
+                    </Dialog>
+                </div>
                  {projects.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-1">
                         {projects.map(renderItem)}
                     </div>
                 ) : (
@@ -116,11 +117,13 @@ export default function PortfolioSection() {
                 )}
             </div>
 
+            <Separator className="my-6" />
+
             {/* Weekly Statuses */}
-            <div className="space-y-2">
-                <h4 className="text-lg font-semibold font-headline">Weekly Statuses</h4>
+            <div className="space-y-4">
+                <h3 className="text-xl font-bold font-headline">Weekly Statuses</h3>
                 {statuses.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-1">
                         {statuses.map(renderItem)}
                     </div>
                 ) : (

@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'SpaceWise',
-  description: 'Office space reservation app for interns',
+  title: 'PraktykanciHub',
+  description: 'Aplikacja społecznościowa dla praktykantów.',
 };
 
 export default function RootLayout({

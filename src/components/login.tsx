@@ -30,8 +30,8 @@ export default function Login() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Logo className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="font-headline text-3xl">Welcome to SpaceWise</CardTitle>
-            <CardDescription>Enter your name to reserve your spot.</CardDescription>
+            <CardTitle className="font-headline text-3xl">Welcome to PraktykanciHub</CardTitle>
+            <CardDescription>Enter your name to join and reserve your spot.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

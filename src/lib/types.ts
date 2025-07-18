@@ -12,7 +12,8 @@ export type Day = {
 
 export type Reservation = {
   date: string; // YYYY-MM-DD
-  users: string[]; // array of user IDs
+  office: string[]; // array of user IDs
+  online: string[]; // array of user IDs
 };
 
 export type WeeklyStatus = {

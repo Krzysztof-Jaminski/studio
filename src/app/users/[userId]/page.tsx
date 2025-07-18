@@ -3,13 +3,13 @@
 import { useContext, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AppContext } from '@/contexts/app-context';
-import type { PortfolioItem, User } from '@/lib/types';
+import type { PortfolioItem, User, Reservation } from '@/lib/types';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Eye, FileText, Link as LinkIcon, Pencil, Trash2, UserCircle } from 'lucide-react';
+import { ArrowLeft, Briefcase, Eye, FileText, Globe, Link as LinkIcon, Pencil, Sigma, Trash2, UserCircle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -48,26 +48,49 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
     </Card>
 );
 
+const StatCard = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: number }) => (
+    <Card>
+        <CardContent className="p-4 flex items-center gap-4">
+            {icon}
+            <div>
+                <p className="text-2xl font-bold">{value}</p>
+                <p className="text-sm text-muted-foreground">{label}</p>
+            </div>
+        </CardContent>
+    </Card>
+);
+
+
 export default function UserProfilePage() {
-  const { getUserById } = useContext(AppContext);
+  const { getUserById, allUsers, reservations } = useContext(AppContext);
   const router = useRouter();
   const params = useParams();
   const userId = params.userId as string;
 
   const [profileUser, setProfileUser] = useState<User | null>(null);
   const [userPortfolio, setUserPortfolio] = useState<PortfolioItem[]>([]);
+  const [userStats, setUserStats] = useState({ office: 0, online: 0, total: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (userId) {
+    if (userId && allUsers.length > 0) {
       const { user, portfolio } = getUserById(userId);
       if (user) {
         setProfileUser(user);
         setUserPortfolio(portfolio.filter(item => item.isVisible));
+        
+        const officeDays = reservations.filter(r => r.office.includes(userId)).length;
+        const onlineDays = reservations.filter(r => r.online.includes(userId)).length;
+        setUserStats({
+            office: officeDays,
+            online: onlineDays,
+            total: officeDays + onlineDays,
+        });
+
       }
       setIsLoading(false);
     }
-  }, [userId, getUserById]);
+  }, [userId, getUserById, allUsers, reservations]);
   
   if (isLoading) {
     return (
@@ -80,6 +103,11 @@ export default function UserProfilePage() {
                         <Skeleton className="h-8 w-48" />
                         <Skeleton className="h-5 w-64" />
                     </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
                 </div>
                 <Skeleton className="h-96 w-full" />
             </main>
@@ -119,16 +147,25 @@ export default function UserProfilePage() {
                 </Avatar>
                 <div>
                     <h1 className="text-4xl font-bold font-headline">{profileUser.name}</h1>
-                    <p className="text-lg text-muted-foreground">{profileUser.email}</p>
+                    <p className="text-lg text-muted-foreground">Intern at PraktykanciHub</p>
+                </div>
+            </div>
+
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold font-headline mb-4">Attendance Stats</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <StatCard icon={<Briefcase className="h-8 w-8 text-primary" />} label="Days in Office" value={userStats.office} />
+                    <StatCard icon={<Globe className="h-8 w-8 text-primary" />} label="Days Online" value={userStats.online} />
+                    <StatCard icon={<Sigma className="h-8 w-8 text-primary" />} label="Total Bookings" value={userStats.total} />
                 </div>
             </div>
 
             <Separator className="my-8" />
 
-             <div className="space-y-6">
+             <div className="space-y-8">
                  {/* Projects */}
                 <div className="space-y-4">
-                    <h2 className="text-2xl font-bold font-headline">Projects</h2>
+                    <h2 className="text-2xl font-bold font-headline">Projects Portfolio</h2>
                     {projects.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {projects.map(item => <PortfolioCard key={item.id} item={item} />)}

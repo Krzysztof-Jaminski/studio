@@ -17,7 +17,7 @@ export default function Header() {
         <div className="mr-auto flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Logo className="h-6 w-6 text-primary" />
-            <span className="font-bold font-headline text-lg">SpaceWise</span>
+            <span className="font-bold font-headline text-lg">PraktykanciHub</span>
           </Link>
           {user && (
             <nav className="flex items-center gap-4 text-sm">

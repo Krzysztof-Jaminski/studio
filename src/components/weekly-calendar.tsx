@@ -4,15 +4,13 @@ import { useState, useEffect, useContext } from 'react';
 import { addDays, startOfWeek, isToday, isBefore, format, startOfToday } from 'date-fns';
 import { AppContext } from '@/contexts/app-context';
 import DayCard from './day-card';
-import { type Day } from '@/lib/types';
-import { Button } from './ui/button';
-import { MAX_SPOTS } from '@/lib/utils';
+import { type Day, type User } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
 export default function WeeklyCalendar() {
   const [weekDays, setWeekDays] = useState<Day[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user, reservations, toggleAllReservations } = useContext(AppContext);
+  const { user, reservations, allUsers } = useContext(AppContext);
 
   useEffect(() => {
     const today = new Date();
@@ -31,18 +29,9 @@ export default function WeeklyCalendar() {
     setIsLoading(false);
   }, []);
 
-  const handleSelectAll = () => {
-    const availableDays = weekDays
-        .map(day => {
-            const reservation = reservations.find(r => r.date === format(day.date, 'yyyy-MM-dd'));
-            const isFull = reservation ? reservation.users.length >= MAX_SPOTS : false;
-            return { ...day, isFull };
-        })
-        .filter(day => !day.isPast && !day.isFull)
-        .map(day => day.date);
-    
-    toggleAllReservations(availableDays);
-  };
+  const getUserDetails = (userIds: string[]): User[] => {
+    return userIds.map(id => allUsers.find(u => u.id === id)).filter(Boolean) as User[];
+  }
 
   if (isLoading || !user) {
     return (
@@ -57,21 +46,27 @@ export default function WeeklyCalendar() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h1 className="text-3xl font-bold font-headline">Your Week</h1>
-                <p className="text-muted-foreground">Reserve your spot for the upcoming week.</p>
+                <p className="text-muted-foreground">Declare your presence for the upcoming week.</p>
             </div>
-            <Button onClick={handleSelectAll}>Select All Available</Button>
         </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {weekDays.map((day) => {
           const reservation = reservations.find(r => r.date === format(day.date, "yyyy-MM-dd"));
-          const bookedCount = reservation ? reservation.users.length : 0;
-          const isBookedByUser = reservation ? reservation.users.includes(user.id) : false;
+          const officeUsers = reservation ? getUserDetails(reservation.office) : [];
+          const onlineUsers = reservation ? getUserDetails(reservation.online) : [];
+
+          let isBookedByUser: 'office' | 'online' | null = null;
+          if(reservation) {
+            if(reservation.office.includes(user.id)) isBookedByUser = 'office';
+            else if (reservation.online.includes(user.id)) isBookedByUser = 'online';
+          }
 
           return (
             <DayCard
               key={day.date.toString()}
               day={day}
-              bookedCount={bookedCount}
+              officeUsers={officeUsers}
+              onlineUsers={onlineUsers}
               isBookedByUser={isBookedByUser}
             />
           );

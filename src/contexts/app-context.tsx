@@ -11,9 +11,7 @@ type AppContextType = {
   login: (name: string) => void;
   logout: () => void;
   reservations: Reservation[];
-  toggleReservation: (date: Date) => void;
-  toggleAllReservations: (dates: Date[]) => void;
-  getUserReservations: (userId: string) => Reservation[];
+  toggleReservation: (date: Date, type: 'office' | 'online') => void;
   weeklyStatus: WeeklyStatus | null;
   portfolio: PortfolioItem[];
   showStatusPrompt: boolean;
@@ -31,8 +29,6 @@ export const AppContext = createContext<AppContextType>({
   logout: () => {},
   reservations: [],
   toggleReservation: () => {},
-  toggleAllReservations: () => {},
-  getUserReservations: () => [],
   weeklyStatus: null,
   portfolio: [],
   showStatusPrompt: false,
@@ -139,26 +135,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }, [weeklyStatus]);
 
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!user) return;
-      setReservations(prev => {
-        const today = new Date();
-        const dayToUpdate = new Date(today.setDate(today.getDate() + Math.floor(Math.random() * 5)));
-        const dateString = format(dayToUpdate, "yyyy-MM-dd");
-
-        const res = prev.find(r => r.date === dateString);
-        if (res && res.users.length < MAX_SPOTS && !res.users.includes('user-ai')) {
-          return prev.map(r => r.date === dateString ? { ...r, users: [...r.users, 'user-ai'] } : r);
-        } else if (!res) {
-          return [...prev, { date: dateString, users: ['user-ai'] }]
-        }
-        return prev;
-      });
-    }, 15000);
-    return () => clearInterval(interval);
-  }, [user]);
-
   const login = (name: string) => {
     const newUser = { ...MOCK_USER_BASE, id: 'user-1', name };
     setUser(newUser);
@@ -177,89 +153,82 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setWeeklyStatus(null);
     setPortfolio([]);
     setAllUsers([]);
+    setReservations([]);
   };
 
-  const toggleReservation = (date: Date) => {
+  const toggleReservation = (date: Date, type: 'office' | 'online') => {
     if (!user) return;
     const dateString = format(date, "yyyy-MM-dd");
-    const existingReservation = reservations.find((r) => r.date === dateString);
+    let res = reservations.find((r) => r.date === dateString);
+    let userBooking: 'office' | 'online' | null = null;
+    
+    if (res) {
+        if (res.office.includes(user.id)) userBooking = 'office';
+        if (res.online.includes(user.id)) userBooking = 'online';
+    }
 
-    if (existingReservation && existingReservation.users.includes(user.id)) {
-      setReservations(
-        reservations.map((r) =>
-          r.date === dateString
-            ? { ...r, users: r.users.filter((id) => id !== user.id) }
-            : r
-        )
-      );
-      toast({
-        title: "Reservation Cancelled",
-        description: `Your spot for ${format(date, "MMMM d")} has been cancelled.`,
-      });
-    } else {
-      if (existingReservation && existingReservation.users.length >= MAX_SPOTS) {
+    // Case 1: User is canceling their existing booking
+    if (userBooking) {
+        const updatedReservations = reservations.map(r => {
+            if (r.date === dateString) {
+                return {
+                    ...r,
+                    office: r.office.filter(id => id !== user.id),
+                    online: r.online.filter(id => id !== user.id),
+                }
+            }
+            return r;
+        });
+        setReservations(updatedReservations);
+        toast({
+            title: "Reservation Cancelled",
+            description: `Your spot for ${format(date, "MMMM d")} has been cancelled.`,
+        });
+        return;
+    }
+    
+    // Case 2: User is making a new booking, but is already booked for that day
+    if (userBooking) {
         toast({
           variant: "destructive",
           title: "Booking Failed",
-          description: `Sorry, all spots for ${format(date, "MMMM d")} are taken.`,
+          description: `You are already booked for ${format(date, "MMMM d")}. Please cancel first.`,
         });
         return;
-      }
+    }
+    
+    // Case 3: User is booking an office spot that is full
+    if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
+        toast({
+          variant: "destructive",
+          title: "Booking Failed",
+          description: `Sorry, all office spots for ${format(date, "MMMM d")} are taken.`,
+        });
+        return;
+    }
 
-      if (existingReservation) {
+    // Case 4: New booking
+    const newReservationData = {
+        office: type === 'office' ? [user.id] : [],
+        online: type === 'online' ? [user.id] : [],
+    };
+
+    if (res) {
         setReservations(
           reservations.map((r) =>
-            r.date === dateString ? { ...r, users: [...r.users, user.id] } : r
+            r.date === dateString ? { ...r, office: [...r.office, ...newReservationData.office], online: [...r.online, ...newReservationData.online] } : r
           )
         );
-      } else {
-        setReservations([...reservations, { date: dateString, users: [user.id] }]);
-      }
-      toast({
-        title: "Reservation Confirmed!",
-        description: `You have booked a spot for ${format(date, "MMMM d")}.`,
-      });
-    }
-  };
-
-  const toggleAllReservations = (dates: Date[]) => {
-    if (!user) return;
-    let updatedReservations = [...reservations];
-    let newBookings = 0;
-
-    dates.forEach(date => {
-        const dateString = format(date, "yyyy-MM-dd");
-        const res = updatedReservations.find(r => r.date === dateString);
-        
-        if (!res || (res.users.length < MAX_SPOTS && !res.users.includes(user.id))) {
-            if (res) {
-                updatedReservations = updatedReservations.map(r => r.date === dateString ? { ...r, users: [...r.users, user.id] } : r);
-            } else {
-                updatedReservations.push({ date: dateString, users: [user.id] });
-            }
-            newBookings++;
-        }
-    });
-
-    setReservations(updatedReservations);
-    if(newBookings > 0) {
-        toast({
-            title: "Reservations Updated",
-            description: `You have booked spots for ${newBookings} available day(s).`,
-        });
     } else {
-        toast({
-            title: "No new bookings",
-            description: "All available days were already booked by you or are full.",
-        });
+        setReservations([...reservations, { date: dateString, ...newReservationData }]);
     }
+    
+    toast({
+        title: "Reservation Confirmed!",
+        description: `You have booked an ${type} spot for ${format(date, "MMMM d")}.`,
+    });
   };
 
-
-  const getUserReservations = (userId: string) => {
-    return reservations.filter((r) => r.users.includes(userId));
-  };
-  
   const publishStatus = () => {
     if (!weeklyStatus) return;
     const content = weeklyStatus.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus.content;
@@ -281,13 +250,17 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
   const updateWeeklyStatus = (content: string, status: 'draft' | 'published') => {
     if (!weeklyStatus) return;
-    setWeeklyStatus({ ...weeklyStatus, content });
+    const newStatus = { ...weeklyStatus, content, status: weeklyStatus.status };
+
     if (status === 'published') {
+        setWeeklyStatus({ ...newStatus, status: 'published' });
         publishStatus();
     } else {
+        setWeeklyStatus(newStatus);
         toast({ title: "Draft Saved", description: "Your status has been saved as a draft." });
     }
   };
+
 
   const upsertPortfolioItem = (item: PortfolioItem) => {
     setPortfolio(prev => {
@@ -314,12 +287,12 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
   
   const getUserById = (userId: string) => {
-    const foundUser = [user, ...MOCK_USERS].find(u => u?.id === userId);
-    const userPortfolio = MOCK_PORTFOLIOS[userId] || [];
+    const foundUser = allUsers.find(u => u?.id === userId);
     // for the logged-in user, return their current portfolio state
     if (userId === user?.id) {
         return { user: foundUser || null, portfolio: portfolio };
     }
+    const userPortfolio = MOCK_PORTFOLIOS[userId] || [];
     return { user: foundUser || null, portfolio: userPortfolio };
   };
 
@@ -331,8 +304,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         logout,
         reservations,
         toggleReservation,
-        toggleAllReservations,
-        getUserReservations,
         weeklyStatus,
         portfolio,
         showStatusPrompt,

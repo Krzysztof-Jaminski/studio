@@ -2,32 +2,59 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { cn, getOccupancyDetails, MAX_SPOTS } from "@/lib/utils";
-import { type Day } from "@/lib/types";
-import { Check, X } from "lucide-react";
+import type { Day, User } from "@/lib/types";
+import { Briefcase, Check, Globe, Users, X } from "lucide-react";
 import { format } from "date-fns";
 import { useContext } from "react";
 import { AppContext } from "@/contexts/app-context";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { UserCircle } from "lucide-react";
 
 type DayCardProps = {
   day: Day;
-  bookedCount: number;
-  isBookedByUser: boolean;
+  officeUsers: User[];
+  onlineUsers: User[];
+  isBookedByUser: 'office' | 'online' | null;
 };
 
-export default function DayCard({ day, bookedCount, isBookedByUser }: DayCardProps) {
-  const { toggleReservation } = useContext(AppContext);
+const UserList = ({ users }: { users: User[] }) => (
+    <div className="space-y-2">
+        {users.length > 0 ? users.map(user => (
+            <div key={user.id} className="flex items-center gap-2 text-sm">
+                <Avatar className="h-6 w-6">
+                    <AvatarFallback className="text-muted-foreground text-xs">
+                        <UserCircle />
+                    </AvatarFallback>
+                </Avatar>
+                <span>{user.name}</span>
+            </div>
+        )) : <p className="text-xs text-muted-foreground">No one yet.</p>}
+    </div>
+);
+
+
+export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser }: DayCardProps) {
+  const { toggleReservation, allUsers } = useContext(AppContext);
   const { date, isToday, isPast } = day;
-  const isFull = bookedCount >= MAX_SPOTS;
-  const isDisabled = isPast || (isFull && !isBookedByUser);
-  const occupancy = getOccupancyDetails(bookedCount);
+  
+  const bookedInOffice = officeUsers.length;
+  const isOfficeFull = bookedInOffice >= MAX_SPOTS;
+  
+  const occupancy = getOccupancyDetails(bookedInOffice);
+
+  const handleCancel = () => {
+    if (isBookedByUser) {
+        toggleReservation(date, isBookedByUser);
+    }
+  }
 
   return (
     <Card className={cn(
       "flex flex-col transition-all duration-300",
-      isDisabled ? "bg-muted/50" : "bg-card",
+      isPast ? "bg-muted/50" : "bg-card",
       isToday && "border-primary border-2 shadow-lg"
     )}>
       <CardHeader>
@@ -37,44 +64,77 @@ export default function DayCard({ day, bookedCount, isBookedByUser }: DayCardPro
         </div>
         <CardDescription>{format(date, "MMMM d, yyyy")}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between items-baseline mb-1">
-              <p className="text-sm font-medium">
-                {MAX_SPOTS - bookedCount} <span className="text-muted-foreground">spots left</span>
-              </p>
-              <p className={cn("text-sm font-semibold", occupancy.textColor)}>{occupancy.label}</p>
-            </div>
-            <Progress value={(bookedCount / MAX_SPOTS) * 100} className="h-2" indicatorClassName={occupancy.color} />
-          </div>
-          {isBookedByUser && (
-            <div className="flex items-center gap-2 text-green-600 bg-green-100 p-2 rounded-md">
-                <Check className="h-5 w-5" />
-                <p className="font-semibold text-sm">You are booked!</p>
-            </div>
-          )}
+
+      <CardContent className="flex-grow space-y-4">
+        {isBookedByUser && (
+            <Badge variant={isBookedByUser === 'office' ? 'default' : 'secondary'} className="w-full justify-center">
+                {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}
+                You are booked {isBookedByUser}
+            </Badge>
+        )}
+
+        {/* Attendance Lists */}
+        <div className="space-y-2">
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start">
+                        <Briefcase className="mr-2" /> 
+                        In Office ({bookedInOffice}/{MAX_SPOTS})
+                        <Users className="ml-auto" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56">
+                    <p className="font-semibold mb-2 text-sm">In Office</p>
+                    <UserList users={officeUsers} />
+                </PopoverContent>
+            </Popover>
+
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start">
+                        <Globe className="mr-2" /> 
+                        Online ({onlineUsers.length})
+                        <Users className="ml-auto" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56">
+                    <p className="font-semibold mb-2 text-sm">Online</p>
+                    <UserList users={onlineUsers} />
+                </PopoverContent>
+            </Popover>
         </div>
+
       </CardContent>
-      <CardFooter>
-        <Button
-          className="w-full transition-all"
-          onClick={() => toggleReservation(date)}
-          disabled={isDisabled}
-          variant={isBookedByUser ? "destructive" : "default"}
-        >
-          {isBookedByUser ? (
+
+      <CardFooter className="flex flex-col gap-2">
+        {isBookedByUser ? (
+            <Button
+                className="w-full"
+                variant="destructive"
+                onClick={handleCancel}
+                disabled={isPast}
+            >
+                <X className="mr-2"/> Cancel Booking
+            </Button>
+        ) : (
             <>
-              <X className="mr-2 h-4 w-4" />
-              Cancel Spot
+                <Button
+                    className="w-full"
+                    onClick={() => toggleReservation(date, 'office')}
+                    disabled={isPast || isOfficeFull}
+                >
+                    <Briefcase className="mr-2" /> Book Office Spot
+                </Button>
+                <Button
+                    className="w-full"
+                    variant="secondary"
+                    onClick={() => toggleReservation(date, 'online')}
+                    disabled={isPast}
+                >
+                    <Globe className="mr-2" /> Book Online
+                </Button>
             </>
-          ) : (
-            <>
-              <Check className="mr-2 h-4 w-4" />
-              Reserve Spot
-            </>
-          )}
-        </Button>
+        )}
       </CardFooter>
     </Card>
   );
