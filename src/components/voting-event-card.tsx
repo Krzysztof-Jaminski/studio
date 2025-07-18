@@ -61,7 +61,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
             </div>
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-orange-400")} />}
             {!isClosed && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto", hasVoted && "bg-orange-500 hover:bg-orange-600")} variant={hasVoted ? "default" : "outline"}>
+                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto", hasVoted && "bg-orange-600 hover:bg-orange-700")} variant={hasVoted ? "default" : "outline"}>
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Voted' : 'Vote'}
                 </Button>
@@ -104,13 +104,13 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                         )}
                     </div>
                      {!event.isOpen && (
-                        <Badge variant="destructive" className="flex items-center gap-1">
+                        <Badge className="flex items-center gap-1 bg-orange-600 text-white">
                             <Trophy className="h-3 w-3" /> Voting Closed
                         </Badge>
                     )}
                 </div>
             </CardHeader>
-            <CardContent className="flex-grow flex flex-col min-h-0 py-4">
+            <CardContent className="flex-grow flex flex-col min-h-0 p-4">
                  <ScrollArea className="flex-grow pr-4 -mr-4">
                     <div className="space-y-3">
                          {event.votingOptions.length > 0 ? (
@@ -130,7 +130,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                     </div>
                 </ScrollArea>
             </CardContent>
-            <CardFooter className="flex flex-col gap-2 border-t pt-4">
+            <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4">
                  {(isCreator || isAdmin) && (
                      <div className="w-full space-y-2">
                         <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>

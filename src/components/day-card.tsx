@@ -70,7 +70,13 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
 
       <CardContent className="flex-grow space-y-4">
         {isBookedByUser && (
-            <Badge variant={isBookedByUser === 'office' ? 'default' : 'secondary'} className="w-full justify-center">
+            <Badge 
+                variant={isBookedByUser === 'office' ? 'default' : 'secondary'} 
+                className={cn(
+                    "w-full justify-center",
+                    isBookedByUser === 'office' && 'bg-primary/90'
+                )}
+            >
                 {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}
                 You are booked {isBookedByUser}
             </Badge>

@@ -72,11 +72,11 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                            <CardDescription className="text-xs text-muted-foreground">Creator not found</CardDescription>
                         )}
                     </div>
-                    {!order.isOpen && <Badge variant="destructive">Closed</Badge>}
+                    {!order.isOpen && <Badge className="bg-orange-600 text-white">Closed</Badge>}
                 </div>
             </CardHeader>
 
-            <CardContent className="flex-grow space-y-4 flex flex-col min-h-0">
+            <CardContent className="flex-grow space-y-4 flex flex-col min-h-0 p-4">
                  <ScrollArea className="flex-grow pr-4 -mr-4">
                     <div className="space-y-3">
                         {order.orders.map(item => (
@@ -94,7 +94,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 </div>
             </CardContent>
 
-            <CardFooter className="flex flex-col items-start gap-3">
+            <CardFooter className="flex flex-col items-start gap-3 border-t p-4">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
                     <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-orange-600">
                         <LinkIcon /> Menu Link
