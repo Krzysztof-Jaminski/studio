@@ -11,6 +11,8 @@ import type { FoodOrder } from "@/lib/types";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "./ui/separator";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import { Card } from "./ui/card";
 
 const formSchema = z.object({
     type: z.enum(['order', 'voting'], { required_error: "You must select an event type."}),
@@ -143,49 +145,59 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                 ) : (
                     <div className="space-y-4">
                         <FormLabel>Voting Options</FormLabel>
-                        {fields.map((field, index) => (
-                             <div key={field.id} className="p-4 border rounded-lg space-y-3 relative">
-                                <FormField
-                                    control={form.control}
-                                    name={`votingOptions.${index}.name`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                             <FormLabel className="text-xs">Option {index + 1}: Name</FormLabel>
-                                             <FormControl><Input placeholder="e.g., Sushi World" {...field} /></FormControl>
-                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                 <FormField
-                                    control={form.control}
-                                    name={`votingOptions.${index}.link`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                             <FormLabel className="text-xs">Menu Link</FormLabel>
-                                             <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
-                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name={`votingOptions.${index}.imageUrl`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                             <FormLabel className="text-xs">Image URL (Optional)</FormLabel>
-                                             <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
-                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => remove(index)}>
-                                    <Trash2 />
-                                </Button>
+                        <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+                             <div className="flex w-max space-x-4 p-4">
+                                {fields.map((field, index) => (
+                                     <Card key={field.id} className="p-4 space-y-3 relative w-[300px] whitespace-normal">
+                                        <h4 className="font-semibold">Option {index + 1}</h4>
+                                        <FormField
+                                            control={form.control}
+                                            name={`votingOptions.${index}.name`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                     <FormLabel className="text-xs">Name</FormLabel>
+                                                     <FormControl><Input placeholder="e.g., Sushi World" {...field} /></FormControl>
+                                                     <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                         <FormField
+                                            control={form.control}
+                                            name={`votingOptions.${index}.link`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                     <FormLabel className="text-xs">Menu Link</FormLabel>
+                                                     <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
+                                                     <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`votingOptions.${index}.imageUrl`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                     <FormLabel className="text-xs">Image URL (Optional)</FormLabel>
+                                                     <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
+                                                     <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        {fields.length > 1 && (
+                                            <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => remove(index)}>
+                                                <Trash2 />
+                                            </Button>
+                                        )}
+                                     </Card>
+                                ))}
+                                <div className="flex items-center">
+                                    <Button type="button" variant="outline" size="lg" className="h-full" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
+                                        <PlusCircle className="mr-2" /> Add Option
+                                    </Button>
+                                </div>
                              </div>
-                        ))}
-                        <Button type="button" variant="outline" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
-                            <PlusCircle className="mr-2" /> Add Option
-                        </Button>
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
                     </div>
                 )}
 
