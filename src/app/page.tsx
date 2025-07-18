@@ -7,13 +7,18 @@ import Header from '@/components/header';
 import WeeklyCalendar from '@/components/weekly-calendar';
 import WeeklyStatus from '@/components/weekly-status';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const { user } = useContext(AppContext);
+  const router = useRouter();
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {user ? (
         <>
           <Header />
           <main className="container mx-auto px-4 py-8">
@@ -22,9 +27,6 @@ export default function Home() {
             <WeeklyCalendar />
           </main>
         </>
-      ) : (
-        <Login />
-      )}
     </div>
   );
 }

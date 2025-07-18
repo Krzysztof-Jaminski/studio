@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useContext } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +12,13 @@ import { Logo } from './icons';
 export default function Login() {
   const [name, setName] = useState('');
   const { login } = useContext(AppContext);
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
       login(name.trim());
+      router.push('/');
     }
   };
 

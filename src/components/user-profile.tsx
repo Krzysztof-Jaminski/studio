@@ -10,12 +10,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AppContext } from "@/contexts/app-context";
 import { format, parseISO } from "date-fns";
 import { ScrollArea } from "./ui/scroll-area";
 import { Badge } from "./ui/badge";
-import { CalendarCheck, LogOut } from "lucide-react";
+import { CalendarCheck, LogOut, UserCircle } from "lucide-react";
 import { Separator } from "./ui/separator";
 import PortfolioSection from "./portfolio-section";
 
@@ -32,8 +32,9 @@ export default function UserProfile() {
       <SheetTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${user.name}`} alt={user.name} />
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+             <AvatarFallback className="text-muted-foreground">
+                <UserCircle className="h-full w-full" />
+            </AvatarFallback>
           </Avatar>
         </Button>
       </SheetTrigger>
@@ -41,8 +42,9 @@ export default function UserProfile() {
         <SheetHeader className="text-left">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${user.name}`} alt={user.name} />
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+               <AvatarFallback className="text-muted-foreground">
+                    <UserCircle className="h-full w-full" />
+                </AvatarFallback>
             </Avatar>
             <div>
               <SheetTitle className="font-headline text-2xl">{user.name}</SheetTitle>
