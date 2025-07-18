@@ -75,8 +75,8 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 </div>
             </CardHeader>
 
-            <CardContent className="flex-grow space-y-4">
-                 <ScrollArea className="h-48 pr-4">
+            <CardContent className="flex-grow space-y-4 flex flex-col min-h-0">
+                 <ScrollArea className="flex-grow pr-4 -mr-4">
                     <div className="space-y-3">
                         {order.orders.map(item => (
                             <OrderItem key={item.id} item={item} orderId={order.id} isCreator={isCreator} isAdmin={isAdmin}/>
@@ -86,8 +86,8 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                         )}
                     </div>
                 </ScrollArea>
-                 <Separator />
-                <div className="flex justify-between items-center font-bold">
+                 <Separator className="mt-auto" />
+                <div className="flex justify-between items-center font-bold pt-2">
                     <span>Total:</span>
                     <span>${totalAmount.toFixed(2)}</span>
                 </div>
@@ -157,5 +157,3 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         </Card>
     );
 }
-
-    

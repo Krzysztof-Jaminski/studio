@@ -111,8 +111,8 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                     )}
                 </div>
             </CardHeader>
-            <CardContent className="flex-grow space-y-3">
-                <ScrollArea className="h-64 pr-4">
+            <CardContent className="flex-grow space-y-3 flex flex-col min-h-0">
+                <ScrollArea className="flex-grow pr-4 -mr-4">
                     <div className="space-y-3">
                         {event.votingOptions.map(opt => (
                             <VotingOptionCard 
