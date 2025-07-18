@@ -3,7 +3,7 @@
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData } from "@/lib/types";
-import { format, getWeek, isFriday, startOfWeek } from "date-fns";
+import { format, getWeek, isFriday, startOfWeek, getDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { MAX_SPOTS } from "@/lib/utils";
 
@@ -143,28 +143,31 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkDate = () => {
         const now = new Date();
-        if (isFriday(now) && now.getHours() >= 16) {
+        // getDay() returns 5 for Friday.
+        if (getDay(now) === 5) {
            setShowStatusPrompt(true);
         } else {
            setShowStatusPrompt(false);
         }
-        if (isFriday(now) && now.getHours() >= 18 && weeklyStatus?.status === 'draft') {
+        
+        // Auto-publish logic
+        const currentWeek = getWeek(now, { weekStartsOn: 1 });
+        const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfWeek(now, { weekStartsOn: 1 }).toISOString());
+
+        if (isFriday(now) && now.getHours() >= 18 && weeklyStatus?.status === 'draft' && !statusForCurrentWeekExists) {
             publishStatus();
         }
     };
     checkDate();
-    const interval = setInterval(checkDate, 60000);
+    const interval = setInterval(checkDate, 60000); // check every minute
     return () => clearInterval(interval);
-  }, [weeklyStatus]);
+  }, [weeklyStatus, portfolio]);
 
 
   const login = (name: string) => {
-    // Find user from the persistent list or create a new one for the demo
     let potentialUser = allUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
 
     if (!potentialUser) {
-        // In a real app, this would be a registration flow.
-        // Here, we create a new user for the session to ensure data persistence.
         const newUser: User = {
             id: `user-${Date.now()}`,
             name: name,
@@ -172,13 +175,28 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             role: 'user'
         };
         setAllUsers(prev => [...prev, newUser]);
+        setUserPortfolios(prev => ({...prev, [newUser.id]: [] }));
         potentialUser = newUser;
     }
 
     setUser(potentialUser);
     const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
-    setWeeklyStatus({ week: currentWeek, content: '', status: 'draft' });
-    setPortfolio(userPortfolios[potentialUser.id] || []);
+    const userPortfolio = userPortfolios[potentialUser.id] || [];
+    setPortfolio(userPortfolio);
+    
+    // Check for existing status for the current week
+    const weekStartISO = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
+    const existingStatus = userPortfolio.find(item => item.type === 'status' && item.weekOf === weekStartISO);
+
+    if (existingStatus) {
+        setWeeklyStatus({
+            week: currentWeek,
+            content: existingStatus.description,
+            status: 'published'
+        });
+    } else {
+        setWeeklyStatus({ week: currentWeek, content: '', status: 'draft' });
+    }
     
     toast({
       title: "Logged in",
@@ -204,25 +222,55 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         if (res.online.includes(user.id)) userBooking = 'online';
     }
 
-    if (userBooking) {
-        const updatedReservations = reservations.map(r => {
-            if (r.date === dateString) {
-                return {
-                    ...r,
-                    office: r.office.filter(id => id !== user.id),
-                    online: r.online.filter(id => id !== user.id),
+    if (userBooking) { // User is canceling or changing booking
+        // If user clicks the same booking type, cancel it
+        if (userBooking === type) {
+            const updatedReservations = reservations.map(r => {
+                if (r.date === dateString) {
+                    return {
+                        ...r,
+                        office: r.office.filter(id => id !== user.id),
+                        online: r.online.filter(id => id !== user.id),
+                    }
                 }
+                return r;
+            });
+            setReservations(updatedReservations.filter(r => r.office.length > 0 || r.online.length > 0));
+            toast({
+                title: "Reservation Cancelled",
+                description: `Your spot for ${format(date, "MMMM d")} has been cancelled.`,
+            });
+            return;
+        } else { // User is changing from one type to another
+             // First check for availability if switching to office
+            if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
+                toast({
+                  variant: "destructive",
+                  title: "Booking Failed",
+                  description: `Sorry, all office spots for ${format(date, "MMMM d")} are taken.`,
+                });
+                return;
             }
-            return r;
-        });
-        setReservations(updatedReservations);
-        toast({
-            title: "Reservation Cancelled",
-            description: `Your spot for ${format(date, "MMMM d")} has been cancelled.`,
-        });
-        return;
+             const updatedReservations = reservations.map(r => {
+                if (r.date === dateString) {
+                    return {
+                        ...r,
+                        office: type === 'office' ? [...r.office.filter(id => id !== user.id), user.id] : r.office.filter(id => id !== user.id),
+                        online: type === 'online' ? [...r.online.filter(id => id !== user.id), user.id] : r.online.filter(id => id !== user.id),
+                    }
+                }
+                return r;
+            });
+            setReservations(updatedReservations);
+            toast({
+                title: "Reservation Changed!",
+                description: `You are now booked for an ${type} spot for ${format(date, "MMMM d")}.`,
+            });
+            return;
+        }
     }
     
+    // This is a new booking
     if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
         toast({
           variant: "destructive",
@@ -244,7 +292,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           )
         );
     } else {
-        setReservations([...reservations, { date: dateString, ...newReservationData }]);
+        setReservations([...reservations, { date: dateString, ...newReservationData.office, ...newReservationData.online }]);
     }
     
     toast({
@@ -254,19 +302,19 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   const publishStatus = () => {
-    if (!weeklyStatus || !user) return;
-    const content = weeklyStatus.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus.content;
+    if (!user) return;
+    const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
     const weekOf = startOfWeek(new Date(), { weekStartsOn: 1 });
+    
+    const content = weeklyStatus?.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus?.content || "Brak statusu na dany tydzień.";
 
     const newPortfolioItem: PortfolioItem = {
-      id: `status-${weeklyStatus.week}`, type: 'status', title: `Status - Week ${weeklyStatus.week}`,
+      id: `status-${currentWeek}`, type: 'status', title: `Status - Week ${currentWeek}`,
       description: content, date: new Date().toISOString(), weekOf: weekOf.toISOString(), isVisible: true,
     };
 
-    const updatedPortfolio = [newPortfolioItem, ...portfolio.filter(p => p.id !== newPortfolioItem.id)];
-    setPortfolio(updatedPortfolio);
-    setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
-    setWeeklyStatus(prev => prev ? { ...prev, status: 'published' } : null);
+    upsertPortfolioItem(newPortfolioItem);
+    setWeeklyStatus(prev => prev ? { ...prev, content: content, status: 'published' } : null);
     
     toast({
         title: "Status Published!",
@@ -275,13 +323,19 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }
 
   const updateWeeklyStatus = (content: string, status: 'draft' | 'published') => {
-    if (!weeklyStatus) return;
-    const newStatus = { ...weeklyStatus, content, status: weeklyStatus.status };
+    if (!user) return;
+    const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
 
     if (status === 'published') {
-        publishStatus();
+        const weekOf = startOfWeek(new Date(), { weekStartsOn: 1 });
+        const newPortfolioItem: PortfolioItem = {
+            id: `status-${currentWeek}`, type: 'status', title: `Status - Week ${currentWeek}`,
+            description: content, date: new Date().toISOString(), weekOf: weekOf.toISOString(), isVisible: true,
+        };
+        upsertPortfolioItem(newPortfolioItem);
+        setWeeklyStatus({ week: currentWeek, content, status: 'published' });
     } else {
-        setWeeklyStatus(newStatus);
+        setWeeklyStatus({ week: currentWeek, content, status: 'draft' });
         toast({ title: "Draft Saved", description: "Your status has been saved as a draft." });
     }
   };
@@ -449,5 +503,3 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
-
-    

@@ -34,11 +34,8 @@ const UserCard = ({ user }: { user: User }) => {
 }
 
 export default function UsersPage() {
-  const { allUsers, user: currentUser } = useContext(AppContext);
+  const { allUsers } = useContext(AppContext);
   
-  // Filter out the current user from the list
-  const otherUsers = allUsers.filter(u => u.id !== currentUser?.id);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -48,7 +45,7 @@ export default function UsersPage() {
             <p className="text-muted-foreground">Browse profiles of other interns in the program.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherUsers.map(user => (
+            {allUsers.map(user => (
                 <UserCard key={user.id} user={user} />
             ))}
         </div>

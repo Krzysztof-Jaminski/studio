@@ -2,37 +2,54 @@
 "use client";
 
 import { useState, useEffect, useContext } from 'react';
-import { addDays, startOfWeek, isToday, isBefore, format, startOfToday, isWithinInterval } from 'date-fns';
+import { addDays, startOfWeek, isToday, isBefore, format, startOfToday, isWithinInterval, eachDayOfInterval, getMonth, setMonth } from 'date-fns';
 import { AppContext } from '@/contexts/app-context';
 import DayCard from './day-card';
 import { type Day, type User } from '@/lib/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 // Define the reservation period
 const RESERVATION_START_DATE = new Date('2024-07-07');
 const RESERVATION_END_DATE = new Date('2024-10-01');
 
+const months = [
+    { label: "July", value: 6 },
+    { label: "August", value: 7 },
+    { label: "September", value: 8 },
+    { label: "October", value: 9 },
+]
+
 export default function WeeklyCalendar() {
-  const [weekDays, setWeekDays] = useState<Day[]>([]);
+  const [displayedDays, setDisplayedDays] = useState<Day[]>([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
   const { user, reservations, allUsers } = useContext(AppContext);
 
   useEffect(() => {
-    const today = new Date();
-    // Week starts on Monday
-    const start = startOfWeek(today, { weekStartsOn: 1 });
+    // Ensure the initial view is within the allowed range
+    const initialDate = isWithinInterval(new Date(), { start: RESERVATION_START_DATE, end: RESERVATION_END_DATE }) 
+        ? new Date() 
+        : RESERVATION_START_DATE;
+    setCurrentDate(initialDate);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const start = startOfWeek(currentDate, { weekStartsOn: 1 });
     const days: Day[] = [];
     for (let i = 0; i < 5; i++) { // Monday to Friday
-      const currentDate = addDays(start, i);
+      const date = addDays(start, i);
       days.push({
-        date: currentDate,
-        isToday: isToday(currentDate),
-        isPast: isBefore(currentDate, startOfToday()),
+        date: date,
+        isToday: isToday(date),
+        isPast: isBefore(date, startOfToday()),
       });
     }
-    setWeekDays(days);
+    setDisplayedDays(days);
     setIsLoading(false);
-  }, []);
+  }, [currentDate]);
 
   const getUserDetails = (userIds: string[]): User[] => {
     return userIds.map(id => allUsers.find(u => u.id === id)).filter(Boolean) as User[];
@@ -40,6 +57,34 @@ export default function WeeklyCalendar() {
   
   const isDateReservable = (date: Date): boolean => {
     return isWithinInterval(date, { start: RESERVATION_START_DATE, end: RESERVATION_END_DATE });
+  }
+  
+  const changeWeek = (direction: 'prev' | 'next') => {
+      const newDate = addDays(currentDate, direction === 'prev' ? -7 : 7);
+      if (isWithinInterval(newDate, { start: addDays(RESERVATION_START_DATE, -7), end: addDays(RESERVATION_END_DATE, 7)})) {
+          setCurrentDate(newDate);
+      }
+  };
+
+  const handleMonthChange = (monthValue: string) => {
+      const monthIndex = parseInt(monthValue, 10);
+      let newDate = setMonth(new Date(RESERVATION_START_DATE), monthIndex);
+      
+      // If selected month is past, set to first day of that month, else today
+      if (newDate < new Date() && getMonth(new Date()) !== monthIndex) {
+          if (newDate < RESERVATION_START_DATE) newDate = RESERVATION_START_DATE;
+      } else {
+          newDate = new Date();
+          if (getMonth(newDate) !== monthIndex) {
+            newDate = setMonth(new Date(), monthIndex);
+            if (newDate < RESERVATION_START_DATE) newDate = RESERVATION_START_DATE;
+            else { // Set to the first day of the future month
+                const firstDayOfMonth = new Date(newDate.getFullYear(), monthIndex, 1);
+                newDate = firstDayOfMonth;
+            }
+          }
+      }
+      setCurrentDate(newDate);
   }
 
   if (isLoading || !user) {
@@ -54,16 +99,28 @@ export default function WeeklyCalendar() {
     <div className="space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-bold font-headline">Your Week</h1>
-                <p className="text-muted-foreground">Declare your presence for the upcoming week.</p>
+                <h1 className="text-3xl font-bold font-headline">Reservations</h1>
+                <p className="text-muted-foreground">Declare your presence for any week within the internship period.</p>
+            </div>
+            <div className="flex items-center gap-2">
+                <Select value={getMonth(currentDate).toString()} onValueChange={handleMonthChange}>
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {months.map(m => <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+                <Button variant="outline" size="icon" onClick={() => changeWeek('prev')}><ChevronLeft/></Button>
+                <Button variant="outline" size="icon" onClick={() => changeWeek('next')}><ChevronRight/></Button>
             </div>
         </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {weekDays.map((day) => {
+        {displayedDays.map((day) => {
           const reservation = reservations.find(r => r.date === format(day.date, "yyyy-MM-dd"));
           const officeUsers = reservation ? getUserDetails(reservation.office) : [];
           const onlineUsers = reservation ? getUserDetails(reservation.online) : [];
-          const isReservable = isDateReservable(day.date);
+          const reservable = isDateReservable(day.date) && !day.isPast;
 
           let isBookedByUser: 'office' | 'online' | null = null;
           if(reservation) {
@@ -78,7 +135,7 @@ export default function WeeklyCalendar() {
               officeUsers={officeUsers}
               onlineUsers={onlineUsers}
               isBookedByUser={isBookedByUser}
-              isReservable={isReservable}
+              isReservable={reservable}
             />
           );
         })}
