@@ -1,7 +1,8 @@
+
 "use client";
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
-import { type User, type Reservation, type WeeklyStatus, type PortfolioItem } from "@/lib/types";
+import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData } from "@/lib/types";
 import { format, getWeek, isFriday, startOfWeek } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { MAX_SPOTS } from "@/lib/utils";
@@ -21,6 +22,13 @@ type AppContextType = {
   togglePortfolioItemVisibility: (itemId: string) => void;
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
+  foodOrders: FoodOrder[];
+  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'>) => void;
+  removeFoodOrder: (orderId: string) => void;
+  addOrderItem: (orderId: string, item: OrderItemData) => void;
+  removeOrderItem: (orderId: string, itemId: string) => void;
+  togglePaidStatus: (orderId: string, itemId: string | 'all') => void;
+  toggleOrderState: (orderId: string) => void;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -38,15 +46,22 @@ export const AppContext = createContext<AppContextType>({
   togglePortfolioItemVisibility: () => {},
   allUsers: [],
   getUserById: () => ({ user: null, portfolio: [] }),
+  foodOrders: [],
+  addFoodOrder: () => {},
+  removeFoodOrder: () => {},
+  addOrderItem: () => {},
+  removeOrderItem: () => {},
+  togglePaidStatus: () => {},
+  toggleOrderState: () => {},
 });
 
-const MOCK_USER_BASE: Omit<User, 'id' | 'name'> = { email: "john.doe@example.com" };
+const MOCK_USER_BASE: Omit<User, 'id' | 'name' | 'role'> = { email: "john.doe@example.com" };
 
-// Mock data for other users and their portfolios
 const MOCK_USERS: User[] = [
-    { id: "user-2", name: "Jane Smith", email: "jane.smith@example.com" },
-    { id: "user-3", name: "Peter Jones", email: "peter.jones@example.com" },
-    { id: "user-4", name: "Mary Williams", email: "mary.williams@example.com" },
+    { id: "user-2", name: "Jane Smith", email: "jane.smith@example.com", role: "user" },
+    { id: "user-3", name: "Peter Jones", email: "peter.jones@example.com", role: "user" },
+    { id: "user-4", name: "Mary Williams", email: "mary.williams@example.com", role: "user" },
+    { id: "admin1", name: "Admin User", email: "admin@example.com", role: "admin" },
 ];
 
 const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
@@ -75,26 +90,39 @@ const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
             date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), isVisible: true
         }
     ],
-    "user-3": [
-         {
-            id: 'project-peter-1', type: 'project', title: 'Mobile Game Backend', description: 'Built a scalable backend for a mobile game using Firebase Functions and Firestore.',
-            technologies: ['Firebase', 'Node.js', 'TypeScript'],
-            date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(), isVisible: true
-        }
-    ],
-    "user-4": [
-        {
-            id: 'status-mary-1', type: 'status', title: 'Status - Week 28', weekOf: startOfWeek(new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), { weekStartsOn: 1 }).toISOString(),
-            description: 'Researched different authentication strategies for our web app. Presented findings to the team.',
-            date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), isVisible: false // Hidden item
-        },
-        {
-            id: 'status-mary-2', type: 'status', title: 'Status - Week 27', weekOf: startOfWeek(new Date(Date.now() - 1000 * 60 * 60 * 24 * 14), { weekStartsOn: 1 }).toISOString(),
-            description: 'Onboarding and setup complete. Ready to start contributing to the codebase.',
-            date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(), isVisible: true
-        },
-    ],
+    "user-3": [],
+    "user-4": [],
+    "admin1": [],
 };
+
+const MOCK_FOOD_ORDERS: FoodOrder[] = [
+    {
+        id: 'fo-1',
+        creatorId: 'user-2',
+        companyName: 'Pizza Heaven',
+        link: 'https://example.com',
+        creatorPhoneNumber: '123-456-789',
+        imageUrl: 'https://placehold.co/100x100.png',
+        isOpen: true,
+        orders: [
+            { id: 'item-1', userId: 'user-2', name: 'Margherita', details: 'Large', price: 15.99, isPaid: true },
+            { id: 'item-2', userId: 'user-3', name: 'Pepperoni', details: 'Medium, extra cheese', price: 17.50, isPaid: false },
+        ]
+    },
+    {
+        id: 'fo-2',
+        creatorId: 'user-1',
+        companyName: 'Sushi World',
+        link: 'https://example.com',
+        creatorPhoneNumber: '987-654-321',
+        imageUrl: 'https://placehold.co/100x100.png',
+        isOpen: false,
+        orders: [
+            { id: 'item-3', userId: 'user-1', name: 'California Roll', details: '', price: 8.00, isPaid: true },
+            { id: 'item-4', userId: 'user-4', name: 'Spicy Tuna Roll', details: '', price: 9.50, isPaid: true },
+        ]
+    }
+];
 
 
 export function AppContextProvider({ children }: { children: ReactNode }) {
@@ -105,13 +133,14 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [weeklyStatus, setWeeklyStatus] = useState<WeeklyStatus | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [showStatusPrompt, setShowStatusPrompt] = useState(false);
+  const [foodOrders, setFoodOrders] = useState<FoodOrder[]>(MOCK_FOOD_ORDERS);
   
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
   useEffect(() => {
     // On mount, load all users. In a real app, this would be a fetch.
     if (user) {
-        setAllUsers([user, ...MOCK_USERS]);
+        setAllUsers([user, ...MOCK_USERS.filter(u => u.id !== user.id)]);
     } else {
         setAllUsers([]);
     }
@@ -136,15 +165,27 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
 
   const login = (name: string) => {
-    const newUser = { ...MOCK_USER_BASE, id: 'user-1', name };
+    const isAdmin = name.toLowerCase() === 'admin1';
+    const userId = isAdmin ? 'admin1' : 'user-1';
+    const userRole = isAdmin ? 'admin' : 'user';
+
+    const existingUser = MOCK_USERS.find(u => u.id === userId);
+    const newUser = { 
+        ...MOCK_USER_BASE, 
+        id: userId, 
+        name: existingUser?.name || name,
+        email: existingUser?.email || `${name.replace(' ','_')}@example.com`,
+        role: userRole,
+    };
+
     setUser(newUser);
     const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
     setWeeklyStatus({ week: currentWeek, content: '', status: 'draft' });
-    setPortfolio(MOCK_PORTFOLIOS['user-1'] || []);
-    setAllUsers([newUser, ...MOCK_USERS]);
+    setPortfolio(MOCK_PORTFOLIOS[userId] || []);
+    setAllUsers([newUser, ...MOCK_USERS.filter(u => u.id !== userId)]);
     toast({
       title: "Logged in",
-      description: `Welcome back, ${name}!`,
+      description: `Welcome back, ${newUser.name}!`,
     });
   };
 
@@ -167,7 +208,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         if (res.online.includes(user.id)) userBooking = 'online';
     }
 
-    // Case 1: User is canceling their existing booking
     if (userBooking) {
         const updatedReservations = reservations.map(r => {
             if (r.date === dateString) {
@@ -187,17 +227,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         return;
     }
     
-    // Case 2: User is making a new booking, but is already booked for that day
-    if (userBooking) {
-        toast({
-          variant: "destructive",
-          title: "Booking Failed",
-          description: `You are already booked for ${format(date, "MMMM d")}. Please cancel first.`,
-        });
-        return;
-    }
-    
-    // Case 3: User is booking an office spot that is full
     if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
         toast({
           variant: "destructive",
@@ -207,7 +236,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         return;
     }
 
-    // Case 4: New booking
     const newReservationData = {
         office: type === 'office' ? [user.id] : [],
         online: type === 'online' ? [user.id] : [],
@@ -288,13 +316,104 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   
   const getUserById = (userId: string) => {
     const foundUser = allUsers.find(u => u?.id === userId);
-    // for the logged-in user, return their current portfolio state
     if (userId === user?.id) {
         return { user: foundUser || null, portfolio: portfolio };
     }
     const userPortfolio = MOCK_PORTFOLIOS[userId] || [];
     return { user: foundUser || null, portfolio: userPortfolio };
   };
+
+  // Food Order Functions
+  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'>) => {
+    if (!user) return;
+    const newOrder: FoodOrder = {
+        ...orderData,
+        id: `fo-${Date.now()}`,
+        creatorId: user.id,
+        orders: [],
+        isOpen: true,
+        imageUrl: orderData.imageUrl || 'https://placehold.co/100x100.png',
+    };
+    setFoodOrders(prev => [newOrder, ...prev]);
+    toast({ title: "Order Created!", description: `The "${orderData.companyName}" order event is now live.` });
+  };
+
+  const removeFoodOrder = (orderId: string) => {
+    if (user?.role !== 'admin') return;
+    setFoodOrders(prev => prev.filter(order => order.id !== orderId));
+    toast({ variant: 'destructive', title: "Order Event Removed", description: "The entire food order event has been deleted." });
+  };
+
+  const addOrderItem = (orderId: string, itemData: OrderItemData) => {
+    if (!user) return;
+    const newItem: OrderItem = {
+        ...itemData,
+        id: `item-${Date.now()}`,
+        userId: user.id,
+        isPaid: false,
+    };
+    setFoodOrders(prev => prev.map(order => {
+        if (order.id === orderId) {
+            return { ...order, orders: [...order.orders, newItem] };
+        }
+        return order;
+    }));
+    toast({ title: "Order Added", description: `Your order for "${itemData.name}" has been placed.` });
+  };
+
+  const removeOrderItem = (orderId: string, itemId: string) => {
+    setFoodOrders(prev => prev.map(order => {
+        if (order.id === orderId) {
+            const itemToRemove = order.orders.find(item => item.id === itemId);
+            if (!itemToRemove) return order;
+            // Admin can remove any, creator can remove any, user can only remove their own
+            if (user?.role !== 'admin' && user?.id !== order.creatorId && user?.id !== itemToRemove.userId) {
+                toast({ variant: 'destructive', title: "Permission Denied" });
+                return order;
+            }
+            return { ...order, orders: order.orders.filter(item => item.id !== itemId) };
+        }
+        return order;
+    }));
+    toast({ variant: 'destructive', title: "Order Item Removed" });
+  };
+  
+  const togglePaidStatus = (orderId: string, itemId: string | 'all') => {
+      setFoodOrders(prev => prev.map(order => {
+          if (order.id === orderId) {
+              if (user?.id !== order.creatorId && user?.role !== 'admin') {
+                  toast({ variant: 'destructive', title: "Permission Denied" });
+                  return order;
+              }
+              const newOrders = order.orders.map(item => {
+                  if (itemId === 'all') {
+                      return { ...item, isPaid: true };
+                  }
+                  if (item.id === itemId) {
+                      return { ...item, isPaid: !item.isPaid };
+                  }
+                  return item;
+              });
+              return { ...order, orders: newOrders };
+          }
+          return order;
+      }));
+  };
+
+  const toggleOrderState = (orderId: string) => {
+      setFoodOrders(prev => prev.map(order => {
+          if (order.id === orderId) {
+               if (user?.id !== order.creatorId && user?.role !== 'admin') {
+                  toast({ variant: 'destructive', title: "Permission Denied" });
+                  return order;
+              }
+              return { ...order, isOpen: !order.isOpen };
+          }
+          return order;
+      }));
+      toast({ title: "Order State Changed" });
+  };
+
 
   return (
     <AppContext.Provider
@@ -313,6 +432,13 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         togglePortfolioItemVisibility,
         allUsers,
         getUserById,
+        foodOrders,
+        addFoodOrder,
+        removeFoodOrder,
+        addOrderItem,
+        removeOrderItem,
+        togglePaidStatus,
+        toggleOrderState,
       }}
     >
       {children}

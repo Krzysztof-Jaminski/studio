@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useContext, useEffect, useState } from 'react';
@@ -9,7 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Briefcase, Eye, FileText, Globe, Link as LinkIcon, Pencil, Sigma, Trash2, UserCircle } from 'lucide-react';
+import { ArrowLeft, Briefcase, Eye, FileText, Globe, Link as LinkIcon, Pencil, ShieldCheck, Sigma, Trash2, UserCircle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -146,7 +147,10 @@ export default function UserProfilePage() {
                     </AvatarFallback>
                 </Avatar>
                 <div>
-                    <h1 className="text-4xl font-bold font-headline">{profileUser.name}</h1>
+                    <h1 className="text-4xl font-bold font-headline flex items-center gap-2">
+                        {profileUser.name}
+                        {profileUser.role === 'admin' && <ShieldCheck className="h-8 w-8 text-primary" />}
+                    </h1>
                     <p className="text-lg text-muted-foreground">Intern at PraktykanciHub</p>
                 </div>
             </div>

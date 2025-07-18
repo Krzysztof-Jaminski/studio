@@ -1,7 +1,9 @@
+
 export type User = {
   id: string;
   name: string;
   email: string;
+  role: 'user' | 'admin';
 };
 
 export type Day = {
@@ -34,4 +36,26 @@ export type PortfolioItem = {
     // Project-specific
     link?: string;
     technologies?: string[];
+};
+
+export type OrderItem = {
+    id: string;
+    userId: string;
+    name: string;
+    details?: string;
+    price: number;
+    isPaid: boolean;
+}
+
+export type OrderItemData = Omit<OrderItem, 'id' | 'userId' | 'isPaid'>;
+
+export type FoodOrder = {
+    id: string;
+    creatorId: string;
+    companyName: string;
+    link: string;
+    creatorPhoneNumber: string;
+    imageUrl?: string;
+    isOpen: boolean;
+    orders: OrderItem[];
 };

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useContext } from "react";
@@ -6,7 +7,7 @@ import { AppContext } from "@/contexts/app-context";
 import UserProfile from "./user-profile";
 import { Logo } from "./icons";
 import { Button } from "./ui/button";
-import { Users } from "lucide-react";
+import { ShoppingCart, Users } from "lucide-react";
 
 export default function Header() {
   const { user } = useContext(AppContext);
@@ -20,11 +21,17 @@ export default function Header() {
             <span className="font-bold font-headline text-lg">PraktykanciHub</span>
           </Link>
           {user && (
-            <nav className="flex items-center gap-4 text-sm">
+            <nav className="flex items-center gap-1 text-sm">
                 <Link href="/users" className="text-muted-foreground transition-colors hover:text-foreground">
                     <Button variant="ghost">
                         <Users className="mr-2" />
                         Users
+                    </Button>
+                </Link>
+                <Link href="/food-orders" className="text-muted-foreground transition-colors hover:text-foreground">
+                    <Button variant="ghost">
+                        <ShoppingCart className="mr-2" />
+                        Food Orders
                     </Button>
                 </Link>
             </nav>

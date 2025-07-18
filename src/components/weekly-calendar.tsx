@@ -1,11 +1,16 @@
+
 "use client";
 
 import { useState, useEffect, useContext } from 'react';
-import { addDays, startOfWeek, isToday, isBefore, format, startOfToday } from 'date-fns';
+import { addDays, startOfWeek, isToday, isBefore, format, startOfToday, isWithinInterval } from 'date-fns';
 import { AppContext } from '@/contexts/app-context';
 import DayCard from './day-card';
 import { type Day, type User } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+
+// Define the reservation period
+const RESERVATION_START_DATE = new Date('2024-07-07');
+const RESERVATION_END_DATE = new Date('2024-10-01');
 
 export default function WeeklyCalendar() {
   const [weekDays, setWeekDays] = useState<Day[]>([]);
@@ -32,6 +37,10 @@ export default function WeeklyCalendar() {
   const getUserDetails = (userIds: string[]): User[] => {
     return userIds.map(id => allUsers.find(u => u.id === id)).filter(Boolean) as User[];
   }
+  
+  const isDateReservable = (date: Date): boolean => {
+    return isWithinInterval(date, { start: RESERVATION_START_DATE, end: RESERVATION_END_DATE });
+  }
 
   if (isLoading || !user) {
     return (
@@ -54,6 +63,7 @@ export default function WeeklyCalendar() {
           const reservation = reservations.find(r => r.date === format(day.date, "yyyy-MM-dd"));
           const officeUsers = reservation ? getUserDetails(reservation.office) : [];
           const onlineUsers = reservation ? getUserDetails(reservation.online) : [];
+          const isReservable = isDateReservable(day.date);
 
           let isBookedByUser: 'office' | 'online' | null = null;
           if(reservation) {
@@ -68,6 +78,7 @@ export default function WeeklyCalendar() {
               officeUsers={officeUsers}
               onlineUsers={onlineUsers}
               isBookedByUser={isBookedByUser}
+              isReservable={isReservable}
             />
           );
         })}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn, getOccupancyDetails, MAX_SPOTS } from "@/lib/utils";
 import type { Day, User } from "@/lib/types";
 import { Briefcase, Check, Globe, Users, X } from "lucide-react";
-import { format } from "date-fns";
+import { format, isWithinInterval } from "date-fns";
 import { useContext } from "react";
 import { AppContext } from "@/contexts/app-context";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -18,6 +19,7 @@ type DayCardProps = {
   officeUsers: User[];
   onlineUsers: User[];
   isBookedByUser: 'office' | 'online' | null;
+  isReservable: boolean;
 };
 
 const UserList = ({ users }: { users: User[] }) => (
@@ -36,14 +38,14 @@ const UserList = ({ users }: { users: User[] }) => (
 );
 
 
-export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser }: DayCardProps) {
-  const { toggleReservation, allUsers } = useContext(AppContext);
-  const { date, isToday, isPast } = day;
+export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser, isReservable }: DayCardProps) {
+  const { toggleReservation } = useContext(AppContext);
+  const { date, isToday } = day;
   
   const bookedInOffice = officeUsers.length;
   const isOfficeFull = bookedInOffice >= MAX_SPOTS;
   
-  const occupancy = getOccupancyDetails(bookedInOffice);
+  const isPast = !isReservable && day.isPast;
 
   const handleCancel = () => {
     if (isBookedByUser) {
@@ -54,13 +56,14 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser 
   return (
     <Card className={cn(
       "flex flex-col transition-all duration-300",
-      isPast ? "bg-muted/50" : "bg-card",
-      isToday && "border-primary border-2 shadow-lg"
+      isPast || !isReservable ? "bg-muted/50" : "bg-card",
+      isToday && isReservable && "border-primary border-2 shadow-lg"
     )}>
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="font-headline">{format(date, "EEEE")}</CardTitle>
-          {isToday && <Badge>Today</Badge>}
+          {isToday && isReservable && <Badge>Today</Badge>}
+          {!isReservable && !isPast && <Badge variant="outline">Not Available</Badge>}
         </div>
         <CardDescription>{format(date, "MMMM d, yyyy")}</CardDescription>
       </CardHeader>
@@ -112,7 +115,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser 
                 className="w-full"
                 variant="destructive"
                 onClick={handleCancel}
-                disabled={isPast}
+                disabled={isPast || !isReservable}
             >
                 <X className="mr-2"/> Cancel Booking
             </Button>
@@ -121,7 +124,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser 
                 <Button
                     className="w-full"
                     onClick={() => toggleReservation(date, 'office')}
-                    disabled={isPast || isOfficeFull}
+                    disabled={isPast || !isReservable || isOfficeFull}
                 >
                     <Briefcase className="mr-2" /> Book Office Spot
                 </Button>
@@ -129,7 +132,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser 
                     className="w-full"
                     variant="secondary"
                     onClick={() => toggleReservation(date, 'online')}
-                    disabled={isPast}
+                    disabled={isPast || !isReservable}
                 >
                     <Globe className="mr-2" /> Book Online
                 </Button>

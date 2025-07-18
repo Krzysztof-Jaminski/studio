@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useContext } from 'react';
@@ -6,7 +7,7 @@ import { AppContext } from '@/contexts/app-context';
 import Header from '@/components/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserCircle } from 'lucide-react';
+import { ShieldCheck, UserCircle } from 'lucide-react';
 import type { User } from '@/lib/types';
 
 const UserCard = ({ user }: { user: User }) => {
@@ -20,8 +21,11 @@ const UserCard = ({ user }: { user: User }) => {
                         </AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="font-semibold text-lg">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="font-semibold text-lg flex items-center gap-2">
+                            {user.name}
+                            {user.role === 'admin' && <ShieldCheck className="h-5 w-5 text-primary" />}
+                        </p>
+                        <p className="text-sm text-muted-foreground">Intern</p>
                     </div>
                 </CardContent>
             </Card>
