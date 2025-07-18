@@ -13,7 +13,7 @@ import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel';
+import { ScrollArea } from './ui/scroll-area';
 
 const UserList = ({ users }: { users: User[] }) => (
     <div className="space-y-2">
@@ -111,34 +111,24 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                 </div>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col min-h-0 py-4">
-                {event.votingOptions.length > 0 ? (
-                    <Carousel
-                        opts={{
-                            align: "start",
-                        }}
-                        className="w-full"
-                    >
-                        <CarouselContent className="-ml-4">
-                            {event.votingOptions.map((opt) => (
-                                <CarouselItem key={opt.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
-                                    <div className="p-1 h-full">
-                                        <VotingOptionCard
-                                            option={opt}
-                                            eventId={event.id}
-                                            totalVotes={totalVotes}
-                                            isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
-                                            isClosed={!event.isOpen}
-                                        />
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
-                    </Carousel>
-                ) : (
-                    <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
-                )}
+                 <ScrollArea className="flex-grow pr-4 -mr-4">
+                    <div className="space-y-3">
+                         {event.votingOptions.length > 0 ? (
+                            event.votingOptions.map((opt) => (
+                                <VotingOptionCard
+                                    key={opt.id}
+                                    option={opt}
+                                    eventId={event.id}
+                                    totalVotes={totalVotes}
+                                    isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
+                                    isClosed={!event.isOpen}
+                                />
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
+                        )}
+                    </div>
+                </ScrollArea>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 border-t pt-4">
                  {(isCreator || isAdmin) && (
