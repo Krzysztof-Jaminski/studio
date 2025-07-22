@@ -62,7 +62,7 @@ export default function UsersPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen bg-background text-foreground"
+        className="min-h-screen text-foreground"
     >
       <Header />
       <main className="container mx-auto px-4 py-8">

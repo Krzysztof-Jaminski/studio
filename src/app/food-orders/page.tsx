@@ -140,7 +140,7 @@ export default function FoodOrdersPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="min-h-screen bg-background text-foreground flex flex-col"
+            className="min-h-screen text-foreground flex flex-col"
         >
             <Header />
             <main className="container mx-auto px-4 py-8 flex-grow flex flex-col">
@@ -186,5 +186,3 @@ export default function FoodOrdersPage() {
         </motion.div>
     );
 }
-
-    

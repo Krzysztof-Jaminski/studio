@@ -10,7 +10,7 @@
     --card-foreground: 210 20% 98%;
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
-    --primary: 217 91% 60%;
+    --primary: 262 84% 60%;
     --primary-foreground: 210 20% 98%;
     --secondary: 215 28% 17%;
     --secondary-foreground: 210 20% 98%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 210 20% 98%;
     --border: 215 28% 17%;
     --input: 215 28% 17%;
-    --ring: 217 91% 60%;
+    --ring: 262 84% 60%;
     --radius: 0.5rem;
 
     --bg-square-opacity: 0.1;
@@ -42,7 +42,8 @@
 
 @layer components {
   .btn-gradient {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold;
+    @apply bg-primary/20 text-primary-foreground border-2 border-primary/30 transition-all duration-300;
+    @apply hover:bg-primary/30 hover:border-primary hover:shadow-[0_0_15px_theme(colors.primary)];
   }
   .text-gradient {
     @apply bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text;

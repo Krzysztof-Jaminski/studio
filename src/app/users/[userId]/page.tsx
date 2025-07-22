@@ -99,7 +99,7 @@ export default function UserProfilePage() {
   
   if (isLoading) {
     return (
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="min-h-screen text-foreground">
             <Header />
             <main className="container mx-auto px-4 py-8">
                 <div className="flex items-center gap-4 mb-8">
@@ -122,7 +122,7 @@ export default function UserProfilePage() {
 
   if (!profileUser) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen text-foreground">
         <Header />
         <main className="container mx-auto px-4 py-8 text-center">
             <p className="text-lg">Nie znaleziono użytkownika.</p>
@@ -137,7 +137,7 @@ export default function UserProfilePage() {
   const projects = sortedPortfolio.filter(item => item.type === 'project');
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
         <Header />
         <main className="container mx-auto px-4 py-8">
             <Button variant="outline" onClick={() => router.back()} className="mb-6">
