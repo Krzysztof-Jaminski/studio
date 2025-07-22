@@ -293,7 +293,7 @@ export default function FoodOrderForm({ onSubmit, onCancel, storedDetails }: Foo
                 <Separator />
                 <div className="flex justify-end gap-2 p-4 -m-4 mt-0">
                     <Button type="button" variant="outline" onClick={onCancel}>Anuluj</Button>
-                    <Button type="submit" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                    <Button type="submit" className="btn-gradient">
                         Utwórz wydarzenie
                     </Button>
                 </div>

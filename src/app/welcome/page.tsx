@@ -2,7 +2,7 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Briefcase, FileText, ShoppingCart, Users, CheckCircle } from "lucide-react";
 import { Logo } from "@/components/icons";
 import React, { useState } from "react";
@@ -26,56 +26,18 @@ const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNod
     </motion.div>
 );
 
-const AnimatedSquare = ({ size, initialX, initialY, duration }: { size: number, initialX: string, initialY: string, duration: number }) => (
-    <motion.div
-        style={{
-            width: size,
-            height: size,
-            position: 'absolute',
-            top: initialY,
-            left: initialX,
-            backgroundColor: 'hsla(var(--primary) / 0.1)',
-            borderRadius: '15px',
-        }}
-        initial={{ opacity: 0, y: 50, rotate: 0 }}
-        animate={{
-            opacity: [0, 1, 0],
-            y: [50, -50, 50],
-            x: [0, 20, -20, 0],
-            rotate: [0, 90, 180],
-        }}
-        transition={{
-            duration: duration,
-            repeat: Infinity,
-            repeatType: 'mirror',
-            ease: 'easeInOut',
-        }}
-    />
-);
-
-
 export default function WelcomePage() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
     return (
         <motion.div 
-            className="min-h-screen w-full flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative"
+            className="min-h-screen w-full flex flex-col items-center justify-center bg-transparent text-foreground p-4 overflow-hidden"
             initial="initial"
             animate="animate"
         >
             <div className="absolute top-4 right-4 z-20">
                 <ThemeToggle />
             </div>
-
-            {/* Animated background elements */}
-            <AnimatedSquare size={150} initialX="5%" initialY="15%" duration={25} />
-            <AnimatedSquare size={100} initialX="85%" initialY="10%" duration={22} />
-            <AnimatedSquare size={200} initialX="10%" initialY="70%" duration={28} />
-            <AnimatedSquare size={120} initialX="90%" initialY="80%" duration={20} />
-            <AnimatedSquare size={80} initialX="50%" initialY="50%" duration={30} />
-            <AnimatedSquare size={70} initialX="30%" initialY="30%" duration={18} />
-            <AnimatedSquare size={180} initialX="70%" initialY="60%" duration={26} />
-
 
             <div className="container mx-auto px-4 py-12 z-10">
                 <motion.div
@@ -85,7 +47,7 @@ export default function WelcomePage() {
                     className="text-center mb-12"
                 >
                     <Logo className="h-20 w-20 mx-auto mb-4 text-primary drop-shadow-lg" />
-                    <h1 className="text-5xl md:text-6xl font-bold font-headline mb-2 text-primary drop-shadow-md">Witaj w PraktykanciHub!</h1>
+                    <h1 className="text-5xl md:text-6xl font-bold font-headline mb-2 text-gradient drop-shadow-md">Witaj w PraktykanciHub!</h1>
                     <p className="text-lg md:text-xl text-muted-foreground">Twoje centrum do zarządzania praktykami.</p>
                 </motion.div>
 
@@ -124,7 +86,7 @@ export default function WelcomePage() {
                 >
                     <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                         <DialogTrigger asChild>
-                            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform duration-300">
+                            <Button size="lg" className="btn-gradient shadow-lg transform hover:scale-105 transition-transform duration-300">
                                 <CheckCircle className="mr-2"/> Rozpocznij
                             </Button>
                         </DialogTrigger>

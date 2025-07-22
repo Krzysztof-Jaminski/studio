@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
 import { ThemeProvider } from '@/components/theme-provider';
+import AnimatedBackground from '@/components/animated-background';
 
 export const metadata: Metadata = {
   title: 'PraktykanciHub',
@@ -29,7 +30,10 @@ export default function RootLayout({
             disableTransitionOnChange
         >
             <Providers>
-              {children}
+              <AnimatedBackground />
+              <main className="relative z-10">
+                {children}
+              </main>
             </Providers>
             <Toaster />
         </ThemeProvider>

@@ -61,3 +61,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .btn-gradient {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white;
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text;
+  }
+}

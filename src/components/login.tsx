@@ -49,8 +49,8 @@ export default function Login() {
 
   return (
     <>
-      <DialogHeader className="sr-only">
-        <DialogTitle>Login</DialogTitle>
+      <DialogHeader>
+        <DialogTitle className="sr-only">Login</DialogTitle>
       </DialogHeader>
       <Card className="w-full max-w-md shadow-2xl bg-transparent border-none">
           <CardHeader className="text-center">
@@ -61,10 +61,10 @@ export default function Login() {
             <CardDescription>Zaloguj się, aby zarezerwować miejsce i dołączyć do społeczności.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button className="w-full bg-primary/80 hover:bg-primary text-primary-foreground" onClick={() => handleLogin('google')}>
+            <Button className="w-full btn-gradient" onClick={() => handleLogin('google')}>
               <GoogleIcon /> Zaloguj przez Google
             </Button>
-            <Button className="w-full bg-primary/80 hover:bg-primary text-primary-foreground" onClick={() => handleLogin('discord')}>
+            <Button className="w-full btn-gradient" onClick={() => handleLogin('discord')}>
               <DiscordIcon /> Zaloguj przez Discord
             </Button>
           </CardContent>
