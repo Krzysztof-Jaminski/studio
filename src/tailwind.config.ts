@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['"Space Grotesk"', 'sans-serif'],
+        body: ['"Russo One"', 'sans-serif'],
+        headline: ['"Russo One"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
