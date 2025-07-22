@@ -14,6 +14,16 @@ export type StoredOrderDetails = {
     imageUrl?: string;
 };
 
+type NewFoodOrderData = {
+    companyName: string;
+    description?: string;
+    deadline?: string;
+} & (
+    | { type: 'order', link?: string, creatorPhoneNumber?: string, imageUrl?: string }
+    | { type: 'voting', votingOptions: { name: string, link?: string }[] }
+);
+
+
 type AppContextType = {
   user: User | null;
   login: (userId: string, provider: 'google' | 'discord' | 'microsoft') => void;
@@ -30,7 +40,7 @@ type AppContextType = {
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
-  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string }[] }) => void;
+  addFoodOrder: (order: NewFoodOrderData) => void;
   editFoodOrder: (orderId: string, editedData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'order' }) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData, guestName?: string) => void;
@@ -174,7 +184,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             description: `Witaj z powrotem, ${user.name}!`,
         });
     }
-  }, [user?.id, toast]);
+  }, [user?.id]);
 
 
   const login = (userId: string, provider: 'google' | 'discord' | 'microsoft') => {
@@ -379,25 +389,31 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     return { user: foundUser || null, portfolio: userPortfolio };
   };
 
-  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'> & { votingOptions?: { name: string, link?: string }[] }) => {
+  const addFoodOrder = (orderData: NewFoodOrderData) => {
     if (!user) return;
-    
+
     let updatedOrders = [...foodOrders];
     if (orderData.type === 'voting') {
         updatedOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
     }
   
+    const deadlineDate = orderData.deadline ? new Date() : undefined;
+    if (deadlineDate && orderData.deadline) {
+        const [hours, minutes] = orderData.deadline.split(':').map(Number);
+        deadlineDate.setHours(hours, minutes, 0, 0);
+    }
+    
     let newEvent: FoodOrder;
     const baseEvent = {
         id: `evt-${Date.now()}`,
         creatorId: user.id,
         companyName: orderData.companyName,
         isOpen: true,
-        deadline: orderData.deadline,
+        deadline: deadlineDate?.toISOString(),
         description: orderData.description,
     };
 
-    if (orderData.type === 'voting' && orderData.votingOptions) {
+    if (orderData.type === 'voting') {
         newEvent = {
             ...baseEvent,
             type: 'voting',
@@ -437,6 +453,12 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   
   const editFoodOrder = (orderId: string, editedData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'order' }) => {
     if (!user) return;
+    const deadlineDate = editedData.deadline ? new Date() : undefined;
+    if (deadlineDate && editedData.deadline) {
+        const [hours, minutes] = editedData.deadline.split(':').map(Number);
+        deadlineDate.setHours(hours, minutes, 0, 0);
+    }
+
 
     setFoodOrders(prevOrders => prevOrders.map(order => {
         if (order.id === orderId) {
@@ -451,7 +473,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 link: editedData.link,
                 creatorPhoneNumber: editedData.creatorPhoneNumber,
                 imageUrl: editedData.imageUrl,
-                deadline: editedData.deadline,
+                deadline: deadlineDate?.toISOString(),
             };
         }
         return order;
@@ -647,5 +669,3 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
-
-    

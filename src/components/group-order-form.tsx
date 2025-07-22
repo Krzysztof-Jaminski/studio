@@ -15,6 +15,15 @@ import type { StoredOrderDetails } from "@/contexts/app-context";
 import { useEffect } from "react";
 import { format } from "date-fns";
 
+type FormValues = {
+    companyName: string;
+    description?: string;
+    link?: string;
+    creatorPhoneNumber?: string;
+    imageUrl?: string;
+    deadline?: string;
+};
+
 const formSchema = z.object({
     companyName: z.string().min(2, "Nazwa firmy musi mieć co najmniej 2 znaki."),
     description: z.string().optional(),
@@ -25,7 +34,7 @@ const formSchema = z.object({
 });
 
 type GroupOrderFormProps = {
-    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions' | 'type'> & { type: 'order' }) => void;
+    onSubmit: (data: FormValues & { type: 'order' }) => void;
     onCancel: () => void;
     storedDetails?: StoredOrderDetails | null;
     existingOrder?: FoodOrder;
@@ -62,15 +71,8 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails, exis
     }, [storedDetails, form, existingOrder]);
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        const deadlineDate = values.deadline ? new Date() : undefined;
-        if (deadlineDate && values.deadline) {
-            const [hours, minutes] = values.deadline.split(':').map(Number);
-            deadlineDate.setHours(hours, minutes, 0, 0);
-        }
-
         onSubmit({
             ...values,
-            deadline: deadlineDate?.toISOString(),
             type: 'order'
         });
     };

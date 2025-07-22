@@ -25,8 +25,8 @@ export default function FoodOrdersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedEventType, setSelectedEventType] = useState<EventType | null>(null);
 
-    const handleFormSubmit = (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
-        addFoodOrder(order);
+    const handleFormSubmit = (data: any) => {
+        addFoodOrder(data);
         setIsDialogOpen(false);
         setSelectedEventType(null);
     };
