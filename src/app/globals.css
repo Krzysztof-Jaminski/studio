@@ -16,7 +16,7 @@
     --secondary-foreground: 210 20% 98%;
     --muted: 215 28% 17%;
     --muted-foreground: 218 11% 65%;
-    --accent: 28 100% 50%;
+    --accent: 262 84% 60%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
@@ -25,9 +25,6 @@
     --ring: 217 91% 60%;
     --radius: 0.5rem;
 
-    --color-presence: 217 91% 60%; /* Blue */
-    --color-food: 28 100% 50%; /* Orange */
-    --color-status: 145 58% 55%; /* Green */
     --bg-square-opacity: 0.1;
     --bg-glow-opacity: 0.2;
   }
@@ -45,7 +42,7 @@
     --secondary-foreground: 210 20% 98%;
     --muted: 215 28% 17%;
     --muted-foreground: 218 11% 65%;
-    --accent: 28 100% 50%;
+    --accent: 262 84% 60%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
