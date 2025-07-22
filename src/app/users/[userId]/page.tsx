@@ -126,7 +126,7 @@ export default function UserProfilePage() {
         <Header />
         <main className="container mx-auto px-4 py-8 text-center">
             <p className="text-lg">Nie znaleziono użytkownika.</p>
-            <Button onClick={() => router.push('/users')} className="mt-4 btn-gradient">Wróć do listy</Button>
+            <Button onClick={() => router.push('/users')} variant="glass" className="mt-4">Wróć do listy</Button>
         </main>
       </div>
     );

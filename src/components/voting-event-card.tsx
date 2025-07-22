@@ -70,7 +70,7 @@ const AddOptionForm = ({ eventId, onAdded }: { eventId: string, onAdded: () => v
                 <Label htmlFor="option-image">URL obrazka (opcjonalnie)</Label>
                 <Input id="option-image" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://example.com/logo.png"/>
             </div>
-            <Button type="submit" className="w-full btn-gradient">Dodaj opcję</Button>
+            <Button type="submit" variant="glass" className="w-full">Dodaj opcję</Button>
         </form>
     )
 }
@@ -115,7 +115,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-accent/80")} />}
             
             {canVote && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white btn-gradient")} >
+                <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto text-white")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Cofnij głos' : 'Głosuj'}
                 </Button>
