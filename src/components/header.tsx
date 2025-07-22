@@ -8,7 +8,6 @@ import UserProfile from "./user-profile";
 import { Logo } from "./icons";
 import { Button } from "./ui/button";
 import { ShoppingCart, Users } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
   const { user } = useContext(AppContext);
@@ -39,7 +38,6 @@ export default function Header() {
           )}
         </div>
         <div className="flex items-center justify-end space-x-2">
-          <ThemeToggle />
           {user && <UserProfile />}
         </div>
       </div>

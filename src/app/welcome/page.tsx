@@ -8,7 +8,6 @@ import { Logo } from "@/components/icons";
 import React, { useState } from "react";
 import Login from "@/components/login";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: number }) => (
     <motion.div 
@@ -35,10 +34,6 @@ export default function WelcomePage() {
             initial="initial"
             animate="animate"
         >
-            <div className="absolute top-4 right-4 z-20">
-                <ThemeToggle />
-            </div>
-
             <div className="container mx-auto px-4 py-12 z-10">
                 <motion.div
                     initial={{ y: -20, opacity: 0 }}
