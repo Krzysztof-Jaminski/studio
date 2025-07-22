@@ -1,8 +1,19 @@
 
 export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
-    <div {...props}>
-        <div className="flex items-center justify-center h-full w-full rounded-md bg-gradient-to-br from-blue-500 to-purple-600 text-white p-1">
-            <span className="font-black font-headline text-2xl">PH</span>
-        </div>
-    </div>
+    <svg width="40" height="32" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <rect width="8" height="8" y="0" fill="hsl(var(--primary))" />
+        <rect width="8" height="8" y="8" fill="hsl(var(--primary))" opacity="0.75" />
+        <rect width="8" height="8" y="16" fill="hsl(var(--primary))" opacity="0.5" />
+        <rect width="8" height="8" y="24" fill="hsl(var(--primary))" opacity="0.25" />
+
+        <rect width="8" height="8" x="8" y="16" fill="hsl(var(--primary))" opacity="0.5" />
+        <rect width="8" height="8" x="16" y="8" fill="hsl(var(--primary))" opacity="0.75" />
+        <rect width="8" height="8" x="16" y="16" fill="hsl(var(--primary))" opacity="0.5" />
+
+        <rect width="8" height="8" x="24" y="16" fill="hsl(var(--primary))" opacity="0.5" />
+        <rect width="8" height="8" x="32" y="24" fill="hsl(var(--primary))" opacity="0.25" />
+        <rect width="8" height="8" x="32" y="16" fill="hsl(var(--primary))" opacity="0.5" />
+        <rect width="8" height="8" x="32" y="8" fill="hsl(var(--primary))" opacity="0.75" />
+        <rect width="8" height="8" x="32" y="0" fill="hsl(var(--primary))" />
+    </svg>
 );
