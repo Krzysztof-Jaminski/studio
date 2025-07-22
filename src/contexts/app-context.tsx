@@ -7,6 +7,12 @@ import { format, startOfWeek, getDay, isAfter, endOfDay, differenceInWeeks, addD
 import { useToast } from "@/hooks/use-toast";
 import { MAX_SPOTS } from "@/lib/utils";
 
+export type StoredOrderDetails = {
+    link?: string;
+    creatorPhoneNumber?: string;
+    imageUrl?: string;
+};
+
 type AppContextType = {
   user: User | null;
   login: (userId: string, provider: 'google' | 'discord') => void;
@@ -31,6 +37,7 @@ type AppContextType = {
   toggleOrderState: (orderId: string) => void;
   toggleVote: (eventId: string, optionId: string) => void;
   addVotingOption: (eventId: string, optionData: { name: string, link?: string, imageUrl?: string }) => void;
+  storedOrderDetails: StoredOrderDetails | null;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -57,6 +64,7 @@ export const AppContext = createContext<AppContextType>({
   toggleOrderState: () => {},
   toggleVote: () => {},
   addVotingOption: () => {},
+  storedOrderDetails: null,
 });
 
 const INTERNSHIP_START_DATE = new Date('2025-07-07');
@@ -115,7 +123,19 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   
   const [allUsers, setAllUsers] = useState<User[]>(INITIAL_USERS);
   const [userPortfolios, setUserPortfolios] = useState<Record<string, PortfolioItem[]>>({});
+  const [storedOrderDetails, setStoredOrderDetails] = useState<StoredOrderDetails | null>(null);
 
+
+  useEffect(() => {
+    try {
+        const stored = localStorage.getItem('lastOrderDetails');
+        if (stored) {
+            setStoredOrderDetails(JSON.parse(stored));
+        }
+    } catch (error) {
+        console.error("Failed to read from localStorage", error);
+    }
+  }, []);
 
   useEffect(() => {
     const checkDate = () => {
@@ -360,7 +380,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         ? foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o)
         : foodOrders;
 
-
     let newEvent: FoodOrder;
     const baseEvent = {
         id: `evt-${Date.now()}`,
@@ -392,6 +411,17 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             imageUrl: orderData.imageUrl,
             orders: [],
         };
+        const detailsToStore: StoredOrderDetails = {
+            link: orderData.link,
+            creatorPhoneNumber: orderData.creatorPhoneNumber,
+            imageUrl: orderData.imageUrl
+        };
+        try {
+            localStorage.setItem('lastOrderDetails', JSON.stringify(detailsToStore));
+            setStoredOrderDetails(detailsToStore);
+        } catch (error) {
+            console.error("Failed to write to localStorage", error);
+        }
     }
 
     setFoodOrders([newEvent, ...updatedOrders]);
@@ -552,6 +582,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         toggleOrderState,
         toggleVote,
         addVotingOption,
+        storedOrderDetails,
       }}
     >
       {children}
