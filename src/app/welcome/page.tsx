@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Briefcase, FileText, ShoppingCart, Users, CheckCircle } from "lucide-react";
 import { Logo } from "@/components/icons";
+import React from "react";
 
 const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: number }) => (
     <motion.div 
@@ -21,6 +22,31 @@ const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNod
         <p className="text-white/80">{description}</p>
     </motion.div>
 );
+
+const AnimatedShape = ({ size, top, left, duration, delay }: { size: number, top: string, left: string, duration: number, delay: number }) => (
+    <motion.div
+        className="absolute rounded-lg bg-white/10"
+        style={{
+            width: size,
+            height: size,
+            top,
+            left,
+        }}
+        animate={{
+            y: ["0%", "20%", "0%", "-20%", "0%"],
+            x: ["0%", "-15%", "0%", "15%", "0%"],
+            rotate: [0, 45, 90, 135, 180],
+        }}
+        transition={{
+            duration: duration,
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "mirror",
+            delay: delay
+        }}
+    />
+);
+
 
 export default function WelcomePage({ onDone }: { onDone: () => void }) {
     return (
@@ -52,6 +78,15 @@ export default function WelcomePage({ onDone }: { onDone: () => void }) {
                         ease: 'easeInOut'
                     }}
                  />
+
+                {/* Animated Shapes */}
+                <AnimatedShape size={80} top="15%" left="10%" duration={15} delay={0} />
+                <AnimatedShape size={40} top="25%" left="80%" duration={12} delay={2} />
+                <AnimatedShape size={120} top="70%" left="5%" duration={20} delay={1} />
+                <AnimatedShape size={60} top="80%" left="90%" duration={18} delay={3} />
+                <AnimatedShape size={50} top="50%" left="50%" duration={10} delay={0.5} />
+
+
              </motion.div>
 
 
