@@ -64,8 +64,8 @@ export default function FoodOrdersPage() {
             {activeVotingEvent ? (
                 <VotingEventCard event={activeVotingEvent} />
             ) : (
-                <Alert className="mb-8 border-accent/50 bg-accent/10 text-accent-foreground">
-                    <Info className="h-4 w-4 !text-accent" />
+                <Alert className="mb-8 border-primary/50 bg-primary/10 text-primary-foreground">
+                    <Info className="h-4 w-4 !text-primary" />
                     <AlertTitle>Brak aktywnego głosowania</AlertTitle>
                     <AlertDescription>
                         Obecnie nie ma aktywnego głosowania. Możesz utworzyć nowe, aby społeczność wybrała restaurację.
@@ -85,8 +85,8 @@ export default function FoodOrdersPage() {
                     </motion.div>
                 </div>
             ) : (
-                 <Alert className="mb-8 border-accent/50 bg-accent/10 text-accent-foreground">
-                    <Info className="h-4 w-4 !text-accent" />
+                 <Alert className="mb-8 border-primary/50 bg-primary/10 text-primary-foreground">
+                    <Info className="h-4 w-4 !text-primary" />
                     <AlertTitle>Brak aktywnych zamówień</AlertTitle>
                     <AlertDescription>
                         Możesz utworzyć bezpośrednie zamówienie, jeśli nie ma potrzeby głosowania.

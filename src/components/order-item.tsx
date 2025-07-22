@@ -43,7 +43,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                         {displayName}
                         {item.guestName && <Badge variant="outline">Gość</Badge>}
                     </p>
-                    <p className="font-bold text-sm text-accent">{item.price.toFixed(2)} zł</p>
+                    <p className="font-bold text-sm text-primary">{item.price.toFixed(2)} zł</p>
                 </div>
                 <p className="text-xs text-foreground/80">{item.name}</p>
                 {item.details && <p className="text-xs text-muted-foreground">↳ {item.details}</p>}
@@ -70,7 +70,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                         className="h-7 w-7 text-muted-foreground hover:bg-red-500/20 hover:text-red-400"
                         onClick={() => removeOrderItem(orderId, item.id)}
                     >
-                         {isAdmin && user?.id !== item.userId && <ShieldCheck className="absolute h-3 w-3 -top-1 -right-1 text-accent" />}
+                         {isAdmin && user?.id !== item.userId && <ShieldCheck className="absolute h-3 w-3 -top-1 -right-1 text-primary" />}
                         <Trash2 />
                     </Button>
                  )}

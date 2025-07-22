@@ -52,7 +52,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const canOrder = order.isOpen && !isDeadlinePassed;
 
     return (
-        <Card className="flex flex-col border-accent/30 bg-card h-full">
+        <Card className="flex flex-col border-primary/30 bg-card h-full">
             <CardHeader className="bg-secondary/50 rounded-t-lg p-4">
                 <div className="flex items-start gap-4">
                     {order.imageUrl ? (
@@ -69,7 +69,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                         </div>
                     )}
                     <div className="flex-1">
-                        <CardTitle className="font-headline text-xl text-accent">{order.companyName}</CardTitle>
+                        <CardTitle className="font-headline text-xl text-primary">{order.companyName}</CardTitle>
                          {creator ? (
                             <CardDescription className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Avatar className="h-4 w-4">
@@ -106,7 +106,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
 
             <CardFooter className="flex flex-col items-start gap-3 border-t p-4 bg-secondary/30">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
-                    <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-accent transition-colors">
+                    <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary transition-colors">
                         <LinkIcon /> Link do Menu
                     </a>
                     <span className="flex items-center gap-1">
@@ -124,7 +124,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                                 <DialogTitle>Dodaj do zamówienia "{order.companyName}"</DialogTitle>
                                 <DialogDescription>
                                     Możesz dodać zamówienie dla siebie lub dla gościa, który nie jest w aplikacji.
-                                    <Button variant="link" asChild className="p-0 h-auto ml-1 text-accent">
+                                    <Button variant="link" asChild className="p-0 h-auto ml-1 text-primary">
                                         <a href={order.link} target="_blank" rel="noopener noreferrer">Zobacz menu</a>
                                     </Button>
                                 </DialogDescription>
@@ -175,8 +175,8 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                      </div>
                 )}
                 {isAdmin && (
-                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-accent">
-                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
+                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary">
+                        <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
                         <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(order.id)}>
                             <Trash2 className="mr-2" /> Usuń całe wydarzenie
                         </Button>

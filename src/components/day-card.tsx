@@ -125,14 +125,14 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
         ) : (
             <>
                 <Button
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-auto whitespace-normal"
                     onClick={() => toggleReservation(date, 'office')}
                     disabled={isPast || !isReservable || isOfficeFull}
                 >
                     <Briefcase className="mr-2" /> Zarezerwuj miejsce w biurze
                 </Button>
                 <Button
-                    className="w-full bg-accent hover:bg-accent/90 text-white"
+                    className="w-full bg-accent hover:bg-accent/90 text-white h-auto whitespace-normal"
                     onClick={() => toggleReservation(date, 'online')}
                     disabled={isPast || !isReservable}
                 >

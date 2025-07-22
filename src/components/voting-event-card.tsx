@@ -85,8 +85,8 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
 
     return (
         <Card className={cn(
-            "flex flex-col space-y-3 relative h-full bg-secondary/80 p-4 transition-all hover:shadow-md hover:border-accent",
-            hasVoted && "border-accent",
+            "flex flex-col space-y-3 relative h-full bg-secondary/80 p-4 transition-all hover:shadow-md hover:border-primary",
+            hasVoted && "border-primary",
             isWinner && "border-yellow-400"
         )}>
              {isWinner && (
@@ -97,9 +97,9 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
             <div className="flex items-start gap-4">
                 {option.imageUrl && <Image src={option.imageUrl} alt={option.name} width={64} height={64} className="rounded-md border-2 border-border h-16 w-16 object-cover" />}
                 <div className="flex-1">
-                    <p className="font-bold text-lg text-accent">{option.name}</p>
+                    <p className="font-bold text-lg text-primary">{option.name}</p>
                      {option.link && (
-                        <Button variant="link" asChild className="p-0 h-auto -ml-1 text-accent/80 hover:text-accent">
+                        <Button variant="link" asChild className="p-0 h-auto -ml-1 text-primary/80 hover:text-primary">
                            <a href={option.link} target="_blank" rel="noopener noreferrer">
                                <LinkIcon className="mr-1" /> Zobacz menu
                            </a>
@@ -112,7 +112,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                  <VoterList users={voters} />
              </div>
              
-            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-accent/80")} />}
+            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary/80")} />}
             
             {canVote && (
                 <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto text-white")} >
@@ -153,11 +153,11 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     }, [isClosed, event.votingOptions]);
     
     return (
-        <Card className="flex flex-col border-accent/30 w-full h-full bg-card">
+        <Card className="flex flex-col border-primary/30 w-full h-full bg-card">
             <CardHeader className="bg-secondary/50 rounded-t-lg p-4 space-y-2">
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="font-headline text-xl text-accent">{event.companyName}</CardTitle>
+                        <CardTitle className="font-headline text-xl text-primary">{event.companyName}</CardTitle>
                         {creator && (
                             <CardDescription className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Avatar className="h-4 w-4">
@@ -222,8 +222,8 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                      </div>
                 )}
                  {isAdmin && (
-                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-accent mt-2">
-                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
+                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary mt-2">
+                        <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
                         <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(event.id)}>
                             <Trash2 className="mr-2" /> Usuń całe wydarzenie
                         </Button>
