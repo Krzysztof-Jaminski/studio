@@ -38,6 +38,7 @@ type AppContextType = {
   toggleOrderState: (orderId: string) => void;
   toggleVote: (eventId: string, optionId: string) => void;
   addVotingOption: (eventId: string, optionData: { name: string, link?: string }) => void;
+  createOrderFromVote: (eventId: string, optionId: string) => void;
   storedOrderDetails: StoredOrderDetails | null;
 };
 
@@ -65,6 +66,7 @@ export const AppContext = createContext<AppContextType>({
   toggleOrderState: () => {},
   toggleVote: () => {},
   addVotingOption: () => {},
+  createOrderFromVote: () => {},
   storedOrderDetails: null,
 });
 
@@ -375,13 +377,14 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     return { user: foundUser || null, portfolio: userPortfolio };
   };
 
-  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string }[] }) => {
+  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen'> & { votingOptions?: { name: string, link?: string }[] }) => {
     if (!user) return;
     
-    const updatedOrders = orderData.type === 'voting' 
-        ? foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o)
-        : foodOrders;
-
+    let updatedOrders = [...foodOrders];
+    if (orderData.type === 'voting') {
+        updatedOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
+    }
+  
     let newEvent: FoodOrder;
     const baseEvent = {
         id: `evt-${Date.now()}`,
@@ -392,16 +395,17 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         description: orderData.description,
     };
 
-    if (orderData.type === 'voting') {
+    if (orderData.type === 'voting' && orderData.votingOptions) {
         newEvent = {
             ...baseEvent,
             type: 'voting',
-            votingOptions: orderData.votingOptions?.map((opt, index) => ({
+            votingOptions: orderData.votingOptions.map((opt, index) => ({
                 id: `opt-${Date.now()}-${index}`,
                 name: opt.name,
                 link: opt.link,
                 votes: [],
-            }))
+            })),
+            orders: [] // Ensure orders is not undefined
         };
     } else { // 'order'
         newEvent = {
@@ -555,6 +559,30 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     toast({ title: "Dodano nową opcję", description: `Twoja propozycja "${optionData.name}" została dodana do głosowania.` });
   };
 
+  const createOrderFromVote = (eventId: string, optionId: string) => {
+    if (!user) return;
+    const votingEvent = foodOrders.find(e => e.id === eventId && e.type === 'voting');
+    if (!votingEvent || !votingEvent.votingOptions) return;
+
+    const winningOption = votingEvent.votingOptions.find(o => o.id === optionId);
+    if (!winningOption) return;
+
+    const newOrder: FoodOrder = {
+        id: `evt-${Date.now()}`,
+        creatorId: user.id,
+        companyName: winningOption.name,
+        link: winningOption.link,
+        isOpen: true,
+        type: 'order',
+        orders: [],
+        creatorPhoneNumber: storedOrderDetails?.creatorPhoneNumber,
+        imageUrl: storedOrderDetails?.imageUrl,
+    };
+
+    setFoodOrders(prev => [newOrder, ...prev]);
+    toast({ title: "Utworzono zamówienie!", description: `Można teraz składać zamówienia z "${winningOption.name}".` });
+  };
+
 
   return (
     <AppContext.Provider
@@ -582,6 +610,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         toggleOrderState,
         toggleVote,
         addVotingOption,
+        createOrderFromVote,
         storedOrderDetails,
       }}
     >
@@ -589,3 +618,5 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
+    

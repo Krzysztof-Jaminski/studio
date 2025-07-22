@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, User, VotingOption } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil } from 'lucide-react';
+import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil, ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
@@ -39,7 +39,7 @@ const VoterList = ({ users }: { users: User[] }) => (
 
 
 const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, canVote }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean, canVote: boolean }) => {
-    const { user, allUsers, toggleVote } = useContext(AppContext);
+    const { user, allUsers, toggleVote, createOrderFromVote } = useContext(AppContext);
     if (!user) return null;
 
     const voters = option.votes.map(id => allUsers.find(u => u.id === id)).filter(Boolean) as User[];
@@ -84,6 +84,12 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                 <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto text-white")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Cofnij głos' : 'Głosuj'}
+                </Button>
+            )}
+
+            {isWinner && (
+                 <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="default" className="w-full mt-auto bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+                    <ShoppingCart className="mr-2" /> Utwórz zamówienie z tej opcji
                 </Button>
             )}
         </Card>
@@ -203,3 +209,5 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         </Card>
     );
 }
+
+    
