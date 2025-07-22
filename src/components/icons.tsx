@@ -9,7 +9,7 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
         {...props}
     >
         <path
-            d="M5 0V40H12.5V22.5H27.5V40H35V0H27.5V17.5H12.5V0H5Z"
+            d="M5 0V40H15V25H25V40H35V0H25V15H15V0H5Z"
             fill="hsl(var(--primary))"
         />
     </svg>
