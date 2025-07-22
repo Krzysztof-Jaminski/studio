@@ -38,8 +38,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-2xl">
+      <Card className="w-full max-w-md shadow-2xl bg-card/80 backdrop-blur-sm border-border/50">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Logo className="h-8 w-8 text-primary" />
@@ -59,6 +58,5 @@ export default function Login() {
             <p>Logując się, akceptujesz nasze warunki i politykę prywatności.</p>
           </CardFooter>
       </Card>
-    </div>
   );
 }

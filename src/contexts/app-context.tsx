@@ -367,14 +367,14 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         creatorId: user.id,
         companyName: orderData.companyName,
         isOpen: true,
-        deadline: orderData.deadline
+        deadline: orderData.deadline,
+        description: orderData.description,
     };
 
     if (orderData.type === 'voting') {
         newEvent = {
             ...baseEvent,
             type: 'voting',
-            description: orderData.description,
             votingOptions: orderData.votingOptions?.map((opt, index) => ({
                 id: `opt-${Date.now()}-${index}`,
                 name: opt.name,

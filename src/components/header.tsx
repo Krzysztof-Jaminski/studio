@@ -18,23 +18,23 @@ export default function Header() {
       <div className="container flex h-16 items-center">
         <div className="mr-auto flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-6 w-6 text-primary" />
+            <Logo className="h-8 w-8 text-primary" />
             <span className="font-bold font-headline text-lg">PraktykanciHub</span>
           </Link>
           {user && (
             <nav className="hidden items-center gap-1 text-sm md:flex">
-                <Link href="/users" className="text-muted-foreground transition-colors hover:text-foreground">
-                    <Button variant="ghost">
+                <Button asChild variant="ghost" className="text-muted-foreground hover:text-foreground">
+                    <Link href="/users">
                         <Users className="mr-2 text-green-500" />
                         Użytkownicy
-                    </Button>
-                </Link>
-                <Link href="/food-orders" className="text-muted-foreground transition-colors hover:text-foreground">
-                    <Button variant="ghost">
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" className="text-muted-foreground hover:text-foreground">
+                    <Link href="/food-orders">
                         <ShoppingCart className="mr-2 text-orange-500" />
                         Zamówienia
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
             </nav>
           )}
         </div>

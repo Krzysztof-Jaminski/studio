@@ -71,7 +71,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
         };
 
         if (values.type === 'order') {
-            const { votingOptions, description, ...orderData } = dataToSubmit;
+            const { votingOptions, ...orderData } = dataToSubmit;
             onSubmit(orderData);
         } else {
              const { link, creatorPhoneNumber, imageUrl, ...votingData } = dataToSubmit;
@@ -139,6 +139,17 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
 
                 {eventType === 'order' ? (
                     <>
+                         <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description (optional)</FormLabel>
+                                    <FormControl><Textarea placeholder="e.g., organizational instructions, BLIK number for payment, order information" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="link"
