@@ -116,7 +116,13 @@ export default function FoodOrdersPage() {
                         ))}
                     </motion.div>
                 ) : (
-                    <p className="text-sm text-muted-foreground">Brak zakończonych głosowań.</p>
+                    <Alert className="border-secondary-foreground/20 bg-secondary/30">
+                        <Info className="h-4 w-4 !text-muted-foreground" />
+                        <AlertTitle>Brak zakończonych głosowań</AlertTitle>
+                        <AlertDescription>
+                            Wszystkie zakończone głosowania pojawią się w tym miejscu.
+                        </AlertDescription>
+                    </Alert>
                 )}
             </div>
             <div className="space-y-4">
@@ -130,7 +136,13 @@ export default function FoodOrdersPage() {
                         ))}
                     </motion.div>
                 ) : (
-                    <p className="text-sm text-muted-foreground">Brak zakończonych zamówień.</p>
+                     <Alert className="border-secondary-foreground/20 bg-secondary/30">
+                        <Info className="h-4 w-4 !text-muted-foreground" />
+                        <AlertTitle>Brak zakończonych zamówień</AlertTitle>
+                        <AlertDescription>
+                            Wszystkie zakończone zamówienia pojawią się w tym miejscu.
+                        </AlertDescription>
+                    </Alert>
                 )}
             </div>
         </motion.div>
