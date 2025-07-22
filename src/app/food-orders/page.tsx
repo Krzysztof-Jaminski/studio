@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function FoodOrdersPage() {
     const { foodOrders, addFoodOrder } = useContext(AppContext);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('votings');
 
     const handleFormSubmit = (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'>) => {
         addFoodOrder(order);
@@ -45,6 +46,89 @@ export default function FoodOrdersPage() {
           opacity: 1
         }
     };
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'votings':
+                return (
+                    <motion.div
+                        key="votings"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <motion.div 
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
+                        >
+                            {activeVotings.length > 0 ? (
+                                activeVotings.map(order => <motion.div variants={itemVariants} key={`voting-${order.id}`}><VotingEventCard event={order} /></motion.div>)
+                            ) : (
+                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych głosowań.</p>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                );
+            case 'orders':
+                 return (
+                    <motion.div
+                        key="orders"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <motion.div 
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
+                        >
+                            {activeOrders.length > 0 ? (
+                                activeOrders.map(order => <motion.div variants={itemVariants} key={`order-${order.id}`}><FoodOrderCard order={order} /></motion.div>)
+                            ) : (
+                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych zamówień.</p>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                );
+            case 'history':
+                return (
+                    <motion.div
+                        key="history"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                         <motion.div 
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
+                         >
+                            {closedEvents.length > 0 ? (
+                                closedEvents.map(order => 
+                                    <motion.div variants={itemVariants} key={`history-${order.type}-${order.id}`}>
+                                        {order.type === 'voting' 
+                                        ? <VotingEventCard event={order} />
+                                        : <FoodOrderCard order={order} />}
+                                    </motion.div>
+                                )
+                            ) : (
+                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak zakończonych wydarzeń.</p>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                );
+            default:
+                return null;
+        }
+    };
+
 
     return (
         <motion.div 
@@ -78,65 +162,14 @@ export default function FoodOrdersPage() {
                     </Dialog>
                 </div>
                 
-                <Tabs defaultValue="votings" className="w-full">
+                <Tabs defaultValue="votings" className="w-full" onValueChange={setActiveTab}>
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="votings">Głosowania ({activeVotings.length})</TabsTrigger>
                         <TabsTrigger value="orders">Aktywne zamówienia ({activeOrders.length})</TabsTrigger>
                         <TabsTrigger value="history">Historia wydarzeń ({closedEvents.length})</TabsTrigger>
                     </TabsList>
-
                     <AnimatePresence mode="wait">
-                        <TabsContent value="votings" asChild>
-                             <motion.div 
-                                key="votings"
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
-                             >
-                                {activeVotings.length > 0 ? (
-                                    activeVotings.map(order => <motion.div variants={itemVariants} key={`voting-${order.id}`}><VotingEventCard event={order} /></motion.div>)
-                                ) : (
-                                    <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych głosowań.</p>
-                                )}
-                            </motion.div>
-                        </TabsContent>
-                        <TabsContent value="orders" asChild>
-                             <motion.div 
-                                key="orders"
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
-                             >
-                                {activeOrders.length > 0 ? (
-                                    activeOrders.map(order => <motion.div variants={itemVariants} key={`order-${order.id}`}><FoodOrderCard order={order} /></motion.div>)
-                                ) : (
-                                    <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych zamówień.</p>
-                                )}
-                            </motion.div>
-                        </TabsContent>
-                         <TabsContent value="history" asChild>
-                             <motion.div 
-                                key="history"
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
-                             >
-                                {closedEvents.length > 0 ? (
-                                    closedEvents.map(order => 
-                                        <motion.div variants={itemVariants} key={`history-${order.type}-${order.id}`}>
-                                            {order.type === 'voting' 
-                                            ? <VotingEventCard event={order} />
-                                            : <FoodOrderCard order={order} />}
-                                        </motion.div>
-                                    )
-                                ) : (
-                                    <p className="text-muted-foreground col-span-full text-center mt-8">Brak zakończonych wydarzeń.</p>
-                                )}
-                            </motion.div>
-                        </TabsContent>
+                       {renderContent()}
                     </AnimatePresence>
                 </Tabs>
             </main>
