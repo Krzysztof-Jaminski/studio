@@ -1,13 +1,24 @@
 
 export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-        <g transform="rotate(-90 20 20)">
-            <path d="M40 8V32H32V8H40Z" fill="hsl(var(--primary))"/>
-            <path d="M32 0V40H24V0H32Z" fill="hsl(var(--primary))"/>
-            <path d="M8 8V32H0V8H8Z" fill="hsl(var(--primary))"/>
-        </g>
-        <path d="M16 0H24V16H16V0Z" fill="hsl(var(--accent))"/>
-        <path d="M16 16H8V24H16V16Z" fill="hsl(var(--accent))"/>
-        <path d="M16 24V40H8V24H16Z" fill="hsl(var(--accent))" fillOpacity="0.7"/>
+    <svg
+        width="40"
+        height="40"
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+    >
+        <defs>
+            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: 'hsl(var(--accent))' }} />
+                <stop offset="100%" style={{ stopColor: 'hsl(var(--primary))' }} />
+            </linearGradient>
+        </defs>
+        <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M17.415 0.00195312C28.523 0.00195312 37.388 8.86695 37.388 19.975C37.388 31.083 28.523 39.948 17.415 39.948H5V0.00195312H17.415ZM17.415 8.65195H13.65V31.298H17.415C23.865 31.298 28.738 26.425 28.738 19.975C28.738 13.525 23.865 8.65195 17.415 8.65195Z"
+            fill="url(#logo-gradient)"
+        />
     </svg>
 );
