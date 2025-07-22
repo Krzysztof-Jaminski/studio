@@ -14,8 +14,12 @@ const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNod
         className="p-8 rounded-lg bg-card/50 backdrop-blur-sm border border-border/20 flex flex-col items-center text-center shadow-lg"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: delay, ease: "easeOut" }}
-        whileHover={{ translateY: -5, boxShadow: "0px 10px 20px rgba(91, 33, 182, 0.2)" }}
+        transition={{ duration: 0.6, delay, ease: "easeOut" }}
+        whileHover={{ 
+            translateY: -5, 
+            boxShadow: "0px 10px 20px rgba(91, 33, 182, 0.2)",
+            transition: { duration: 0.2 }
+        }}
     >
         <div className="p-3 rounded-full bg-primary/10 mb-4 text-primary">
             {icon}

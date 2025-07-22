@@ -42,7 +42,7 @@
 
 @layer components {
   .btn-gradient {
-    @apply bg-card/50 backdrop-blur-sm text-foreground border-2 border-foreground/80 transition-all duration-300;
+    @apply bg-card/50 backdrop-blur-sm text-foreground border-2 border-transparent transition-all duration-300;
     @apply hover:border-primary hover:shadow-[0_0_15px_theme(colors.primary)];
   }
   .text-gradient {
