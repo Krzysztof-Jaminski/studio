@@ -396,14 +396,13 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     if (orderData.type === 'voting') {
         updatedOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
     }
-  
+
     const deadlineDate = orderData.deadline ? new Date() : undefined;
     if (deadlineDate && orderData.deadline) {
         const [hours, minutes] = orderData.deadline.split(':').map(Number);
         deadlineDate.setHours(hours, minutes, 0, 0);
     }
-    
-    let newEvent: FoodOrder;
+
     const baseEvent = {
         id: `evt-${Date.now()}`,
         creatorId: user.id,
@@ -413,6 +412,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         description: orderData.description,
     };
 
+    let newEvent: FoodOrder;
     if (orderData.type === 'voting') {
         newEvent = {
             ...baseEvent,
@@ -423,7 +423,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 link: opt.link,
                 votes: [],
             })),
-            orders: [] // Ensure orders is not undefined
+            orders: [] // Ensure orders is not undefined for type consistency
         };
     } else { // 'order'
         const { link, creatorPhoneNumber, imageUrl } = orderData;
@@ -435,11 +435,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             imageUrl,
             orders: [],
         };
-        const detailsToStore: StoredOrderDetails = {
-            link,
-            creatorPhoneNumber,
-            imageUrl
-        };
+        const detailsToStore: StoredOrderDetails = { link, creatorPhoneNumber, imageUrl };
         try {
             localStorage.setItem('lastOrderDetails', JSON.stringify(detailsToStore));
             setStoredOrderDetails(detailsToStore);
@@ -670,3 +666,4 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+ 
