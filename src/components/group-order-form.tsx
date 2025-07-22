@@ -13,6 +13,7 @@ import { Textarea } from "./ui/textarea";
 import { ScrollArea } from "./ui/scroll-area";
 import type { StoredOrderDetails } from "@/contexts/app-context";
 import { useEffect } from "react";
+import { format } from "date-fns";
 
 const formSchema = z.object({
     companyName: z.string().min(2, "Nazwa firmy musi mieć co najmniej 2 znaki."),
@@ -27,12 +28,19 @@ type GroupOrderFormProps = {
     onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions' | 'type'> & { type: 'order' }) => void;
     onCancel: () => void;
     storedDetails?: StoredOrderDetails | null;
+    existingOrder?: FoodOrder;
 };
 
-export default function GroupOrderForm({ onSubmit, onCancel, storedDetails }: GroupOrderFormProps) {
+export default function GroupOrderForm({ onSubmit, onCancel, storedDetails, existingOrder }: GroupOrderFormProps) {
+    const deadlineTime = existingOrder?.deadline ? format(new Date(existingOrder.deadline), 'HH:mm') : '';
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
+        defaultValues: existingOrder ? {
+            ...existingOrder,
+            creatorPhoneNumber: existingOrder.creatorPhoneNumber || "",
+            deadline: deadlineTime,
+        } : {
             companyName: "",
             description: "",
             link: storedDetails?.link || "",
@@ -43,7 +51,7 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails }: Gr
     });
 
     useEffect(() => {
-        if (storedDetails) {
+        if (storedDetails && !existingOrder) {
             form.reset({
                 ...form.getValues(),
                 link: storedDetails.link,
@@ -51,7 +59,7 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails }: Gr
                 imageUrl: storedDetails.imageUrl,
             });
         }
-    }, [storedDetails, form]);
+    }, [storedDetails, form, existingOrder]);
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
         const deadlineDate = values.deadline ? new Date() : undefined;
@@ -146,9 +154,11 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails }: Gr
                 <Separator className="my-4" />
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={onCancel}>Anuluj</Button>
-                    <Button type="submit" variant="glass">Utwórz zamówienie</Button>
+                    <Button type="submit" variant="glass">{existingOrder ? 'Zapisz zmiany' : 'Utwórz zamówienie'}</Button>
                 </div>
             </form>
         </Form>
     );
 }
+
+    

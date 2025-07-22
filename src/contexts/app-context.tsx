@@ -31,6 +31,7 @@ type AppContextType = {
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
   addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string }[] }) => void;
+  editFoodOrder: (orderId: string, editedData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'order' }) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData, guestName?: string) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
@@ -59,6 +60,7 @@ export const AppContext = createContext<AppContextType>({
   getUserById: () => ({ user: null, portfolio: [] }),
   foodOrders: [],
   addFoodOrder: () => {},
+  editFoodOrder: () => {},
   removeFoodOrder: () => {},
   addOrderItem: () => {},
   removeOrderItem: () => {},
@@ -432,6 +434,31 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setFoodOrders([newEvent, ...updatedOrders]);
     toast({ title: "Wydarzenie utworzone!", description: `Wydarzenie "${orderData.companyName}" jest już aktywne.` });
   };
+  
+  const editFoodOrder = (orderId: string, editedData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'order' }) => {
+    if (!user) return;
+
+    setFoodOrders(prevOrders => prevOrders.map(order => {
+        if (order.id === orderId) {
+            if (user.id !== order.creatorId && user.role !== 'admin') {
+                toast({ variant: 'destructive', title: 'Brak uprawnień', description: 'Tylko twórca lub administrator może edytować wydarzenie.' });
+                return order;
+            }
+            return {
+                ...order,
+                companyName: editedData.companyName,
+                description: editedData.description,
+                link: editedData.link,
+                creatorPhoneNumber: editedData.creatorPhoneNumber,
+                imageUrl: editedData.imageUrl,
+                deadline: editedData.deadline,
+            };
+        }
+        return order;
+    }));
+
+    toast({ title: "Zapisano zmiany", description: `Wydarzenie "${editedData.companyName}" zostało zaktualizowane.` });
+  };
 
   const removeFoodOrder = (orderId: string) => {
     if (!user) return;
@@ -604,6 +631,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         getUserById,
         foodOrders,
         addFoodOrder,
+        editFoodOrder,
         removeFoodOrder,
         addOrderItem,
         removeOrderItem,
@@ -621,5 +649,3 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 }
 
     
-
-  

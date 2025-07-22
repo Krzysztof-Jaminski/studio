@@ -19,12 +19,14 @@ import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { isPast } from 'date-fns';
 import CountdownTimer from './countdown-timer';
+import GroupOrderForm from './group-order-form';
 
 export default function FoodOrderCard({ order }: { order: FoodOrder }) {
-    const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder } = useContext(AppContext);
+    const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder, editFoodOrder } = useContext(AppContext);
     const [newItem, setNewItem] = useState<{ name: string; details: string; price: string }>({ name: '', details: '', price: '' });
     const [guestName, setGuestName] = useState('');
     const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
     if (!user) return null;
 
@@ -46,6 +48,12 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
             setGuestName('');
             setIsOrderDialogOpen(false);
         }
+    };
+    
+    const handleEditSubmit = (editedOrder: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'order' }) => {
+        if (!order) return;
+        editFoodOrder(order.id, editedOrder);
+        setIsEditDialogOpen(false);
     };
 
     const totalAmount = order.orders.reduce((sum, item) => sum + item.price, 0);
@@ -163,7 +171,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 {(isCreator || isAdmin) && (
                      <div className="w-full space-y-2 pt-2 border-t">
                         <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                              <Button variant="secondary" className="flex-1" onClick={() => togglePaidStatus(order.id, 'all')}>
                                 <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
                             </Button>
@@ -181,9 +189,24 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(order.id)}>
                                 <Trash2 className="mr-2" /> Usuń
                             </Button>
-                            <Button className="flex-1" variant="outline">
-                                <Pencil className="mr-2" /> Edytuj
-                            </Button>
+                             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="flex-1" variant="outline">
+                                        <Pencil className="mr-2" /> Edytuj
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[90vw] md:max-w-[50vw]">
+                                    <DialogHeader>
+                                        <DialogTitle>Edytuj zamówienie grupowe</DialogTitle>
+                                        <DialogDescription>Zmień szczegóły istniejącego zamówienia.</DialogDescription>
+                                    </DialogHeader>
+                                    <GroupOrderForm
+                                        onSubmit={handleEditSubmit}
+                                        onCancel={() => setIsEditDialogOpen(false)}
+                                        existingOrder={order}
+                                    />
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
                 )}
@@ -191,3 +214,5 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         </Card>
     );
 }
+
+    
