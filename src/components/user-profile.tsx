@@ -52,8 +52,8 @@ export default function UserProfile() {
           </Avatar>
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-[650px] flex flex-col">
-        <SheetHeader className="text-left pb-4">
+      <SheetContent className="w-full sm:max-w-[650px] flex flex-col p-0">
+        <SheetHeader className="text-left p-6 pb-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
                {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
@@ -65,7 +65,7 @@ export default function UserProfile() {
           </div>
         </SheetHeader>
         
-        <div className="border rounded-lg p-3 text-sm">
+        <div className="border-t border-b bg-secondary/50 p-6 text-sm">
             <h4 className="font-semibold mb-2">Bezpieczeństwo konta</h4>
             <div className="flex items-center gap-2 text-muted-foreground">
                 <ProviderIcon provider={user.provider} />
@@ -73,11 +73,11 @@ export default function UserProfile() {
             </div>
         </div>
         
-        <ScrollArea className="flex-grow pr-6 -mr-6 my-4">
+        <ScrollArea className="flex-grow p-6">
             <PortfolioSection />
         </ScrollArea>
 
-        <div className="mt-auto border-t -mx-6 px-6 pt-4 bg-background">
+        <div className="mt-auto border-t p-6 bg-background">
           <Button variant="outline" className="w-full" onClick={logout}>
             <LogOut className="mr-2"/> Wyloguj
           </Button>
@@ -86,5 +86,3 @@ export default function UserProfile() {
     </Sheet>
   );
 }
-
-    

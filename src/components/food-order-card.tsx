@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, OrderItemData } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { UserCircle, Link as LinkIcon, Phone, ShoppingCart, Pencil, Trash2, Check, X, ShieldCheck } from 'lucide-react';
+import { UserCircle, Link as LinkIcon, Phone, ShoppingCart, Pencil, Trash2, Check, X, ShieldCheck, UserPlus } from 'lucide-react';
 import OrderItem from './order-item';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
@@ -23,6 +23,7 @@ import CountdownTimer from './countdown-timer';
 export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder } = useContext(AppContext);
     const [newItem, setNewItem] = useState<{ name: string; details: string; price: string }>({ name: '', details: '', price: '' });
+    const [guestName, setGuestName] = useState('');
     const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
 
     if (!user) return null;
@@ -40,8 +41,9 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 name: newItem.name,
                 details: newItem.details,
                 price: price,
-            });
+            }, guestName || undefined);
             setNewItem({ name: '', details: '', price: '' });
+            setGuestName('');
             setIsOrderDialogOpen(false);
         }
     };
@@ -53,7 +55,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         <Card className="flex flex-col border-accent/30 bg-card h-full">
             <CardHeader className="bg-secondary/50 rounded-t-lg p-4">
                 <div className="flex items-start gap-4">
-                    {order.imageUrl && (
+                    {order.imageUrl ? (
                          <Image
                             src={order.imageUrl}
                             alt={`${order.companyName} logo`}
@@ -61,6 +63,10 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             height={56}
                             className="rounded-md border-2 border-border object-cover h-14 w-14"
                         />
+                    ) : (
+                        <div className="h-14 w-14 flex items-center justify-center bg-muted rounded-md border-2 border-border">
+                            <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+                        </div>
                     )}
                     <div className="flex-1">
                         <CardTitle className="font-headline text-xl text-accent">{order.companyName}</CardTitle>
@@ -116,8 +122,22 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Add to order "{order.companyName}"</DialogTitle>
+                                <DialogDescription>
+                                    You can add an order for yourself or for a guest who isn't in the app.
+                                    <Button variant="link" asChild className="p-0 h-auto ml-1 text-accent">
+                                        <a href={order.link} target="_blank" rel="noopener noreferrer">View Menu</a>
+                                    </Button>
+                                </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleAddOrderItem} className="space-y-4">
+                                <Separator />
+                                <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">Guest Order</h4>
+                                    <Label htmlFor="guest-name">Guest Name (optional)</Label>
+                                    <Input id="guest-name" value={guestName} onChange={e => setGuestName(e.target.value)} placeholder="e.g., Jan Kowalski" />
+                                    <p className="text-xs text-muted-foreground">If you leave this empty, the order will be assigned to you.</p>
+                                </div>
+                                <Separator />
                                 <div>
                                     <Label htmlFor="item-name">Product Name</Label>
                                     <Input id="item-name" value={newItem.name} onChange={e => setNewItem(prev => ({ ...prev, name: e.target.value }))} required />

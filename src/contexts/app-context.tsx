@@ -25,7 +25,7 @@ type AppContextType = {
   foodOrders: FoodOrder[];
   addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => void;
   removeFoodOrder: (orderId: string) => void;
-  addOrderItem: (orderId: string, item: OrderItemData) => void;
+  addOrderItem: (orderId: string, item: OrderItemData, guestName?: string) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
   togglePaidStatus: (orderId: string, itemId: string | 'all') => void;
   toggleOrderState: (orderId: string) => void;
@@ -414,21 +414,28 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     toast({ title: "Wydarzenie usunięte", description: "Całe wydarzenie jedzeniowe zostało usunięte." });
   };
 
-  const addOrderItem = (orderId: string, itemData: OrderItemData) => {
-    if (!user) return;
+  const addOrderItem = (orderId: string, itemData: OrderItemData, guestName?: string) => {
+    if (!user && !guestName) return;
+
     const newItem: OrderItem = {
         ...itemData,
         id: `item-${Date.now()}`,
-        userId: user.id,
+        userId: guestName ? null : user!.id,
+        guestName: guestName,
         isPaid: false,
     };
+
     setFoodOrders(prev => prev.map(order => {
         if (order.id === orderId && order.type === 'order') {
             return { ...order, orders: [...(order.orders || []), newItem] };
         }
         return order;
     }));
-    toast({ title: "Dodano zamówienie", description: `Twoje zamówienie na "${itemData.name}" zostało złożone.` });
+
+    const toastMessage = guestName
+      ? `Zamówienie dla gościa "${guestName}" zostało złożone.`
+      : `Twoje zamówienie na "${itemData.name}" zostało złożone.`;
+    toast({ title: "Dodano zamówienie", description: toastMessage });
   };
 
   const removeOrderItem = (orderId: string, itemId: string) => {
@@ -558,7 +565,3 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
-
-    
-
-    

@@ -8,6 +8,7 @@ import UserProfile from "./user-profile";
 import { Logo } from "./icons";
 import { Button } from "./ui/button";
 import { ShoppingCart, Users } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
   const { user } = useContext(AppContext);
@@ -21,10 +22,10 @@ export default function Header() {
             <span className="font-bold font-headline text-lg">PraktykanciHub</span>
           </Link>
           {user && (
-            <nav className="flex items-center gap-1 text-sm">
+            <nav className="hidden items-center gap-1 text-sm md:flex">
                 <Link href="/users" className="text-muted-foreground transition-colors hover:text-foreground">
                     <Button variant="ghost">
-                        <Users className="mr-2 text-green-600" />
+                        <Users className="mr-2 text-green-500" />
                         Użytkownicy
                     </Button>
                 </Link>
@@ -38,6 +39,7 @@ export default function Header() {
           )}
         </div>
         <div className="flex items-center justify-end space-x-2">
+          <ThemeToggle />
           {user && <UserProfile />}
         </div>
       </div>

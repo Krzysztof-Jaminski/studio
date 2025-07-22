@@ -19,7 +19,12 @@ type OrderItemProps = {
 
 export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderItemProps) {
     const { user, allUsers, removeOrderItem, togglePaidStatus } = useContext(AppContext);
-    const itemUser = allUsers.find(u => u.id === item.userId);
+    
+    // Find user only if it's not a guest order
+    const itemUser = item.userId ? allUsers.find(u => u.id === item.userId) : null;
+    const displayName = item.guestName || itemUser?.name || 'Unknown User';
+    const displayAvatar = itemUser?.avatarUrl;
+
     const canModify = isCreator || isAdmin || user?.id === item.userId;
 
     if (!user) return null;
@@ -30,11 +35,14 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
             item.isPaid ? 'bg-green-500/20' : 'bg-secondary'
         )}>
             <Avatar className="h-8 w-8">
-                 {itemUser?.avatarUrl ? <AvatarImage src={itemUser.avatarUrl} alt={itemUser.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
+                 {displayAvatar ? <AvatarImage src={displayAvatar} alt={displayName} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
             </Avatar>
             <div className="flex-1">
                 <div className="flex justify-between items-start">
-                    <p className="font-semibold text-sm">{itemUser?.name || 'Unknown User'}</p>
+                    <p className="font-semibold text-sm flex items-center gap-2">
+                        {displayName}
+                        {item.guestName && <Badge variant="outline">Gość</Badge>}
+                    </p>
                     <p className="font-bold text-sm text-accent">{item.price.toFixed(2)} zł</p>
                 </div>
                 <p className="text-xs text-foreground/80">{item.name}</p>

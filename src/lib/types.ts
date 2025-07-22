@@ -43,14 +43,15 @@ export type PortfolioItem = {
 
 export type OrderItem = {
     id: string;
-    userId: string;
+    userId: string | null; // Can be null for guest orders
+    guestName?: string; // For guest orders
     name: string;
     details?: string;
     price: number;
     isPaid: boolean;
 }
 
-export type OrderItemData = Omit<OrderItem, 'id' | 'userId' | 'isPaid'>;
+export type OrderItemData = Omit<OrderItem, 'id' | 'userId' | 'isPaid' | 'guestName'>;
 
 export type VotingOption = {
     id: string;
@@ -72,7 +73,7 @@ export type FoodOrder = {
     link?: string;
     creatorPhoneNumber?: string;
     imageUrl?: string;
-    orders?: OrderItem[];
+    orders: OrderItem[];
     // Voting specific
     votingOptions?: VotingOption[];
 };
