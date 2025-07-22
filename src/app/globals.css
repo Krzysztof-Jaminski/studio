@@ -29,6 +29,7 @@
     --color-food: 28 100% 50%; /* Orange */
     --color-status: 145 58% 55%; /* Green */
     --bg-square-opacity: 0.1;
+    --bg-glow-opacity: 0.2;
   }
 
   .dark {
@@ -52,6 +53,7 @@
     --input: 215 28% 17%;
     --ring: 217 91% 60%;
     --bg-square-opacity: 0.1;
+    --bg-glow-opacity: 0.2;
   }
 }
 

@@ -54,7 +54,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
 
   return (
     <Card className={cn(
-      "flex flex-col transition-all duration-300 bg-card",
+      "flex flex-col transition-all duration-150 bg-card",
       isPast || !isReservable ? "opacity-50" : "hover:border-primary/80",
       isToday && isReservable && "border-primary border-2 shadow-lg"
     )}>

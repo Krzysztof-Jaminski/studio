@@ -48,8 +48,14 @@ export default function AnimatedBackground() {
     return (
         <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
              {/* Static glows */}
-            <div className="absolute top-[-20%] left-[-20%] w-[50vw] h-[50vw] bg-gradient-to-br from-primary/20 to-accent/20 rounded-full filter blur-3xl opacity-50 animate-pulse"></div>
-            <div className="absolute bottom-[-20%] right-[-20%] w-[50vw] h-[50vw] bg-gradient-to-tl from-primary/20 to-accent/20 rounded-full filter blur-3xl opacity-50 animate-pulse delay-1000"></div>
+            <div
+                className="absolute top-[-20%] left-[-20%] w-[50vw] h-[50vw] rounded-full filter blur-3xl animate-pulse"
+                style={{ background: 'radial-gradient(circle, hsla(var(--primary) / var(--bg-glow-opacity)), transparent 60%)'}}
+            ></div>
+            <div 
+                className="absolute bottom-[-20%] right-[-20%] w-[50vw] h-[50vw] rounded-full filter blur-3xl animate-pulse delay-1000"
+                style={{ background: 'radial-gradient(circle, hsla(var(--accent) / var(--bg-glow-opacity)), transparent 60%)'}}
+            ></div>
 
             {/* Animated squares */}
             {/* Large and slow */}
