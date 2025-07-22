@@ -39,7 +39,7 @@ export default function WeeklyStatus() {
   const weekNumber = differenceInWeeks(startOfThisWeek, startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 })) + 1;
 
   return (
-    <Card className="w-full border-green-500/30 bg-card">
+    <Card className="w-full border-accent/30 bg-card">
       <CardHeader className="bg-secondary/50 rounded-t-lg">
         <CardTitle className="font-headline text-2xl text-white">Status tygodniowy - Tydzień {weekNumber}</CardTitle>
         <CardDescription>
@@ -51,10 +51,10 @@ export default function WeeklyStatus() {
       </CardHeader>
       <CardContent className="pt-6">
         {isPublished ? (
-           <Alert variant="default" className="bg-green-500/10 border-green-500/30">
-             <CheckCircle className="h-4 w-4 !text-green-400" />
+           <Alert variant="default" className="bg-accent/10 border-accent/30">
+             <CheckCircle className="h-4 w-4 !text-accent" />
              <AlertTitle className="text-white">Status opublikowany!</AlertTitle>
-             <AlertDescription className="text-green-400/80">
+             <AlertDescription className="text-accent/80">
                 Twój status został dodany do Twojego portfolio. Nadal możesz go edytować lub rozszerzać z poziomu swojego profilu.
              </AlertDescription>
            </Alert>

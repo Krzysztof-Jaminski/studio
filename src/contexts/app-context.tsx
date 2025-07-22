@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
+import { useRouter } from 'next/navigation';
 import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData, type VotingOption } from "@/lib/types";
 import { format, startOfWeek, getDay, isAfter, endOfDay, differenceInWeeks, addDays, eachDayOfInterval } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
@@ -115,6 +116,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { toast } = useToast();
+  const router = useRouter();
 
   const [weeklyStatus, setWeeklyStatus] = useState<WeeklyStatus | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
@@ -219,6 +221,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setWeeklyStatus(null);
     setPortfolio([]);
+    router.push('/');
   };
 
   const toggleReservation = (date: Date, type: 'office' | 'online') => {

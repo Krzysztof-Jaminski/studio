@@ -24,7 +24,7 @@ export default function Header() {
             <nav className="hidden items-center gap-1 text-sm md:flex">
                 <Button asChild variant="ghost" className="text-muted-foreground hover:text-foreground">
                     <Link href="/users">
-                        <Users className="mr-2 text-green-500" />
+                        <Users className="mr-2 text-accent" />
                         Użytkownicy
                     </Link>
                 </Button>

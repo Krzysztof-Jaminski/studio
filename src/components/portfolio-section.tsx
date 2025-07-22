@@ -53,7 +53,7 @@ export default function PortfolioSection() {
                             {item.type === 'project' && `Dodano ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
                         </CardDescription>
                     </div>
-                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600/80 text-white")}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
+                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-accent/80 text-white")}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-4">

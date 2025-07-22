@@ -32,7 +32,7 @@ const UserList = ({ users }: { users: User[] }) => (
                 </Avatar>
                 <span>{user.name}</span>
             </div>
-        )) : <p className="text-xs text-muted-foreground">No one yet.</p>}
+        )) : <p className="text-xs text-muted-foreground">Brak rezerwacji.</p>}
     </div>
 );
 
@@ -61,8 +61,8 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="font-headline text-primary">{format(date, "EEEE", { locale: pl })}</CardTitle>
-          {isToday && isReservable && <Badge variant="default" className="bg-primary/20 text-primary">Today</Badge>}
-          {!isReservable && !isPast && <Badge variant="outline">Unavailable</Badge>}
+          {isToday && isReservable && <Badge variant="default" className="bg-primary/20 text-primary">Dzisiaj</Badge>}
+          {!isReservable && !isPast && <Badge variant="outline">Niedostępny</Badge>}
         </div>
         <CardDescription>{format(date, "d MMMM yyyy", { locale: pl })}</CardDescription>
       </CardHeader>
@@ -73,11 +73,11 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 variant={isBookedByUser === 'office' ? 'default' : 'secondary'} 
                 className={cn(
                     "w-full justify-center text-white",
-                    isBookedByUser === 'office' ? 'bg-primary hover:bg-primary/90' : 'bg-green-600 hover:bg-green-700'
+                    isBookedByUser === 'office' ? 'bg-primary hover:bg-primary/90' : 'bg-accent hover:bg-accent/90'
                 )}
             >
                 {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}
-                You are booked {isBookedByUser === 'office' ? 'for the office' : 'for online'}
+                Jesteś zapisany {isBookedByUser === 'office' ? 'do biura' : 'na online'}
             </Badge>
         )}
 
@@ -86,12 +86,12 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
                         <Briefcase className="mr-2 text-primary" /> 
-                        In Office ({bookedInOffice}/{MAX_SPOTS})
+                        W biurze ({bookedInOffice}/{MAX_SPOTS})
                         <Users className="ml-auto" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-56">
-                    <p className="font-semibold mb-2 text-sm">In Office</p>
+                    <p className="font-semibold mb-2 text-sm">W biurze</p>
                     <UserList users={officeUsers} />
                 </PopoverContent>
             </Popover>
@@ -99,7 +99,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Globe className="mr-2 text-green-500" /> 
+                        <Globe className="mr-2 text-accent" /> 
                         Online ({onlineUsers.length})
                         <Users className="ml-auto" />
                     </Button>
@@ -120,7 +120,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 onClick={handleCancel}
                 disabled={isPast || !isReservable}
             >
-                <X className="mr-2"/> Cancel Reservation
+                <X className="mr-2"/> Anuluj rezerwację
             </Button>
         ) : (
             <>
@@ -129,14 +129,14 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                     onClick={() => toggleReservation(date, 'office')}
                     disabled={isPast || !isReservable || isOfficeFull}
                 >
-                    <Briefcase className="mr-2" /> Book Office Spot
+                    <Briefcase className="mr-2" /> Zarezerwuj miejsce w biurze
                 </Button>
                 <Button
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full bg-accent hover:bg-accent/90 text-white"
                     onClick={() => toggleReservation(date, 'online')}
                     disabled={isPast || !isReservable}
                 >
-                    <Globe className="mr-2" /> Book Online
+                    <Globe className="mr-2" /> Zarezerwuj online
                 </Button>
             </>
         )}

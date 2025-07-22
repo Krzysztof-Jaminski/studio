@@ -28,7 +28,7 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
                         {item.type === 'project' && `Dodano ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
                     </CardDescription>
                 </div>
-                <Badge variant={item.type === 'status' ? 'secondary' : 'default'} className={cn(item.type === 'status' ? 'bg-green-600/80 text-white' : 'bg-primary/80 text-white')}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
+                <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' ? 'bg-accent/80 text-white' : 'bg-primary/80 text-white')}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
             </div>
         </CardHeader>
         <CardContent className="flex-grow pt-4">
@@ -161,8 +161,8 @@ export default function UserProfilePage() {
                 <h2 className="text-2xl font-bold font-headline mb-4 text-white">Statystyki obecności</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <StatCard icon={<Briefcase className="h-6 w-6 text-primary-foreground" />} label="Dni w biurze" value={userStats.office} colorClass="bg-primary" />
-                    <StatCard icon={<Globe className="h-6 w-6 text-primary-foreground" />} label="Dni online" value={userStats.online} colorClass="bg-green-500" />
-                    <StatCard icon={<Sigma className="h-6 w-6 text-primary-foreground" />} label="Wszystkie rezerwacje" value={userStats.total} colorClass="bg-accent" />
+                    <StatCard icon={<Globe className="h-6 w-6 text-accent-foreground" />} label="Dni online" value={userStats.online} colorClass="bg-accent" />
+                    <StatCard icon={<Sigma className="h-6 w-6 text-primary-foreground" />} label="Wszystkie rezerwacje" value={userStats.total} colorClass="bg-secondary" />
                 </div>
             </div>
 
