@@ -47,7 +47,7 @@ export default function WelcomePage() {
                 >
                     <Logo className="h-20 w-20 mx-auto mb-4 text-primary drop-shadow-lg" />
                     <h1 className="text-5xl md:text-6xl font-bold font-headline mb-2 drop-shadow-md">Witaj w Praktykanci<span className="text-primary">Hub</span>!</h1>
-                    <p className="text-lg md:text-xl text-muted-foreground">Twoje centrum do zarządzania praktykami.</p>
+                    <p className="text-lg md:text-xl text-muted-foreground">Twoje centrum do zarządzania praktykami</p>
                 </motion.div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
