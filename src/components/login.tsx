@@ -31,9 +31,9 @@ export default function Login() {
     // In a real app, this would trigger the OAuth flow.
     // For this prototype, we'll simulate it by logging in a mock user.
     if (provider === 'google') {
-      login('user-2'); // Jane Smith as Google user
+      login('user-2', 'google'); // Jane Smith as Google user
     } else {
-      login('user-1'); // John Doe as Discord user
+      login('user-1', 'discord'); // John Doe as Discord user
     }
   };
 

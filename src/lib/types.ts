@@ -6,6 +6,7 @@ export type User = {
   email: string;
   role: 'user' | 'admin';
   avatarUrl?: string;
+  provider?: 'google' | 'discord';
 };
 
 export type Day = {

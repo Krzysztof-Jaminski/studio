@@ -10,7 +10,7 @@ import { MAX_SPOTS } from "@/lib/utils";
 
 type AppContextType = {
   user: User | null;
-  login: (name: string) => void;
+  login: (userId: string, provider: 'google' | 'discord') => void;
   logout: () => void;
   reservations: Reservation[];
   toggleReservation: (date: Date, type: 'office' | 'online') => void;
@@ -198,8 +198,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const checkDate = () => {
         const now = new Date();
         const dayOfWeek = getDay(now); // 0 (Sunday) to 6 (Saturday), 5 is Friday
-        // Show status prompt only on Fridays
-        setShowStatusPrompt(dayOfWeek === 5);
+        
+        const isFriday = dayOfWeek === 5;
+        setShowStatusPrompt(isFriday);
         
         const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
         const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfThisWeek.toISOString());
@@ -218,7 +219,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }, [weeklyStatus, portfolio, user]);
 
 
-  const login = (userId: string) => {
+  const login = (userId: string, provider: 'google' | 'discord') => {
     let potentialUser = allUsers.find(u => u.id === userId);
 
     if (!potentialUser) {
@@ -236,12 +237,16 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         potentialUser = newUser;
     }
 
-    setUser(potentialUser);
-    const userPortfolio = userPortfolios[potentialUser.id] || [];
+    const loggedInUser = {...potentialUser, provider};
+    setUser(loggedInUser);
+
+    const userPortfolio = userPortfolios[loggedInUser.id] || [];
     setPortfolio(userPortfolio);
     
     // Seed reservations once on login
-    setReservations(seedRandomReservations(allUsers));
+    if (reservations.length === 0) {
+        setReservations(seedRandomReservations(allUsers));
+    }
 
     // Check for existing status for the current week
     const weekStartISO = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
@@ -263,7 +268,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     
     toast({
       title: "Zalogowano",
-      description: `Witaj z powrotem, ${potentialUser.name}!`,
+      description: `Witaj z powrotem, ${loggedInUser.name}!`,
     });
   };
 
