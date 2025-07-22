@@ -15,9 +15,13 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
             </linearGradient>
         </defs>
         <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M17.415 0.00195312C28.523 0.00195312 37.388 8.86695 37.388 19.975C37.388 31.083 28.523 39.948 17.415 39.948H5V0.00195312H17.415ZM17.415 8.65195H13.65V31.298H17.415C23.865 31.298 28.738 26.425 28.738 19.975C28.738 13.525 23.865 8.65195 17.415 8.65195Z"
+            d="M17.5 0H5V40H17.5C28.8381 40 38 31.0457 38 20C38 8.9543 28.8381 0 17.5 0Z"
+            transform="matrix(-1 0 0 1 20 0)"
+            fill="url(#logo-gradient)"
+        />
+        <path 
+            d="M17.5 0H5V40H17.5C28.8381 40 38 31.0457 38 20C38 8.9543 28.8381 0 17.5 0Z"
+            transform="translate(20, 0)"
             fill="url(#logo-gradient)"
         />
     </svg>
