@@ -53,11 +53,11 @@ export default function AnimatedBackground() {
                 style={{ background: 'radial-gradient(circle, hsla(var(--primary) / var(--bg-glow-opacity)), transparent 60%)'}}
             ></div>
             <div 
-                className="absolute bottom-[-20%] right-[-20%] w-[50vw] h-[50vw] rounded-full filter blur-3xl animate-pulse delay-1000"
+                className="absolute bottom-[-20%] right-[-20%] w-[50vw] h-[50vw] rounded-full filter blur-3xl animate-pulse"
                 style={{ background: 'radial-gradient(circle, hsla(var(--accent) / var(--bg-glow-opacity)), transparent 60%)'}}
             ></div>
             <div 
-                className="absolute bottom-[5%] left-[10%] w-[30vw] h-[30vw] rounded-full filter blur-3xl animate-pulse delay-500"
+                className="absolute bottom-[5%] left-[10%] w-[30vw] h-[30vw] rounded-full filter blur-3xl animate-pulse"
                 style={{ background: 'radial-gradient(circle, hsla(28, 100%, 50%, var(--bg-glow-orange-opacity)), transparent 70%)'}}
             ></div>
 
@@ -70,13 +70,13 @@ export default function AnimatedBackground() {
             <AnimatedSquare size={320} initialX="90%" initialY="80%" duration={30} />
             
             {/* Medium */}
-            <AnimatedSquare size={180} initialX="50%" initialY="50%" duration={25} delay={1}/>
+            <AnimatedSquare size={180} initialX="50%" initialY="50%" duration={25} />
             <AnimatedSquare size={170} initialX="30%" initialY="30%" duration={22} />
-            <AnimatedSquare size={280} initialX="70%" initialY="60%" duration={28} delay={2}/>
+            <AnimatedSquare size={280} initialX="70%" initialY="60%" duration={28} />
             
             {/* Small and fast */}
             <AnimatedSquare size={80} initialX="20%" initialY="80%" duration={15} />
-            <AnimatedSquare size={100} initialX="80%" initialY="40%" duration={18} delay={1.5} />
+            <AnimatedSquare size={100} initialX="80%" initialY="40%" duration={18} />
              <AnimatedSquare size={90} initialX="40%" initialY="10%" duration={16} />
         </div>
     );
