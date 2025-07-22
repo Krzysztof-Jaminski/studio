@@ -17,8 +17,8 @@ export default function Header() {
       <div className="container flex h-16 items-center">
         <div className="mr-auto flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="font-bold font-headline text-lg">PraktykanciHub</span>
+            <Logo className="h-8 w-8" />
+            <span className="font-bold font-headline text-lg">Praktykanci<span className="text-primary">Hub</span></span>
           </Link>
           {user && (
             <nav className="hidden items-center gap-1 text-sm md:flex">

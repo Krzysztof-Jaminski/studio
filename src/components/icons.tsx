@@ -8,21 +8,9 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
         xmlns="http://www.w3.org/2000/svg"
         {...props}
     >
-        <defs>
-            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{ stopColor: 'hsl(var(--accent))' }} />
-                <stop offset="100%" style={{ stopColor: 'hsl(var(--primary))' }} />
-            </linearGradient>
-        </defs>
         <path
-            d="M17.5 0H5V40H17.5C28.8381 40 38 31.0457 38 20C38 8.9543 28.8381 0 17.5 0Z"
-            transform="matrix(-1 0 0 1 20 0)"
-            fill="url(#logo-gradient)"
-        />
-        <path 
-            d="M17.5 0H5V40H17.5C28.8381 40 38 31.0457 38 20C38 8.9543 28.8381 0 17.5 0Z"
-            transform="translate(20, 0)"
-            fill="url(#logo-gradient)"
+            d="M5 0V40H12.5V22.5H27.5V40H35V0H27.5V17.5H12.5V0H5Z"
+            fill="hsl(var(--primary))"
         />
     </svg>
 );
