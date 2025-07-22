@@ -1,17 +1,7 @@
 export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M3 10h18" />
-    <path d="M3 6h18" />
-    <path d="m8 14 4 4 4-4" />
-    <path d="M12 18V6" />
-  </svg>
+    <div {...props} className="flex items-center space-x-1 font-bold text-2xl font-headline">
+        <span style={{ color: 'hsl(var(--primary))' }}>P</span>
+        <span style={{ color: 'hsl(var(--color-status))' }}>R</span>
+        <span style={{ color: 'hsl(var(--color-food))' }}>H</span>
+    </div>
 );

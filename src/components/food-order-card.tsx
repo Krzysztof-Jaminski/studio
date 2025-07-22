@@ -60,7 +60,6 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             width={56}
                             height={56}
                             className="rounded-md border object-cover h-14 w-14"
-                            data-ai-hint="logo"
                         />
                     )}
                     <div className="flex-1">

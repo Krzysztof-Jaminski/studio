@@ -13,15 +13,13 @@ import WelcomePage from './welcome/page';
 
 export default function Home() {
   const { user } = useContext(AppContext);
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // This logic now only controls showing the welcome page, not based on seeing it before.
-    // It will always show first.
     const welcomeSeen = sessionStorage.getItem('hasSeenWelcome');
-    if (welcomeSeen) {
-      setShowWelcome(false);
+    if (!welcomeSeen) {
+      setShowWelcome(true);
     }
     setIsLoading(false);
   }, []);
@@ -32,7 +30,7 @@ export default function Home() {
   }
   
   if (isLoading) {
-    return <div className="min-h-screen" />; 
+    return <div className="min-h-screen bg-background" />; 
   }
 
   if (showWelcome) {

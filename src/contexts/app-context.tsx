@@ -71,82 +71,6 @@ const INITIAL_USERS: User[] = [
     { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin", avatarUrl: "https://i.pravatar.cc/150?u=admin1" },
 ];
 
-const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
-    "user-1": [
-        {
-            id: 'status-1', type: 'status', title: 'Status Update', weekOf: startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 }).toISOString(),
-            description: 'W tym tygodniu skupiłem się na nauce podstaw Next.js i zarządzaniu stanem za pomocą React Context. To było wyzwanie, ale bardzo satysfakcjonujące. Zbudowałem też początkowy interfejs kalendarza rezerwacji.',
-            date: new Date().toISOString(), isVisible: true
-        },
-        {
-            id: 'project-1', type: 'project', title: 'Moja strona osobista',
-            description: 'Osobista strona portfolio do prezentacji moich umiejętności i projektów, zbudowana przy użyciu nowoczesnych technologii internetowych.',
-            link: 'https://github.com', technologies: ['Next.js', 'TypeScript', 'Tailwind CSS'],
-            date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(), isVisible: true
-        }
-    ],
-    "user-2": [
-        {
-            id: 'project-jane-1', type: 'project', title: 'Narzędzie do wizualizacji danych', description: 'Narzędzie do wizualizacji złożonych zbiorów danych przy użyciu D3.js.',
-            link: 'https://github.com', technologies: ['React', 'D3.js', 'Vite'],
-            date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), isVisible: true
-        },
-         {
-            id: 'status-jane-1', type: 'status', title: 'Status - Tydzień 2', weekOf: startOfWeek(new Date(INTERNSHIP_START_DATE.getTime() + 1000 * 60 * 60 * 24 * 7), { weekStartsOn: 1 }).toISOString(),
-            description: 'Ukończyłam moduł parsowania danych i rozpoczęłam pracę nad komponentami wykresów. Napotkałam pewne problemy z responsywnym skalowaniem.',
-            date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), isVisible: true
-        }
-    ],
-    "user-3": [],
-    "user-4": [],
-    "admin1": [],
-};
-
-const MOCK_FOOD_ORDERS: FoodOrder[] = [
-    {
-        id: 'fo-1',
-        type: 'order',
-        creatorId: 'user-2',
-        companyName: 'Pizza Heaven',
-        link: 'https://example.com',
-        creatorPhoneNumber: '123-456-789',
-        imageUrl: 'https://placehold.co/100x100.png',
-        isOpen: false,
-        orders: [
-            { id: 'item-1', userId: 'user-2', name: 'Margherita', details: 'Duża', price: 15.99, isPaid: true },
-            { id: 'item-2', userId: 'user-3', name: 'Pepperoni', details: 'Średnia, dodatkowy ser', price: 17.50, isPaid: false },
-        ]
-    },
-    {
-        id: 'fo-2',
-        type: 'order',
-        creatorId: 'user-1',
-        companyName: 'Sushi World',
-        link: 'https://example.com',
-        creatorPhoneNumber: '987-654-321',
-        imageUrl: 'https://placehold.co/100x100.png',
-        isOpen: false,
-        orders: [
-            { id: 'item-3', userId: 'user-1', name: 'California Roll', details: '', price: 8.00, isPaid: true },
-            { id: 'item-4', userId: 'user-4', name: 'Spicy Tuna Roll', details: '', price: 9.50, isPaid: true },
-        ]
-    },
-    {
-        id: 'vo-1',
-        type: 'voting',
-        creatorId: 'admin1',
-        companyName: 'Głosowanie na lunch w piątek',
-        description: "Głosujemy na miejsce na dzisiejszy lunch. Po wyborze, osoba z największą liczbą głosów zamawia dla wszystkich. Płatność BLIK na numer 123-456-789.",
-        isOpen: true,
-        deadline: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(), // 2 hours from now
-        votingOptions: [
-            { id: 'opt-1', name: 'Mexican Grill', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-1', 'user-4'] },
-            { id: 'opt-2', name: 'Italian Pasta', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-2'] },
-            { id: 'opt-3', name: 'Thai Corner', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-1', 'user-2', 'user-3'] },
-        ]
-    }
-];
-
 const seedRandomReservations = (users: User[]): Reservation[] => {
     const reservations: Reservation[] = [];
     const days = eachDayOfInterval({ start: INTERNSHIP_START_DATE, end: INTERNSHIP_END_DATE });
@@ -187,10 +111,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [weeklyStatus, setWeeklyStatus] = useState<WeeklyStatus | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [showStatusPrompt, setShowStatusPrompt] = useState(false);
-  const [foodOrders, setFoodOrders] = useState<FoodOrder[]>(MOCK_FOOD_ORDERS);
+  const [foodOrders, setFoodOrders] = useState<FoodOrder[]>([]);
   
   const [allUsers, setAllUsers] = useState<User[]>(INITIAL_USERS);
-  const [userPortfolios, setUserPortfolios] = useState<Record<string, PortfolioItem[]>>(MOCK_PORTFOLIOS);
+  const [userPortfolios, setUserPortfolios] = useState<Record<string, PortfolioItem[]>>({});
 
 
   useEffect(() => {
@@ -224,7 +148,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             description: `Witaj z powrotem, ${user.name}!`,
         });
     }
-  }, [user?.id]);
+  }, [user?.id, toast]);
 
 
   const login = (userId: string, provider: 'google' | 'discord') => {
@@ -463,7 +387,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 id: `opt-${Date.now()}-${index}`,
                 name: opt.name,
                 link: opt.link,
-                imageUrl: opt.imageUrl || 'https://placehold.co/100x100.png',
+                imageUrl: opt.imageUrl,
                 votes: [],
             }))
         };
@@ -473,7 +397,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             type: 'order',
             link: orderData.link,
             creatorPhoneNumber: orderData.creatorPhoneNumber,
-            imageUrl: orderData.imageUrl || 'https://placehold.co/100x100.png',
+            imageUrl: orderData.imageUrl,
             orders: [],
         };
     }
@@ -588,7 +512,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         id: `opt-${Date.now()}`,
         name: optionData.name,
         link: optionData.link,
-        imageUrl: optionData.imageUrl || 'https://placehold.co/100x100.png',
+        imageUrl: optionData.imageUrl,
         votes: [user.id], // The user who adds the option automatically votes for it
     };
 

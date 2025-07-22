@@ -85,7 +85,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                 </div>
             )}
             <div className="flex items-start gap-4">
-                <Image src={option.imageUrl || 'https://placehold.co/64x64.png'} alt={option.name} width={64} height={64} className="rounded-md border h-16 w-16 object-cover" data-ai-hint="logo" />
+                {option.imageUrl && <Image src={option.imageUrl} alt={option.name} width={64} height={64} className="rounded-md border h-16 w-16 object-cover" />}
                 <div className="flex-1">
                     <p className="font-bold text-lg text-orange-800">{option.name}</p>
                      {option.link && (
