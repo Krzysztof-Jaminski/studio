@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Badge } from './ui/badge';
 import { format, parseISO } from 'date-fns';
+import { pl } from 'date-fns/locale';
 import { FileText, Link, PlusCircle, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import PortfolioItemForm from './portfolio-item-form';
 import { Separator } from './ui/separator';
@@ -48,11 +49,11 @@ export default function PortfolioSection() {
                     <div>
                         <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-900" : "text-green-900")}>{item.title}</CardTitle>
                         <CardDescription>
-                            {item.type === 'status' && item.weekOf && `Status for week of ${format(parseISO(item.weekOf), 'MMMM d, yyyy')}`}
-                            {item.type === 'project' && `Added on ${format(parseISO(item.date), 'MMMM d, yyyy')}`}
+                            {item.type === 'status' && item.weekOf && `Status na tydzień ${format(parseISO(item.weekOf), 'd MMMM yyyy', { locale: pl })}`}
+                            {item.type === 'project' && `Dodano ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
                         </CardDescription>
                     </div>
-                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600 text-white")}>{item.type}</Badge>
+                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600 text-white")}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-4">
@@ -68,7 +69,7 @@ export default function PortfolioSection() {
                     {item.link && (
                         <Button variant="link" asChild className="p-0 h-auto">
                             <a href={item.link} target="_blank" rel="noopener noreferrer">
-                               <Link className="mr-2" /> View Link
+                               <Link className="mr-2" /> Zobacz link
                             </a>
                         </Button>
                     )}
@@ -91,16 +92,16 @@ export default function PortfolioSection() {
             {/* Projects Portfolio */}
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold font-headline text-green-800">Projects Portfolio</h3>
+                    <h3 className="text-xl font-bold font-headline text-green-800">Portfolio projektów</h3>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
                             <Button onClick={handleAddNew} className="bg-green-600 hover:bg-green-700 text-white">
-                                <PlusCircle className="mr-2" /> Add Project
+                                <PlusCircle className="mr-2" /> Dodaj projekt
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>{editingItem ? "Edit Project" : "Add New Project"}</DialogTitle>
+                                <DialogTitle>{editingItem ? "Edytuj projekt" : "Dodaj nowy projekt"}</DialogTitle>
                             </DialogHeader>
                             <PortfolioItemForm
                               item={editingItem}
@@ -115,7 +116,7 @@ export default function PortfolioSection() {
                         {projects.map(renderItem)}
                     </div>
                 ) : (
-                    <p className="text-muted-foreground text-sm">No projects added yet.</p>
+                    <p className="text-muted-foreground text-sm">Nie dodano jeszcze żadnych projektów.</p>
                 )}
             </div>
 
@@ -123,7 +124,7 @@ export default function PortfolioSection() {
 
             {/* Weekly Statuses */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold font-headline text-green-800">Weekly Statuses</h3>
+                <h3 className="text-xl font-bold font-headline text-green-800">Statusy tygodniowe</h3>
                 {statuses.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-1">
                         {statuses.map(renderItem)}
@@ -131,8 +132,8 @@ export default function PortfolioSection() {
                 ) : (
                     <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center">
                         <FileText className="h-12 w-12 text-muted-foreground" />
-                        <p className="mt-4 font-medium">No Statuses Published</p>
-                        <p className="text-sm text-muted-foreground">Your weekly statuses will appear here automatically.</p>
+                        <p className="mt-4 font-medium">Brak opublikowanych statusów</p>
+                        <p className="text-sm text-muted-foreground">Twoje statusy tygodniowe pojawią się tutaj automatycznie.</p>
                     </div>
                 )}
             </div>

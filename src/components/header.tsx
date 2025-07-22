@@ -25,13 +25,13 @@ export default function Header() {
                 <Link href="/users" className="text-muted-foreground transition-colors hover:text-foreground">
                     <Button variant="ghost">
                         <Users className="mr-2 text-green-600" />
-                        Users
+                        Użytkownicy
                     </Button>
                 </Link>
                 <Link href="/food-orders" className="text-muted-foreground transition-colors hover:text-foreground">
                     <Button variant="ghost">
                         <ShoppingCart className="mr-2 text-orange-500" />
-                        Food Orders
+                        Zamówienia
                     </Button>
                 </Link>
             </nav>

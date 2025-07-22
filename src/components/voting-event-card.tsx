@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, User, VotingOption } from '@/lib/types';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -20,11 +20,11 @@ const UserList = ({ users }: { users: User[] }) => (
         {users.length > 0 ? users.map(user => (
             <div key={user.id} className="flex items-center gap-2 text-sm">
                 <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>
+                    {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>}
                 </Avatar>
                 <span>{user.name}</span>
             </div>
-        )) : <p className="text-xs text-muted-foreground">No votes yet.</p>}
+        )) : <p className="text-xs text-muted-foreground">Brak głosów.</p>}
     </div>
 );
 
@@ -47,14 +47,14 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
                 <Image src={option.imageUrl || 'https://placehold.co/64x64.png'} alt={option.name} width={48} height={48} className="rounded-md border h-12 w-12 object-cover" data-ai-hint="logo" />
                 <div className="flex-1">
                     <a href={option.link} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline text-orange-800">{option.name}</a>
-                    <p className="text-sm text-muted-foreground">{option.votes.length} vote(s)</p>
+                    <p className="text-sm text-muted-foreground">{option.votes.length} głos(y/ów)</p>
                 </div>
                 <Popover>
                     <PopoverTrigger asChild>
                        <Button variant="ghost" size="icon" className="h-8 w-8"><Users /></Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-56">
-                        <p className="font-semibold mb-2 text-sm">Voters for {option.name}</p>
+                        <p className="font-semibold mb-2 text-sm">Głosujący na {option.name}</p>
                         <UserList users={voters} />
                     </PopoverContent>
                 </Popover>
@@ -63,7 +63,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
             {!isClosed && (
                 <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white", hasVoted ? "bg-orange-600 hover:bg-orange-700" : "bg-orange-500 hover:bg-orange-600")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
-                    {hasVoted ? 'Voted' : 'Vote'}
+                    {hasVoted ? 'Zagłosowano' : 'Głosuj'}
                 </Button>
             )}
         </div>
@@ -98,14 +98,16 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                         <CardTitle className="font-headline text-xl text-orange-900">{event.companyName}</CardTitle>
                         {creator && (
                             <CardDescription className="flex items-center gap-2 text-xs">
-                                <Avatar className="h-4 w-4"><AvatarFallback><UserCircle /></AvatarFallback></Avatar>
-                                Created by {creator.name}
+                                <Avatar className="h-4 w-4">
+                                     {creator.avatarUrl ? <AvatarImage src={creator.avatarUrl} alt={creator.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
+                                </Avatar>
+                                Utworzone przez {creator.name}
                             </CardDescription>
                         )}
                     </div>
                      {!event.isOpen && (
                         <Badge className="flex items-center gap-1 bg-orange-600 text-white">
-                            <Trophy className="h-3 w-3" /> Voting Closed
+                            <Trophy className="h-3 w-3" /> Głosowanie zakończone
                         </Badge>
                     )}
                 </div>
@@ -125,7 +127,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                 />
                             ))
                         ) : (
-                            <p className="text-sm text-muted-foreground text-center py-8">No voting options added yet.</p>
+                            <p className="text-sm text-muted-foreground text-center py-8">Brak opcji do głosowania.</p>
                         )}
                     </div>
                 </ScrollArea>
@@ -133,17 +135,17 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
             <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4 bg-orange-50/50">
                  {(isCreator || isAdmin) && event.isOpen && (
                      <div className="w-full space-y-2">
-                        <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
                         <Button variant="secondary" className="w-full" onClick={() => toggleOrderState(event.id)}>
-                            <X className="mr-2"/> Close Voting
+                            <X className="mr-2"/> Zakończ głosowanie
                         </Button>
                      </div>
                 )}
                  {isAdmin && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-orange-500">
-                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
                         <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => removeFoodOrder(event.id)}>
-                            <Trash2 className="mr-2" /> Delete Entire Event
+                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
                         </Button>
                     </div>
                 )}

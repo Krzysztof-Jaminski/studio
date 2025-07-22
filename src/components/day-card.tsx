@@ -8,10 +8,11 @@ import { cn, getOccupancyDetails, MAX_SPOTS } from "@/lib/utils";
 import type { Day, User } from "@/lib/types";
 import { Briefcase, Check, Globe, Users, X } from "lucide-react";
 import { format, isWithinInterval } from "date-fns";
+import { pl } from 'date-fns/locale';
 import { useContext } from "react";
 import { AppContext } from "@/contexts/app-context";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { UserCircle } from "lucide-react";
 
 type DayCardProps = {
@@ -27,13 +28,11 @@ const UserList = ({ users }: { users: User[] }) => (
         {users.length > 0 ? users.map(user => (
             <div key={user.id} className="flex items-center gap-2 text-sm">
                 <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-muted-foreground text-xs">
-                        <UserCircle />
-                    </AvatarFallback>
+                    {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>}
                 </Avatar>
                 <span>{user.name}</span>
             </div>
-        )) : <p className="text-xs text-muted-foreground">No one yet.</p>}
+        )) : <p className="text-xs text-muted-foreground">Nikt jeszcze.</p>}
     </div>
 );
 
@@ -61,11 +60,11 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
     )}>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle className="font-headline">{format(date, "EEEE")}</CardTitle>
-          {isToday && isReservable && <Badge>Today</Badge>}
-          {!isReservable && !isPast && <Badge variant="outline">Not Available</Badge>}
+          <CardTitle className="font-headline">{format(date, "EEEE", { locale: pl })}</CardTitle>
+          {isToday && isReservable && <Badge>Dzisiaj</Badge>}
+          {!isReservable && !isPast && <Badge variant="outline">Niedostępny</Badge>}
         </div>
-        <CardDescription>{format(date, "MMMM d, yyyy")}</CardDescription>
+        <CardDescription>{format(date, "d MMMM yyyy", { locale: pl })}</CardDescription>
       </CardHeader>
 
       <CardContent className="flex-grow space-y-4">
@@ -78,7 +77,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 )}
             >
                 {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}
-                You are booked {isBookedByUser}
+                Jesteś zapisany/a {isBookedByUser === 'office' ? 'do biura' : 'online'}
             </Badge>
         )}
 
@@ -88,12 +87,12 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
                         <Briefcase className="mr-2" /> 
-                        In Office ({bookedInOffice}/{MAX_SPOTS})
+                        W biurze ({bookedInOffice}/{MAX_SPOTS})
                         <Users className="ml-auto" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-56">
-                    <p className="font-semibold mb-2 text-sm">In Office</p>
+                    <p className="font-semibold mb-2 text-sm">W biurze</p>
                     <UserList users={officeUsers} />
                 </PopoverContent>
             </Popover>
@@ -122,7 +121,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 onClick={handleCancel}
                 disabled={isPast || !isReservable}
             >
-                <X className="mr-2"/> Cancel Booking
+                <X className="mr-2"/> Anuluj rezerwację
             </Button>
         ) : (
             <>
@@ -131,7 +130,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                     onClick={() => toggleReservation(date, 'office')}
                     disabled={isPast || !isReservable || isOfficeFull}
                 >
-                    <Briefcase className="mr-2" /> Book Office Spot
+                    <Briefcase className="mr-2" /> Zarezerwuj miejsce w biurze
                 </Button>
                 <Button
                     className="w-full"
@@ -139,7 +138,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                     onClick={() => toggleReservation(date, 'online')}
                     disabled={isPast || !isReservable}
                 >
-                    <Globe className="mr-2" /> Book Online
+                    <Globe className="mr-2" /> Zarezerwuj online
                 </Button>
             </>
         )}

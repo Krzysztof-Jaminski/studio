@@ -60,36 +60,36 @@ export const AppContext = createContext<AppContextType>({
 const INTERNSHIP_START_DATE = new Date('2025-07-07');
 
 const INITIAL_USERS: User[] = [
-    { id: "user-1", name: "John Doe", email: "john.doe@example.com", role: "user" },
-    { id: "user-2", name: "Jane Smith", email: "jane.smith@example.com", role: "user" },
-    { id: "user-3", name: "Peter Jones", email: "peter.jones@example.com", role: "user" },
-    { id: "user-4", name: "Mary Williams", email: "mary.williams@example.com", role: "user" },
-    { id: "admin1", name: "Admin User", email: "admin@example.com", role: "admin" },
+    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin", avatarUrl: "https://placehold.co/100x100.png" },
 ];
 
 const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
     "user-1": [
         {
             id: 'status-1', type: 'status', title: 'Status Update', weekOf: startOfWeek(INTERNSHIP_START_DATE, { weekStartsOn: 1 }).toISOString(),
-            description: 'This week I focused on learning the basics of Next.js and state management with React Context. It was challenging but rewarding. I also built out the initial reservation calendar UI.',
+            description: 'W tym tygodniu skupiłem się na nauce podstaw Next.js i zarządzaniu stanem za pomocą React Context. To było wyzwanie, ale bardzo satysfakcjonujące. Zbudowałem też początkowy interfejs kalendarza rezerwacji.',
             date: new Date().toISOString(), isVisible: true
         },
         {
-            id: 'project-1', type: 'project', title: 'My Personal Website',
-            description: 'A personal portfolio website to showcase my skills and projects, built with modern web technologies.',
+            id: 'project-1', type: 'project', title: 'Moja strona osobista',
+            description: 'Osobista strona portfolio do prezentacji moich umiejętności i projektów, zbudowana przy użyciu nowoczesnych technologii internetowych.',
             link: 'https://github.com', technologies: ['Next.js', 'TypeScript', 'Tailwind CSS'],
             date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(), isVisible: true
         }
     ],
     "user-2": [
         {
-            id: 'project-jane-1', type: 'project', title: 'DataVis Tool', description: 'A tool for visualizing complex datasets using D3.js.',
+            id: 'project-jane-1', type: 'project', title: 'Narzędzie do wizualizacji danych', description: 'Narzędzie do wizualizacji złożonych zbiorów danych przy użyciu D3.js.',
             link: 'https://github.com', technologies: ['React', 'D3.js', 'Vite'],
             date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), isVisible: true
         },
          {
-            id: 'status-jane-1', type: 'status', title: 'Status - Week 2', weekOf: startOfWeek(new Date(INTERNSHIP_START_DATE.getTime() + 1000 * 60 * 60 * 24 * 7), { weekStartsOn: 1 }).toISOString(),
-            description: 'Finalized the data parsing module and started working on the chart components. Faced some issues with responsive scaling.',
+            id: 'status-jane-1', type: 'status', title: 'Status - Tydzień 2', weekOf: startOfWeek(new Date(INTERNSHIP_START_DATE.getTime() + 1000 * 60 * 60 * 24 * 7), { weekStartsOn: 1 }).toISOString(),
+            description: 'Ukończyłam moduł parsowania danych i rozpoczęłam pracę nad komponentami wykresów. Napotkałam pewne problemy z responsywnym skalowaniem.',
             date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), isVisible: true
         }
     ],
@@ -109,8 +109,8 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
         imageUrl: 'https://placehold.co/100x100.png',
         isOpen: true,
         orders: [
-            { id: 'item-1', userId: 'user-2', name: 'Margherita', details: 'Large', price: 15.99, isPaid: true },
-            { id: 'item-2', userId: 'user-3', name: 'Pepperoni', details: 'Medium, extra cheese', price: 17.50, isPaid: false },
+            { id: 'item-1', userId: 'user-2', name: 'Margherita', details: 'Duża', price: 15.99, isPaid: true },
+            { id: 'item-2', userId: 'user-3', name: 'Pepperoni', details: 'Średnia, dodatkowy ser', price: 17.50, isPaid: false },
         ]
     },
     {
@@ -131,7 +131,7 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
         id: 'vo-1',
         type: 'voting',
         creatorId: 'admin1',
-        companyName: 'Friday Lunch Vote', // Here companyName is used as the voting title
+        companyName: 'Głosowanie na lunch w piątek',
         isOpen: true,
         votingOptions: [
             { id: 'opt-1', name: 'Mexican Grill', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-1', 'user-4'] },
@@ -160,14 +160,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const checkDate = () => {
         const now = new Date();
         const endOfFriday = endOfDay(now);
-        // Show prompt all of Friday.
-        if (getDay(now) === 5) {
-           setShowStatusPrompt(true);
-        } else {
-           setShowStatusPrompt(false);
-        }
         
-        // Auto-publish logic
+        setShowStatusPrompt(true); // Always show prompt for simplicity now
+        
         const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
         const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfThisWeek.toISOString());
 
@@ -182,15 +177,18 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }, [weeklyStatus, portfolio]);
 
 
-  const login = (name: string) => {
-    let potentialUser = allUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
+  const login = (userId: string) => {
+    let potentialUser = allUsers.find(u => u.id === userId);
 
     if (!potentialUser) {
+        // In a real OAuth scenario, we would get user info from the provider.
+        // For this prototype, we'll create a new user if not found.
         const newUser: User = {
-            id: `user-${Date.now()}`,
-            name: name,
-            email: `${name.replace(/\s+/g, '.').toLowerCase()}@example.com`,
-            role: 'user'
+            id: userId,
+            name: `Użytkownik ${userId}`,
+            email: `${userId}@example.com`,
+            role: 'user',
+            avatarUrl: 'https://placehold.co/100x100.png'
         };
         setAllUsers(prev => [...prev, newUser]);
         setUserPortfolios(prev => ({...prev, [newUser.id]: [] }));
@@ -220,8 +218,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     }
     
     toast({
-      title: "Logged in",
-      description: `Welcome back, ${potentialUser.name}!`,
+      title: "Zalogowano",
+      description: `Witaj z powrotem, ${potentialUser.name}!`,
     });
   };
 
@@ -242,82 +240,64 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         if (res.online.includes(user.id)) userBooking = 'online';
     }
 
-    if (userBooking) { // User is canceling or changing booking
-        // If user clicks the same booking type, cancel it
-        if (userBooking === type) {
-            const updatedReservations = reservations.map(r => {
-                if (r.date === dateString) {
-                    return {
-                        ...r,
-                        office: r.office.filter(id => id !== user.id),
-                        online: r.online.filter(id => id !== user.id),
-                    }
+    // Cancel if clicking the same booking type
+    if (userBooking === type) {
+        const updatedReservations = reservations.map(r => {
+            if (r.date === dateString) {
+                return {
+                    ...r,
+                    office: r.office.filter(id => id !== user.id),
+                    online: r.online.filter(id => id !== user.id),
                 }
-                return r;
-            });
-            setReservations(updatedReservations.filter(r => r.office.length > 0 || r.online.length > 0));
-            toast({
-                title: "Reservation Cancelled",
-                description: `Your spot for ${format(date, "MMMM d")} has been cancelled.`,
-            });
-            return;
-        } else { // User is changing from one type to another
-             // First check for availability if switching to office
-            if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
-                toast({
-                  variant: "destructive",
-                  title: "Booking Failed",
-                  description: `Sorry, all office spots for ${format(date, "MMMM d")} are taken.`,
-                });
-                return;
             }
-             const updatedReservations = reservations.map(r => {
-                if (r.date === dateString) {
-                    return {
-                        ...r,
-                        office: type === 'office' ? [...r.office.filter(id => id !== user.id), user.id] : r.office.filter(id => id !== user.id),
-                        online: type === 'online' ? [...r.online.filter(id => id !== user.id), user.id] : r.online.filter(id => id !== user.id),
-                    }
-                }
-                return r;
-            });
-            setReservations(updatedReservations);
-            toast({
-                title: "Reservation Changed!",
-                description: `You are now booked for an ${type} spot for ${format(date, "MMMM d")}.`,
-            });
-            return;
-        }
-    }
-    
-    // This is a new booking
-    if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
+            return r;
+        });
+        setReservations(updatedReservations.filter(r => r.office.length > 0 || r.online.length > 0));
         toast({
-          variant: "destructive",
-          title: "Booking Failed",
-          description: `Sorry, all office spots for ${format(date, "MMMM d")} are taken.`,
+            title: "Rezerwacja anulowana",
+            description: `Twoje miejsce na ${format(date, "d MMMM")} zostało anulowane.`,
         });
         return;
     }
 
-    const newReservationData = {
-        office: type === 'office' ? [user.id] : [],
-        online: type === 'online' ? [user.id] : [],
-    };
+    // If changing booking or new booking, first remove any existing booking for that day
+    const reservationsWithoutUser = reservations.map(r => {
+        if (r.date === dateString) {
+            return {
+                ...r,
+                office: r.office.filter(id => id !== user.id),
+                online: r.online.filter(id => id !== user.id),
+            }
+        }
+        return r;
+    }).filter(r => r.office.length > 0 || r.online.length > 0);
+    
+    res = reservationsWithoutUser.find((r) => r.date === dateString);
 
+    if (type === 'office' && res && res.office.length >= MAX_SPOTS) {
+        toast({
+          variant: "destructive",
+          title: "Rezerwacja nieudana",
+          description: `Przepraszamy, wszystkie miejsca w biurze na ${format(date, "d MMMM")} są zajęte.`,
+        });
+        // Add back the original booking if it existed
+        toggleReservation(date, userBooking);
+        return;
+    }
+    
     if (res) {
-        setReservations(
-          reservations.map((r) =>
-            r.date === dateString ? { ...r, office: [...r.office, ...newReservationData.office], online: [...r.online, ...newReservationData.online] } : r
+         setReservations(
+          reservationsWithoutUser.map((r) =>
+            r.date === dateString ? { ...r, [type]: [...r[type], user.id] } : r
           )
         );
     } else {
-        setReservations([...reservations, { date: dateString, office: newReservationData.office, online: newReservationData.online }]);
+        setReservations([...reservationsWithoutUser, { date: dateString, office: type === 'office' ? [user.id] : [], online: type === 'online' ? [user.id] : [] }]);
     }
     
     toast({
-        title: "Reservation Confirmed!",
-        description: `You have booked an ${type} spot for ${format(date, "MMMM d")}.`,
+        title: "Rezerwacja potwierdzona!",
+        description: `Zarezerwowano miejsce ${type === 'office' ? 'w biurze' : 'online'} na ${format(date, "d MMMM")}.`,
     });
   };
 
@@ -329,7 +309,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const content = weeklyStatus?.content.trim() === "" ? "Brak statusu na dany tydzień." : weeklyStatus?.content || "Brak statusu na dany tydzień.";
 
     const newPortfolioItem: PortfolioItem = {
-      id: `status-${user.id}-${weekStart.toISOString()}`, type: 'status', title: `Status - Week ${weekNumber}`,
+      id: `status-${user.id}-${weekStart.toISOString()}`, type: 'status', title: `Status - Tydzień ${weekNumber}`,
       description: content, date: new Date().toISOString(), weekOf: weekStart.toISOString(), isVisible: true,
     };
 
@@ -337,8 +317,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setWeeklyStatus(prev => prev ? { ...prev, content: content, status: 'published' } : null);
     
     toast({
-        title: "Status Published!",
-        description: "Your weekly status has been added to your portfolio.",
+        title: "Status opublikowany!",
+        description: "Twój tygodniowy status został dodany do portfolio.",
     });
   }
 
@@ -351,7 +331,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         const newPortfolioItem: PortfolioItem = {
             id: `status-${user.id}-${weekStart.toISOString()}`,
             type: 'status',
-            title: `Status - Week ${weekNumber}`,
+            title: `Status - Tydzień ${weekNumber}`,
             description: content,
             date: new Date().toISOString(),
             weekOf: weekStart.toISOString(),
@@ -361,7 +341,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         setWeeklyStatus({ week: weekNumber, content, status: 'published' });
     } else {
         setWeeklyStatus({ week: weekNumber, content, status: 'draft' });
-        toast({ title: "Draft Saved", description: "Your status has been saved as a draft." });
+        toast({ title: "Zapisano wersję roboczą", description: "Twój status został zapisany jako wersja robocza." });
     }
   };
 
@@ -377,7 +357,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     })();
     setPortfolio(updatedPortfolio);
     setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
-    toast({ title: "Portfolio Updated", description: `"${item.title}" has been saved.` });
+    toast({ title: "Portfolio zaktualizowane", description: `"${item.title}" zostało zapisane.` });
   };
 
   const removePortfolioItem = (itemId: string) => {
@@ -385,7 +365,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const updatedPortfolio = portfolio.filter(p => p.id !== itemId);
     setPortfolio(updatedPortfolio);
     setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
-    toast({ variant: 'destructive', title: "Item Removed", description: "The item has been removed from your portfolio." });
+    toast({ variant: 'destructive', title: "Element usunięty", description: "Element został usunięty z Twojego portfolio." });
   };
   
   const togglePortfolioItemVisibility = (itemId: string) => {
@@ -439,16 +419,16 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     }
 
     setFoodOrders(prev => [newEvent, ...prev]);
-    toast({ title: "Event Created!", description: `The "${orderData.companyName}" event is now live.` });
+    toast({ title: "Wydarzenie utworzone!", description: `Wydarzenie "${orderData.companyName}" jest już aktywne.` });
   };
 
   const removeFoodOrder = (orderId: string) => {
     if (user?.role !== 'admin') {
-      toast({ variant: 'destructive', title: 'Permission Denied', description: 'Only an admin can delete an order event.' });
+      toast({ variant: 'destructive', title: 'Brak uprawnień', description: 'Tylko administrator może usunąć wydarzenie.' });
       return;
     }
     setFoodOrders(prev => prev.filter(order => order.id !== orderId));
-    toast({ variant: 'destructive', title: "Event Removed", description: "The entire food event has been deleted." });
+    toast({ variant: 'destructive', title: "Wydarzenie usunięte", description: "Całe wydarzenie jedzeniowe zostało usunięte." });
   };
 
   const addOrderItem = (orderId: string, itemData: OrderItemData) => {
@@ -465,7 +445,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         }
         return order;
     }));
-    toast({ title: "Order Added", description: `Your order for "${itemData.name}" has been placed.` });
+    toast({ title: "Dodano zamówienie", description: `Twoje zamówienie na "${itemData.name}" zostało złożone.` });
   };
 
   const removeOrderItem = (orderId: string, itemId: string) => {
@@ -473,23 +453,22 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         if (order.id === orderId && order.type === 'order') {
             const itemToRemove = order.orders?.find(item => item.id === itemId);
             if (!itemToRemove) return order;
-            // Admin can remove any, creator can remove any, user can only remove their own
             if (user?.role !== 'admin' && user?.id !== order.creatorId && user?.id !== itemToRemove.userId) {
-                toast({ variant: 'destructive', title: "Permission Denied" });
+                toast({ variant: 'destructive', title: "Brak uprawnień" });
                 return order;
             }
             return { ...order, orders: order.orders?.filter(item => item.id !== itemId) };
         }
         return order;
     }));
-    toast({ variant: 'destructive', title: "Order Item Removed" });
+    toast({ variant: 'destructive', title: "Usunięto pozycję zamówienia" });
   };
   
   const togglePaidStatus = (orderId: string, itemId: string | 'all') => {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId && order.type === 'order') {
               if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can manage payments." });
+                  toast({ variant: 'destructive', title: "Brak uprawnień", description: "Tylko twórca lub administrator może zarządzać płatnościami." });
                   return order;
               }
               const newOrders = order.orders?.map(item => {
@@ -511,10 +490,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId) {
                if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Permission Denied", description: "Only the creator or an admin can close the event." });
+                  toast({ variant: 'destructive', title: "Brak uprawnień", description: "Tylko twórca lub administrator może zamknąć wydarzenie." });
                   return order;
               }
-              toast({ title: "Event State Changed", description: `The event is now ${!order.isOpen ? 'open' : 'closed'}.` });
+              toast({ title: "Zmieniono stan wydarzenia", description: `Wydarzenie jest teraz ${!order.isOpen ? 'otwarte' : 'zamknięte'}.` });
               return { ...order, isOpen: !order.isOpen };
           }
           return order;

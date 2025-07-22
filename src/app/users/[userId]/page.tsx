@@ -6,12 +6,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { AppContext } from '@/contexts/app-context';
 import type { PortfolioItem, User, Reservation } from '@/lib/types';
 import Header from '@/components/header';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Briefcase, Eye, FileText, Globe, Link as LinkIcon, Pencil, ShieldCheck, Sigma, Trash2, UserCircle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { pl } from 'date-fns/locale';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -22,11 +23,11 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
                 <div>
                     <CardTitle className="font-headline text-lg">{item.title}</CardTitle>
                     <CardDescription>
-                        {item.type === 'status' && item.weekOf && `Status for week of ${format(parseISO(item.weekOf), 'MMMM d, yyyy')}`}
-                        {item.type === 'project' && `Added on ${format(parseISO(item.date), 'MMMM d, yyyy')}`}
+                        {item.type === 'status' && item.weekOf && `Status na tydzień ${format(parseISO(item.weekOf), 'd MMMM yyyy', { locale: pl })}`}
+                        {item.type === 'project' && `Dodano ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
                     </CardDescription>
                 </div>
-                <Badge variant={item.type === 'status' ? 'secondary' : 'default'}>{item.type}</Badge>
+                <Badge variant={item.type === 'status' ? 'secondary' : 'default'}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
             </div>
         </CardHeader>
         <CardContent className="flex-grow">
@@ -41,7 +42,7 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
             <CardFooter>
                  <Button variant="link" asChild className="p-0 h-auto">
                     <a href={item.link} target="_blank" rel="noopener noreferrer">
-                        <LinkIcon className="mr-2" /> View Link
+                        <LinkIcon className="mr-2" /> Zobacz link
                     </a>
                 </Button>
             </CardFooter>
@@ -121,8 +122,8 @@ export default function UserProfilePage() {
       <div className="min-h-screen bg-background text-foreground">
         <Header />
         <main className="container mx-auto px-4 py-8 text-center">
-            <p className="text-lg">User not found.</p>
-            <Button onClick={() => router.push('/users')} className="mt-4">Back to Users List</Button>
+            <p className="text-lg">Nie znaleziono użytkownika.</p>
+            <Button onClick={() => router.push('/users')} className="mt-4">Wróć do listy</Button>
         </main>
       </div>
     );
@@ -138,29 +139,27 @@ export default function UserProfilePage() {
         <main className="container mx-auto px-4 py-8">
             <Button variant="outline" onClick={() => router.back()} className="mb-6">
                 <ArrowLeft className="mr-2" />
-                Back
+                Wróć
             </Button>
             <div className="flex items-center gap-6 mb-8">
                 <Avatar className="h-24 w-24">
-                    <AvatarFallback className="text-muted-foreground">
-                        <UserCircle className="h-full w-full" />
-                    </AvatarFallback>
+                   {profileUser.avatarUrl ? <AvatarImage src={profileUser.avatarUrl} alt={profileUser.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
                 </Avatar>
                 <div>
                     <h1 className="text-4xl font-bold font-headline flex items-center gap-2">
                         {profileUser.name}
                         {profileUser.role === 'admin' && <ShieldCheck className="h-8 w-8 text-primary" />}
                     </h1>
-                    <p className="text-lg text-muted-foreground">Intern at PraktykanciHub</p>
+                    <p className="text-lg text-muted-foreground">Praktykant w PraktykanciHub</p>
                 </div>
             </div>
 
             <div className="mb-8">
-                <h2 className="text-2xl font-bold font-headline mb-4">Attendance Stats</h2>
+                <h2 className="text-2xl font-bold font-headline mb-4">Statystyki obecności</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <StatCard icon={<Briefcase className="h-8 w-8 text-primary" />} label="Days in Office" value={userStats.office} />
-                    <StatCard icon={<Globe className="h-8 w-8 text-primary" />} label="Days Online" value={userStats.online} />
-                    <StatCard icon={<Sigma className="h-8 w-8 text-primary" />} label="Total Bookings" value={userStats.total} />
+                    <StatCard icon={<Briefcase className="h-8 w-8 text-primary" />} label="Dni w biurze" value={userStats.office} />
+                    <StatCard icon={<Globe className="h-8 w-8 text-primary" />} label="Dni online" value={userStats.online} />
+                    <StatCard icon={<Sigma className="h-8 w-8 text-primary" />} label="Wszystkie rezerwacje" value={userStats.total} />
                 </div>
             </div>
 
@@ -169,13 +168,13 @@ export default function UserProfilePage() {
              <div className="space-y-8">
                  {/* Projects */}
                 <div className="space-y-4">
-                    <h2 className="text-2xl font-bold font-headline">Projects Portfolio</h2>
+                    <h2 className="text-2xl font-bold font-headline">Portfolio projektów</h2>
                     {projects.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {projects.map(item => <PortfolioCard key={item.id} item={item} />)}
                         </div>
                     ) : (
-                        <p className="text-muted-foreground text-sm">This user hasn't added any projects yet.</p>
+                        <p className="text-muted-foreground text-sm">Ten użytkownik nie dodał jeszcze żadnych projektów.</p>
                     )}
                 </div>
 
@@ -183,7 +182,7 @@ export default function UserProfilePage() {
 
                 {/* Weekly Statuses */}
                 <div className="space-y-4">
-                    <h2 className="text-2xl font-bold font-headline">Weekly Statuses</h2>
+                    <h2 className="text-2xl font-bold font-headline">Statusy tygodniowe</h2>
                     {statuses.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {statuses.map(item => <PortfolioCard key={item.id} item={item} />)}
@@ -191,8 +190,8 @@ export default function UserProfilePage() {
                     ) : (
                          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center">
                             <FileText className="h-12 w-12 text-muted-foreground" />
-                            <p className="mt-4 font-medium">No Public Statuses</p>
-                            <p className="text-sm text-muted-foreground">This user has no public statuses yet.</p>
+                            <p className="mt-4 font-medium">Brak publicznych statusów</p>
+                            <p className="text-sm text-muted-foreground">Ten użytkownik nie opublikował jeszcze żadnych statusów.</p>
                         </div>
                     )}
                 </div>

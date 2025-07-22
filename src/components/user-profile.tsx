@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useContext } from "react";
@@ -10,7 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppContext } from "@/contexts/app-context";
 import { ScrollArea } from "./ui/scroll-area";
 import { LogOut, UserCircle } from "lucide-react";
@@ -26,9 +27,7 @@ export default function UserProfile() {
       <SheetTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-             <AvatarFallback className="text-muted-foreground">
-                <UserCircle className="h-full w-full" />
-            </AvatarFallback>
+             {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
           </Avatar>
         </Button>
       </SheetTrigger>
@@ -36,9 +35,7 @@ export default function UserProfile() {
         <SheetHeader className="text-left">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-               <AvatarFallback className="text-muted-foreground">
-                    <UserCircle className="h-full w-full" />
-                </AvatarFallback>
+               {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
             </Avatar>
             <div>
               <SheetTitle className="font-headline text-2xl">{user.name}</SheetTitle>
@@ -53,7 +50,7 @@ export default function UserProfile() {
 
         <div className="mt-auto border-t -mx-6 px-6 pt-4 bg-background">
           <Button variant="outline" className="w-full" onClick={logout}>
-            <LogOut className="mr-2"/> Log Out
+            <LogOut className="mr-2"/> Wyloguj
           </Button>
         </div>
       </SheetContent>

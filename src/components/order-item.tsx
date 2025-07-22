@@ -4,7 +4,7 @@
 import { useContext } from 'react';
 import type { OrderItem, User } from '@/lib/types';
 import { AppContext } from '@/contexts/app-context';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Check, Trash2, UserCircle, X, ShieldCheck } from 'lucide-react';
 import { Badge } from './ui/badge';
@@ -30,12 +30,12 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
             item.isPaid ? 'bg-orange-100' : 'bg-card'
         )}>
             <Avatar className="h-8 w-8">
-                <AvatarFallback><UserCircle /></AvatarFallback>
+                 {itemUser?.avatarUrl ? <AvatarImage src={itemUser.avatarUrl} alt={itemUser.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
             </Avatar>
             <div className="flex-1">
                 <div className="flex justify-between items-start">
-                    <p className="font-semibold text-sm">{itemUser?.name || 'Unknown User'}</p>
-                    <p className="font-bold text-sm text-orange-700">${item.price.toFixed(2)}</p>
+                    <p className="font-semibold text-sm">{itemUser?.name || 'Nieznany użytkownik'}</p>
+                    <p className="font-bold text-sm text-orange-700">{item.price.toFixed(2)} zł</p>
                 </div>
                 <p className="text-xs text-muted-foreground">{item.name}</p>
                 {item.details && <p className="text-xs text-muted-foreground">↳ {item.details}</p>}

@@ -16,16 +16,16 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
-    type: z.enum(['order', 'voting'], { required_error: "You must select an event type."}),
-    companyName: z.string().min(2, "Title must be at least 2 characters."),
-    link: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
-    creatorPhoneNumber: z.string().min(5, "Please enter a valid phone number.").optional().or(z.literal('')),
-    imageUrl: z.string().url("Please enter a valid image URL.").optional().or(z.literal('')),
+    type: z.enum(['order', 'voting'], { required_error: "Musisz wybrać typ wydarzenia."}),
+    companyName: z.string().min(2, "Tytuł musi mieć co najmniej 2 znaki."),
+    link: z.string().url("Proszę podać prawidłowy adres URL.").optional().or(z.literal('')),
+    creatorPhoneNumber: z.string().min(5, "Proszę podać prawidłowy numer telefonu.").optional().or(z.literal('')),
+    imageUrl: z.string().url("Proszę podać prawidłowy adres URL obrazka.").optional().or(z.literal('')),
     votingOptions: z.array(z.object({
-        name: z.string().min(1, "Company name is required."),
-        link: z.string().url("A valid link is required."),
-        imageUrl: z.string().url("A valid image URL is required.").optional().or(z.literal(''))
-    })).min(1, "You must provide at least one voting option.").optional()
+        name: z.string().min(1, "Nazwa firmy jest wymagana."),
+        link: z.string().url("Wymagany jest prawidłowy link."),
+        imageUrl: z.string().url("Wymagany jest prawidłowy adres URL obrazka.").optional().or(z.literal(''))
+    })).min(1, "Musisz podać co najmniej jedną opcję do głosowania.").optional()
 });
 
 type FoodOrderFormProps = {
@@ -71,7 +71,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                     name="type"
                     render={({ field }) => (
                         <FormItem className="space-y-3">
-                            <FormLabel>Event Type</FormLabel>
+                            <FormLabel>Typ wydarzenia</FormLabel>
                             <FormControl>
                                 <RadioGroup
                                     onValueChange={field.onChange}
@@ -80,11 +80,11 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                                 >
                                     <FormItem className="flex items-center space-x-2 space-y-0">
                                         <FormControl><RadioGroupItem value="order" /></FormControl>
-                                        <FormLabel className="font-normal">Direct Order</FormLabel>
+                                        <FormLabel className="font-normal">Bezpośrednie zamówienie</FormLabel>
                                     </FormItem>
                                     <FormItem className="flex items-center space-x-2 space-y-0">
                                         <FormControl><RadioGroupItem value="voting" /></FormControl>
-                                        <FormLabel className="font-normal">Voting for a Restaurant</FormLabel>
+                                        <FormLabel className="font-normal">Głosowanie na restaurację</FormLabel>
                                     </FormItem>
                                 </RadioGroup>
                             </FormControl>
@@ -98,8 +98,8 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                     name="companyName" // Used as a title for both
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{eventType === 'order' ? 'Company/Restaurant Name' : 'Voting Title'}</FormLabel>
-                            <FormControl><Input placeholder={eventType === 'order' ? 'e.g., Pizza Palace' : 'e.g., Lunch for Friday'} {...field} /></FormControl>
+                            <FormLabel>{eventType === 'order' ? 'Nazwa firmy/restauracji' : 'Tytuł głosowania'}</FormLabel>
+                            <FormControl><Input placeholder={eventType === 'order' ? 'np. Pizza Palace' : 'np. Obiad na piątek'} {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -112,7 +112,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                             name="link"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Link to Menu</FormLabel>
+                                    <FormLabel>Link do menu</FormLabel>
                                     <FormControl><Input placeholder="https://pizzapalace.com/menu" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -123,9 +123,9 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                             name="creatorPhoneNumber"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Your Phone Number</FormLabel>
-                                    <FormControl><Input placeholder="For payment coordination" {...field} /></FormControl>
-                                     <FormDescription>Your number will be visible to others in this order.</FormDescription>
+                                    <FormLabel>Twój numer telefonu</FormLabel>
+                                    <FormControl><Input placeholder="Do koordynacji płatności" {...field} /></FormControl>
+                                     <FormDescription>Twój numer będzie widoczny dla innych w tym zamówieniu.</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -135,9 +135,9 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                             name="imageUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Logo/Image URL (Optional)</FormLabel>
+                                    <FormLabel>URL logo/obrazka (opcjonalnie)</FormLabel>
                                     <FormControl><Input placeholder="https://example.com/logo.png" {...field} /></FormControl>
-                                    <FormDescription>A direct link to an image of the company's logo.</FormDescription>
+                                    <FormDescription>Bezpośredni link do obrazka z logo firmy.</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -146,9 +146,9 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                 ) : (
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                            <FormLabel>Voting Options</FormLabel>
+                            <FormLabel>Opcje do głosowania</FormLabel>
                              <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
-                                <PlusCircle className="mr-2" /> Add Option
+                                <PlusCircle className="mr-2" /> Dodaj opcję
                             </Button>
                         </div>
                          <Carousel className="w-full">
@@ -156,14 +156,14 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                                 {fields.map((field, index) => (
                                     <CarouselItem key={field.id}>
                                          <Card className="p-4 space-y-3 relative w-full whitespace-normal">
-                                            <h4 className="font-semibold">Option {index + 1}</h4>
+                                            <h4 className="font-semibold">Opcja {index + 1}</h4>
                                             <FormField
                                                 control={form.control}
                                                 name={`votingOptions.${index}.name`}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                         <FormLabel className="text-xs">Name</FormLabel>
-                                                         <FormControl><Input placeholder="e.g., Sushi World" {...field} /></FormControl>
+                                                         <FormLabel className="text-xs">Nazwa</FormLabel>
+                                                         <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
                                                          <FormMessage />
                                                     </FormItem>
                                                 )}
@@ -173,7 +173,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                                                 name={`votingOptions.${index}.link`}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                         <FormLabel className="text-xs">Menu Link</FormLabel>
+                                                         <FormLabel className="text-xs">Link do menu</FormLabel>
                                                          <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
                                                          <FormMessage />
                                                     </FormItem>
@@ -184,7 +184,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                                                 name={`votingOptions.${index}.imageUrl`}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                         <FormLabel className="text-xs">Image URL (Optional)</FormLabel>
+                                                         <FormLabel className="text-xs">URL obrazka (opcjonalnie)</FormLabel>
                                                          <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
                                                          <FormMessage />
                                                     </FormItem>
@@ -217,9 +217,9 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
 
                 <Separator />
                 <div className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
+                    <Button type="button" variant="outline" onClick={onCancel}>Anuluj</Button>
                     <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white">
-                        Create Event
+                        Utwórz wydarzenie
                     </Button>
                 </div>
             </form>

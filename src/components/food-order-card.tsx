@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, OrderItemData } from '@/lib/types';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { UserCircle, Link as LinkIcon, Phone, ShoppingCart, Pencil, Trash2, Check, X, ShieldCheck } from 'lucide-react';
 import OrderItem from './order-item';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
@@ -64,15 +64,15 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                          {creator ? (
                             <CardDescription className="flex items-center gap-2 text-xs">
                                 <Avatar className="h-4 w-4">
-                                    <AvatarFallback><UserCircle /></AvatarFallback>
+                                   {creator.avatarUrl ? <AvatarImage src={creator.avatarUrl} alt={creator.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
                                 </Avatar>
-                                Created by {creator.name}
+                                Utworzone przez {creator.name}
                             </CardDescription>
                         ) : (
-                           <CardDescription className="text-xs text-muted-foreground">Creator not found</CardDescription>
+                           <CardDescription className="text-xs text-muted-foreground">Nie znaleziono twórcy</CardDescription>
                         )}
                     </div>
-                    {!order.isOpen && <Badge className="bg-orange-600 text-white">Closed</Badge>}
+                    {!order.isOpen && <Badge className="bg-orange-600 text-white">Zamknięte</Badge>}
                 </div>
             </CardHeader>
 
@@ -83,21 +83,21 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             <OrderItem key={item.id} item={item} orderId={order.id} isCreator={isCreator} isAdmin={isAdmin}/>
                         ))}
                          {order.orders.length === 0 && (
-                            <p className="text-sm text-muted-foreground text-center py-8">No orders yet. Be the first!</p>
+                            <p className="text-sm text-muted-foreground text-center py-8">Brak zamówień. Bądź pierwszy!</p>
                         )}
                     </div>
                 </ScrollArea>
                  <Separator className="mt-auto" />
                 <div className="flex justify-between items-center font-bold pt-2">
-                    <span>Total:</span>
-                    <span>${totalAmount.toFixed(2)}</span>
+                    <span>Suma:</span>
+                    <span>{totalAmount.toFixed(2)} zł</span>
                 </div>
             </CardContent>
 
             <CardFooter className="flex flex-col items-start gap-3 border-t p-4 bg-orange-50/50">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
                     <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-orange-600">
-                        <LinkIcon /> Menu Link
+                        <LinkIcon /> Link do menu
                     </a>
                     <span className="flex items-center gap-1">
                         <Phone /> {order.creatorPhoneNumber}
@@ -107,26 +107,26 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 {order.isOpen && (
                     <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white"><ShoppingCart className="mr-2" /> Add Your Order</Button>
+                            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white"><ShoppingCart className="mr-2" /> Dodaj swoje zamówienie</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Add to "{order.companyName}" Order</DialogTitle>
+                                <DialogTitle>Dodaj do zamówienia "{order.companyName}"</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleAddOrderItem} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="item-name">Product Name</Label>
+                                    <Label htmlFor="item-name">Nazwa produktu</Label>
                                     <Input id="item-name" value={newItem.name} onChange={e => setNewItem(prev => ({ ...prev, name: e.target.value }))} required />
                                 </div>
                                 <div>
-                                    <Label htmlFor="item-details">Details (optional)</Label>
-                                    <Input id="item-details" value={newItem.details} onChange={e => setNewItem(prev => ({ ...prev, details: e.target.value }))} placeholder="e.g., extra cheese, no onions" />
+                                    <Label htmlFor="item-details">Szczegóły (opcjonalnie)</Label>
+                                    <Input id="item-details" value={newItem.details} onChange={e => setNewItem(prev => ({ ...prev, details: e.target.value }))} placeholder="np. dodatkowy ser, bez cebuli" />
                                 </div>
                                 <div>
-                                    <Label htmlFor="item-price">Price</Label>
+                                    <Label htmlFor="item-price">Cena</Label>
                                     <Input id="item-price" type="number" step="0.01" value={newItem.price} onChange={e => setNewItem(prev => ({ ...prev, price: e.target.value }))} required />
                                 </div>
-                                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">Add Order Item</Button>
+                                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">Dodaj zamówienie</Button>
                             </form>
                         </DialogContent>
                     </Dialog>
@@ -134,23 +134,23 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 
                 {(isCreator || isAdmin) && (
                      <div className="w-full space-y-2 pt-2 border-t">
-                        <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
                         <div className="flex gap-2">
                              <Button variant="secondary" className="flex-1" onClick={() => togglePaidStatus(order.id, 'all')}>
-                                <Check className="mr-2" /> Mark All Paid
+                                <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
                             </Button>
                             <Button variant="outline" className="flex-1" onClick={() => toggleOrderState(order.id)}>
                                 {order.isOpen ? <X className="mr-2"/> : <Check className="mr-2" />}
-                                {order.isOpen ? "Close Order" : "Re-open Order"}
+                                {order.isOpen ? "Zamknij zamówienie" : "Otwórz ponownie"}
                             </Button>
                         </div>
                      </div>
                 )}
                 {isAdmin && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-orange-500">
-                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
                         <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => removeFoodOrder(order.id)}>
-                            <Trash2 className="mr-2" /> Delete Entire Event
+                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
                         </Button>
                     </div>
                 )}

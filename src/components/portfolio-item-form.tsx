@@ -12,8 +12,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { PortfolioItem } from "@/lib/types";
 
 const formSchema = z.object({
-  title: z.string().min(2, { message: "Title must be at least 2 characters." }),
-  description: z.string().min(10, { message: "Description must be at least 10 characters." }),
+  title: z.string().min(2, { message: "Tytuł musi mieć co najmniej 2 znaki." }),
+  description: z.string().min(10, { message: "Opis musi mieć co najmniej 10 znaków." }),
   link: z.string().url().optional().or(z.literal('')),
   technologies: z.string().optional(),
   isVisible: z.boolean().default(true),
@@ -59,9 +59,9 @@ export default function PortfolioItemForm({ item, onSubmit, onCancel }: Portfoli
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Tytuł</FormLabel>
               <FormControl>
-                <Input placeholder="Project Awesome" {...field} />
+                <Input placeholder="Niesamowity Projekt" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,9 +72,9 @@ export default function PortfolioItemForm({ item, onSubmit, onCancel }: Portfoli
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Opis</FormLabel>
               <FormControl>
-                <Textarea placeholder="A brief description of your project." {...field} />
+                <Textarea placeholder="Krótki opis Twojego projektu." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,12 +98,12 @@ export default function PortfolioItemForm({ item, onSubmit, onCancel }: Portfoli
           name="technologies"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Technologies</FormLabel>
+              <FormLabel>Technologie</FormLabel>
               <FormControl>
                 <Input placeholder="React, Next.js, Tailwind CSS" {...field} />
               </FormControl>
               <FormDescription>
-                Comma-separated list of technologies.
+                Lista technologii oddzielona przecinkami.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -122,18 +122,18 @@ export default function PortfolioItemForm({ item, onSubmit, onCancel }: Portfoli
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>
-                  Visible in Portfolio
+                  Widoczny w portfolio
                 </FormLabel>
                 <FormDescription>
-                  Make this item visible to others on your profile.
+                  Uczyń ten element widocznym dla innych na Twoim profilu.
                 </FormDescription>
               </div>
             </FormItem>
           )}
         />
         <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Save Project</Button>
+            <Button type="button" variant="outline" onClick={onCancel}>Anuluj</Button>
+            <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Zapisz projekt</Button>
         </div>
       </form>
     </Form>

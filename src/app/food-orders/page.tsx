@@ -33,18 +33,18 @@ export default function FoodOrdersPage() {
             <main className="container mx-auto px-4 py-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold font-headline">Food Events</h1>
-                        <p className="text-muted-foreground">Organize group food orders and vote for restaurants.</p>
+                        <h1 className="text-3xl font-bold font-headline">Wydarzenia jedzeniowe</h1>
+                        <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
                     </div>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
                             <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                                <PlusCircle className="mr-2" /> Create Event
+                                <PlusCircle className="mr-2" /> Utwórz wydarzenie
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[600px]">
                             <DialogHeader>
-                                <DialogTitle>Create a New Food Event</DialogTitle>
+                                <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
                             </DialogHeader>
                             <FoodOrderForm
                                 onSubmit={handleFormSubmit}
@@ -56,9 +56,9 @@ export default function FoodOrdersPage() {
                 
                 <Tabs defaultValue="votings" className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="votings">Votings ({activeVotings.length})</TabsTrigger>
-                        <TabsTrigger value="orders">Active Orders ({activeOrders.length})</TabsTrigger>
-                        <TabsTrigger value="history">Event History ({closedEvents.length})</TabsTrigger>
+                        <TabsTrigger value="votings">Głosowania ({activeVotings.length})</TabsTrigger>
+                        <TabsTrigger value="orders">Aktywne zamówienia ({activeOrders.length})</TabsTrigger>
+                        <TabsTrigger value="history">Historia wydarzeń ({closedEvents.length})</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="votings">
@@ -66,7 +66,7 @@ export default function FoodOrdersPage() {
                             {activeVotings.length > 0 ? (
                                 activeVotings.map(order => <VotingEventCard key={order.id} event={order} />)
                             ) : (
-                                <p className="text-muted-foreground col-span-full text-center mt-8">No active votings at the moment.</p>
+                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych głosowań.</p>
                             )}
                         </div>
                     </TabsContent>
@@ -75,7 +75,7 @@ export default function FoodOrdersPage() {
                             {activeOrders.length > 0 ? (
                                 activeOrders.map(order => <FoodOrderCard key={order.id} order={order} />)
                             ) : (
-                                <p className="text-muted-foreground col-span-full text-center mt-8">No active food orders at the moment.</p>
+                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych zamówień.</p>
                             )}
                         </div>
                     </TabsContent>
@@ -88,7 +88,7 @@ export default function FoodOrdersPage() {
                                     : <FoodOrderCard key={order.id} order={order} />
                                 )
                             ) : (
-                                <p className="text-muted-foreground col-span-full text-center mt-8">No past events.</p>
+                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak zakończonych wydarzeń.</p>
                             )}
                         </div>
                     </TabsContent>

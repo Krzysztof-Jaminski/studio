@@ -3,22 +3,25 @@
 
 import { useState, useEffect, useContext } from 'react';
 import { addDays, startOfWeek, isToday, isBefore, format, startOfToday, isWithinInterval, eachDayOfInterval, getMonth, setMonth } from 'date-fns';
+import { pl } from 'date-fns/locale';
 import { AppContext } from '@/contexts/app-context';
 import DayCard from './day-card';
 import { type Day, type User } from '@/lib/types';
-import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, CalendarDays, Info } from 'lucide-react';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 // Define the reservation period
 const RESERVATION_START_DATE = new Date('2025-07-07');
 const RESERVATION_END_DATE = new Date('2025-10-01');
 
 const months = [
-    { label: "July", value: 6 },
-    { label: "August", value: 7 },
-    { label: "September", value: 8 },
-    { label: "October", value: 9 },
+    { label: "Lipiec", value: 6 },
+    { label: "Sierpień", value: 7 },
+    { label: "Wrzesień", value: 8 },
+    { label: "Październik", value: 9 },
 ]
 
 export default function WeeklyCalendar() {
@@ -101,13 +104,13 @@ export default function WeeklyCalendar() {
     <div className="space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-bold font-headline">Reservations</h1>
-                <p className="text-muted-foreground">Declare your presence for any week within the internship period.</p>
+                <h1 className="text-3xl font-bold font-headline">Rezerwacje</h1>
+                <p className="text-muted-foreground">Zadeklaruj swoją obecność w dowolnym tygodniu w okresie trwania praktyk.</p>
             </div>
             <div className="flex items-center gap-2">
                 <Select value={getMonth(currentDate).toString()} onValueChange={handleMonthChange}>
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Month" />
+                        <SelectValue placeholder="Wybierz miesiąc" />
                     </SelectTrigger>
                     <SelectContent>
                         {months.map(m => <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>)}
@@ -117,6 +120,13 @@ export default function WeeklyCalendar() {
                 <Button variant="outline" size="icon" onClick={() => changeWeek('next')}><ChevronRight/></Button>
             </div>
         </div>
+        <Alert>
+              <CalendarDays className="h-4 w-4" />
+              <AlertTitle>Jak działają rezerwacje?</AlertTitle>
+              <AlertDescription>
+                Możesz zarezerwować swoje miejsce w biurze lub online na dowolny dzień roboczy w okresie od <b>7 lipca</b> do <b>1 października 2025</b>. Pamiętaj, że liczba miejsc w biurze jest ograniczona. Możesz anulować swoją rezerwację w każdej chwili.
+              </AlertDescription>
+        </Alert>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {displayedDays.map((day) => {
           const reservation = reservations.find(r => r.date === format(day.date, "yyyy-MM-dd"));
