@@ -26,7 +26,6 @@ const DiscordIcon = () => (
     </svg>
 );
 
-
 const MicrosoftIcon = () => (
     <svg className="mr-2 h-5 w-5" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1 1H10.2321V10.2321H1V1Z" fill="#F25022"/>
@@ -83,5 +82,3 @@ export default function Login() {
     </>
   );
 }
-
-    
