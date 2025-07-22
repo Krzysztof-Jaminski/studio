@@ -74,8 +74,8 @@ export default function Login() {
               <MicrosoftIcon /> Zaloguj przez Microsoft
             </Button>
           </CardContent>
-           <CardFooter className="pt-4">
-            <p className="text-xs text-muted-foreground text-center w-full">Logując się, akceptujesz nasze warunki i politykę prywatności.</p>
+           <CardFooter className="pt-4 flex justify-center">
+            <p className="text-xs text-muted-foreground text-center">Logując się, akceptujesz nasze warunki i politykę prywatności.</p>
           </CardFooter>
       </Card>
     </>

@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 
 export default function FoodOrdersPage() {
@@ -106,7 +106,9 @@ export default function FoodOrdersPage() {
             className="space-y-8"
         >
             <div className="space-y-4">
-                <h2 className="text-2xl font-bold font-headline text-white">Zakończone głosowania</h2>
+                <Card className="bg-card/50 border-border/20 p-4">
+                     <CardTitle className="text-xl font-bold font-headline text-white">Zakończone głosowania</CardTitle>
+                </Card>
                 {historicVotings.length > 0 ? (
                     <motion.div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {historicVotings.map(event => (
@@ -126,7 +128,9 @@ export default function FoodOrdersPage() {
                 )}
             </div>
             <div className="space-y-4">
-                <h2 className="text-2xl font-bold font-headline text-white">Zakończone zamówienia</h2>
+                <Card className="bg-card/50 border-border/20 p-4">
+                    <CardTitle className="text-xl font-bold font-headline text-white">Zakończone zamówienia</CardTitle>
+                </Card>
                 {historicOrders.length > 0 ? (
                     <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {historicOrders.map(order => (
