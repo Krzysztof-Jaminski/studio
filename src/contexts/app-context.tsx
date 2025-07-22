@@ -4,7 +4,7 @@
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData, type VotingOption } from "@/lib/types";
-import { format, startOfWeek, getDay, isAfter, endOfDay, differenceInWeeks } from "date-fns";
+import { format, startOfWeek, getDay, isAfter, endOfDay, differenceInWeeks, addDays, eachDayOfInterval } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { MAX_SPOTS } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ type AppContextType = {
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
-  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'>) => void;
+  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
@@ -61,13 +61,15 @@ export const AppContext = createContext<AppContextType>({
 });
 
 const INTERNSHIP_START_DATE = new Date('2025-07-07');
+const INTERNSHIP_END_DATE = new Date('2025-10-01');
+
 
 const INITIAL_USERS: User[] = [
-    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
-    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
-    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
-    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
-    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-1" },
+    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-2" },
+    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-3" },
+    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-4" },
+    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin", avatarUrl: "https://i.pravatar.cc/150?u=admin1" },
 ];
 
 const MOCK_PORTFOLIOS: Record<string, PortfolioItem[]> = {
@@ -146,6 +148,37 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
     }
 ];
 
+const seedRandomReservations = (users: User[]): Reservation[] => {
+    const reservations: Reservation[] = [];
+    const days = eachDayOfInterval({ start: INTERNSHIP_START_DATE, end: INTERNSHIP_END_DATE });
+
+    days.forEach(day => {
+        const dayOfWeek = getDay(day);
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Monday to Friday
+            const dateString = format(day, "yyyy-MM-dd");
+            const officeUsers: string[] = [];
+            const onlineUsers: string[] = [];
+
+            users.forEach(user => {
+                const rand = Math.random();
+                if (rand < 0.6) { // 60% chance to have a reservation
+                    if (rand < 0.35 && officeUsers.length < MAX_SPOTS) { // ~35% chance for office
+                        officeUsers.push(user.id);
+                    } else { // ~25% chance for online
+                        onlineUsers.push(user.id);
+                    }
+                }
+            });
+
+            if (officeUsers.length > 0 || onlineUsers.length > 0) {
+                reservations.push({ date: dateString, office: officeUsers, online: onlineUsers });
+            }
+        }
+    });
+
+    return reservations;
+};
+
 
 export function AppContextProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -165,6 +198,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const checkDate = () => {
         const now = new Date();
         const dayOfWeek = getDay(now); // 0 (Sunday) to 6 (Saturday), 5 is Friday
+        // Show status prompt only on Fridays
         setShowStatusPrompt(dayOfWeek === 5);
         
         const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
@@ -175,10 +209,13 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             publishStatus();
         }
     };
-    checkDate();
-    const interval = setInterval(checkDate, 60000); // check every minute
-    return () => clearInterval(interval);
-  }, [weeklyStatus, portfolio]);
+
+    if (user) {
+        checkDate();
+        const interval = setInterval(checkDate, 60000); // check every minute
+        return () => clearInterval(interval);
+    }
+  }, [weeklyStatus, portfolio, user]);
 
 
   const login = (userId: string) => {
@@ -192,7 +229,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             name: `Użytkownik ${userId}`,
             email: `${userId}@example.com`,
             role: 'user',
-            avatarUrl: 'https://placehold.co/100x100.png'
+            avatarUrl: `https://i.pravatar.cc/150?u=${userId}`
         };
         setAllUsers(prev => [...prev, newUser]);
         setUserPortfolios(prev => ({...prev, [newUser.id]: [] }));
@@ -203,6 +240,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const userPortfolio = userPortfolios[potentialUser.id] || [];
     setPortfolio(userPortfolio);
     
+    // Seed reservations once on login
+    setReservations(seedRandomReservations(allUsers));
+
     // Check for existing status for the current week
     const weekStartISO = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
     const existingStatus = userPortfolio.find(item => item.type === 'status' && item.weekOf === weekStartISO);
@@ -391,8 +431,11 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
     if (!user) return;
     
-    // Deactivate any other open events
-    const updatedOrders = foodOrders.map(o => ({...o, isOpen: false}));
+    // If creating a voting event, deactivate any other open voting events. Orders can co-exist.
+    const updatedOrders = orderData.type === 'voting' 
+        ? foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o)
+        : foodOrders;
+
 
     let newEvent: FoodOrder;
     const baseEvent = {

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from 'react';
+import { useState, useContext, useMemo } from 'react';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -13,21 +13,27 @@ import FoodOrderCard from '@/components/food-order-card';
 import VotingEventCard from '@/components/voting-event-card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Utensils } from 'lucide-react';
+import { Utensils, Info } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 export default function FoodOrdersPage() {
     const { foodOrders, addFoodOrder } = useContext(AppContext);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('active');
 
-    const handleFormSubmit = (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'>) => {
+    const handleFormSubmit = (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
         addFoodOrder(order);
         setIsFormOpen(false);
     };
+
+    const activeVotingEvent = useMemo(() => foodOrders.find(order => order.type === 'voting' && order.isOpen), [foodOrders]);
+    const activeOrderEvents = useMemo(() => foodOrders.filter(order => order.type === 'order' && order.isOpen), [foodOrders]);
     
-    // For this new design, we assume one active event per day.
-    // We'll find the most recent active event to display.
-    const activeEvent = foodOrders.find(order => order.isOpen);
+    const historicEvents = useMemo(() => foodOrders.filter(order => !order.isOpen), [foodOrders]);
+    const historicVotings = historicEvents.filter(o => o.type === 'voting');
+    const historicOrders = historicEvents.filter(o => o.type === 'order');
+
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -79,37 +85,96 @@ export default function FoodOrdersPage() {
                     </Dialog>
                 </div>
                 
-                 <Alert className="mb-8 border-orange-200 bg-orange-50 text-orange-900">
-                    <Utensils className="h-4 w-4 !text-orange-500" />
-                    <AlertTitle>Jak to działa?</AlertTitle>
-                    <AlertDescription>
-                        Każdego dnia może być aktywne jedno wydarzenie: głosowanie na restaurację lub bezpośrednie zamówienie. Dołącz, dodaj swoje propozycje i bierz udział we wspólnych posiłkach!
-                    </AlertDescription>
-                </Alert>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="active">Aktywne wydarzenia</TabsTrigger>
+                        <TabsTrigger value="history">Historia</TabsTrigger>
+                    </TabsList>
 
-                <AnimatePresence mode="wait">
-                    <motion.div 
-                        key={activeEvent ? activeEvent.id : 'no-event'}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.5 }}
-                        className="flex-grow flex items-center justify-center"
-                    >
-                        {activeEvent ? (
-                             <div className="w-full h-full max-w-5xl mx-auto">
-                                {activeEvent.type === 'voting' 
-                                    ? <VotingEventCard event={activeEvent} />
-                                    : <FoodOrderCard order={activeEvent} />}
-                            </div>
-                        ) : (
-                            <div className="text-center">
-                                <p className="text-xl font-semibold text-muted-foreground">Brak aktywnych wydarzeń na dziś.</p>
-                                <p className="text-muted-foreground">Może chcesz jakieś utworzyć?</p>
-                            </div>
-                        )}
-                    </motion.div>
-                </AnimatePresence>
+                    <AnimatePresence mode="wait">
+                        <TabsContent value="active" asChild>
+                            <motion.div
+                                key="active"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-8"
+                            >
+                                {activeVotingEvent ? (
+                                    <VotingEventCard event={activeVotingEvent} />
+                                ) : (
+                                    <Alert className="mb-8 border-orange-200 bg-orange-50 text-orange-900">
+                                        <Info className="h-4 w-4 !text-orange-500" />
+                                        <AlertTitle>Brak aktywnego głosowania</AlertTitle>
+                                        <AlertDescription>
+                                            Obecnie nie ma aktywnego głosowania. Możesz utworzyć nowe, aby społeczność mogła wybrać restaurację.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                                
+                                {activeOrderEvents.length > 0 ? (
+                                    <div className="space-y-4">
+                                        <h2 className="text-2xl font-bold font-headline">Aktywne zamówienia</h2>
+                                        <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
+                                            {activeOrderEvents.map(order => (
+                                                <motion.div key={order.id} variants={itemVariants}>
+                                                    <FoodOrderCard order={order} />
+                                                </motion.div>
+                                            ))}
+                                        </motion.div>
+                                    </div>
+                                ) : (
+                                     <Alert className="mb-8 border-orange-200 bg-orange-50 text-orange-900">
+                                        <Info className="h-4 w-4 !text-orange-500" />
+                                        <AlertTitle>Brak aktywnych zamówień</AlertTitle>
+                                        <AlertDescription>
+                                            Możesz utworzyć bezpośrednie zamówienie, jeśli nie ma potrzeby głosowania.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                            </motion.div>
+                        </TabsContent>
+
+                         <TabsContent value="history" asChild>
+                            <motion.div
+                                key="history"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-8"
+                            >
+                                <div className="space-y-4">
+                                    <h2 className="text-2xl font-bold font-headline">Zakończone głosowania</h2>
+                                    {historicVotings.length > 0 ? (
+                                        <motion.div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6" variants={containerVariants} initial="hidden" animate="visible">
+                                            {historicVotings.map(event => (
+                                                <motion.div key={`hist-vote-${event.id}`} variants={itemVariants}>
+                                                    <VotingEventCard event={event} />
+                                                </motion.div>
+                                            ))}
+                                        </motion.div>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">Brak zakończonych głosowań.</p>
+                                    )}
+                                </div>
+                                <div className="space-y-4">
+                                    <h2 className="text-2xl font-bold font-headline">Zakończone zamówienia</h2>
+                                    {historicOrders.length > 0 ? (
+                                        <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
+                                            {historicOrders.map(order => (
+                                                 <motion.div key={`hist-order-${order.id}`} variants={itemVariants}>
+                                                    <FoodOrderCard order={order} />
+                                                 </motion.div>
+                                            ))}
+                                        </motion.div>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">Brak zakończonych zamówień.</p>
+                                    )}
+                                </div>
+                            </motion.div>
+                        </TabsContent>
+                    </AnimatePresence>
+                </Tabs>
             </main>
         </motion.div>
     );

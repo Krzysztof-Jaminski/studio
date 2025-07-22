@@ -8,30 +8,31 @@ import Header from '@/components/header';
 import WeeklyCalendar from '@/components/weekly-calendar';
 import WeeklyStatus from '@/components/weekly-status';
 import { Separator } from '@/components/ui/separator';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import WelcomePage from './welcome/page';
 
 export default function Home() {
   const { user } = useContext(AppContext);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const welcomeSeen = localStorage.getItem('hasSeenWelcome');
-    if (!welcomeSeen) {
-      setShowWelcome(true);
+    // This logic now only controls showing the welcome page, not based on seeing it before.
+    // It will always show first.
+    const welcomeSeen = sessionStorage.getItem('hasSeenWelcome');
+    if (welcomeSeen) {
+      setShowWelcome(false);
     }
     setIsLoading(false);
   }, []);
 
   const handleWelcomeDone = () => {
-    localStorage.setItem('hasSeenWelcome', 'true');
+    sessionStorage.setItem('hasSeenWelcome', 'true');
     setShowWelcome(false);
   }
   
   if (isLoading) {
-    return <div className="min-h-screen bg-background" />; 
+    return <div className="min-h-screen" />; 
   }
 
   if (showWelcome) {
