@@ -122,7 +122,7 @@ export default function WelcomePage() {
                                 <CheckCircle className="mr-2"/> Rozpocznij
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-card/80 backdrop-blur-md p-0 w-full max-w-md border-border/30">
+                        <DialogContent>
                            <Login />
                         </DialogContent>
                     </Dialog>
