@@ -149,7 +149,10 @@ export default function FoodOrdersPage() {
                         <h1 className="text-3xl font-bold font-headline">Wydarzenia jedzeniowe</h1>
                         <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
                     </div>
-                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                </div>
+
+                <div className="text-center mb-8">
+                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
                             <Button className="bg-orange-500 hover:bg-orange-600 text-white">
                                 <PlusCircle className="mr-2" /> Utwórz wydarzenie
@@ -182,3 +185,5 @@ export default function FoodOrdersPage() {
         </motion.div>
     );
 }
+
+    

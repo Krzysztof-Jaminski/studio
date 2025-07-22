@@ -79,7 +79,7 @@ export default function PortfolioSection() {
                         {item.isVisible ? <Eye /> : <EyeOff />}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}><Pencil /></Button>
-                    <Button variant="ghost" size="icon" className="hover:bg-green-100 hover:text-green-600" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
+                    <Button variant="ghost" size="icon" className="hover:bg-orange-100 hover:text-orange-600" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
                 </div>
             </CardFooter>
         </Card>
@@ -140,3 +140,5 @@ export default function PortfolioSection() {
         </div>
     );
 }
+
+    

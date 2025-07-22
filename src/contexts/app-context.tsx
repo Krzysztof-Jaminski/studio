@@ -64,11 +64,11 @@ const INTERNSHIP_END_DATE = new Date('2025-10-01');
 
 
 const INITIAL_USERS: User[] = [
-    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-1" },
-    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-2" },
-    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-3" },
-    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user", avatarUrl: "https://i.pravatar.cc/150?u=user-4" },
-    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin", avatarUrl: "https://i.pravatar.cc/150?u=admin1" },
+    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user" },
+    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user" },
+    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user" },
+    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user" },
+    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin" },
 ];
 
 const seedRandomReservations = (users: User[]): Reservation[] => {
@@ -161,8 +161,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             id: userId,
             name: `Użytkownik ${userId}`,
             email: `${userId}@example.com`,
-            role: 'user',
-            avatarUrl: `https://i.pravatar.cc/150?u=${userId}`
+            role: 'user'
         };
         setAllUsers(prev => [...prev, newUser]);
         setUserPortfolios(prev => ({...prev, [newUser.id]: [] }));
@@ -341,7 +340,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     const updatedPortfolio = portfolio.filter(p => p.id !== itemId);
     setPortfolio(updatedPortfolio);
     setUserPortfolios(prev => ({...prev, [user.id]: updatedPortfolio}));
-    toast({ variant: 'destructive', title: "Element usunięty", description: "Element został usunięty z Twojego portfolio." });
+    toast({ title: "Element usunięty", description: "Element został usunięty z Twojego portfolio." });
   };
   
   const togglePortfolioItemVisibility = (itemId: string) => {
@@ -412,7 +411,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       return;
     }
     setFoodOrders(prev => prev.filter(order => order.id !== orderId));
-    toast({ variant: 'destructive', title: "Wydarzenie usunięte", description: "Całe wydarzenie jedzeniowe zostało usunięte." });
+    toast({ title: "Wydarzenie usunięte", description: "Całe wydarzenie jedzeniowe zostało usunięte." });
   };
 
   const addOrderItem = (orderId: string, itemData: OrderItemData) => {
@@ -445,7 +444,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         }
         return order;
     }));
-    toast({ variant: 'destructive', title: "Usunięto pozycję zamówienia" });
+    toast({ title: "Usunięto pozycję zamówienia" });
   };
   
   const togglePaidStatus = (orderId: string, itemId: string | 'all') => {
@@ -559,5 +558,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
+    
 
     

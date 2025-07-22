@@ -223,3 +223,5 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         </Card>
     );
 }
+
+    
