@@ -30,14 +30,14 @@ type AppContextType = {
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
-  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => void;
+  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string }[] }) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData, guestName?: string) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
   togglePaidStatus: (orderId: string, itemId: string | 'all') => void;
   toggleOrderState: (orderId: string) => void;
   toggleVote: (eventId: string, optionId: string) => void;
-  addVotingOption: (eventId: string, optionData: { name: string, link?: string, imageUrl?: string }) => void;
+  addVotingOption: (eventId: string, optionData: { name: string, link?: string }) => void;
   storedOrderDetails: StoredOrderDetails | null;
 };
 
@@ -375,7 +375,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     return { user: foundUser || null, portfolio: userPortfolio };
   };
 
-  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
+  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string }[] }) => {
     if (!user) return;
     
     const updatedOrders = orderData.type === 'voting' 
@@ -400,7 +400,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 id: `opt-${Date.now()}-${index}`,
                 name: opt.name,
                 link: opt.link,
-                imageUrl: opt.imageUrl,
                 votes: [],
             }))
         };
@@ -536,14 +535,13 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       }));
   }
 
-  const addVotingOption = (eventId: string, optionData: { name: string, link?: string, imageUrl?: string }) => {
+  const addVotingOption = (eventId: string, optionData: { name: string, link?: string }) => {
     if (!user) return;
     
     const newOption: VotingOption = {
         id: `opt-${Date.now()}`,
         name: optionData.name,
         link: optionData.link,
-        imageUrl: optionData.imageUrl,
         votes: [user.id], 
     };
 

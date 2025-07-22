@@ -22,12 +22,11 @@ const formSchema = z.object({
     votingOptions: z.array(z.object({
         name: z.string().min(1, "Nazwa firmy jest wymagana."),
         link: z.string().url("Proszę wprowadzić prawidłowy adres URL.").optional().or(z.literal('')),
-        imageUrl: z.string().url("Wymagany jest prawidłowy adres URL obrazu.").optional().or(z.literal(''))
     })).min(1, "Musisz podać co najmniej jedną opcję do głosowania.")
 });
 
 type VotingEventFormProps = {
-    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'voting', votingOptions: { name: string, link?: string, imageUrl?: string }[] }) => void;
+    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'voting', votingOptions: { name: string, link?: string }[] }) => void;
     onCancel: () => void;
 };
 
@@ -38,7 +37,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
             companyName: "",
             description: "",
             deadline: "",
-            votingOptions: [{ name: '', link: '', imageUrl: '' }],
+            votingOptions: [{ name: '', link: '' }],
         },
     });
 
@@ -103,7 +102,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                      <div className="space-y-4">
                         <div className="flex justify-between items-center">
                             <FormLabel>Opcje do głosowania</FormLabel>
-                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
+                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '' })}>
                                 <PlusCircle className="mr-2" /> Dodaj opcję
                             </Button>
                         </div>
@@ -133,17 +132,6 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                                                             <FormItem>
                                                                 <FormLabel className="text-xs">Link do menu (opcjonalnie)</FormLabel>
                                                                 <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`votingOptions.${index}.imageUrl`}
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel className="text-xs">URL obrazka (opcjonalnie)</FormLabel>
-                                                                <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
                                                         )}

@@ -2,7 +2,6 @@
 "use client";
 
 import { useContext, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
@@ -16,9 +15,8 @@ import { ScrollArea } from './ui/scroll-area';
 import { isPast } from 'date-fns';
 import CountdownTimer from './countdown-timer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import AddOptionForm from './add-option-form';
 
 const VoterList = ({ users }: { users: User[] }) => (
     <div className="flex flex-wrap gap-1 -space-x-2">
@@ -39,41 +37,6 @@ const VoterList = ({ users }: { users: User[] }) => (
     </div>
 );
 
-const AddOptionForm = ({ eventId, onAdded }: { eventId: string, onAdded: () => void }) => {
-    const { addVotingOption } = useContext(AppContext);
-    const [name, setName] = useState('');
-    const [link, setLink] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (name) {
-            addVotingOption(eventId, { name, link, imageUrl });
-            onAdded();
-            setName('');
-            setLink('');
-            setImageUrl('');
-        }
-    }
-
-    return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-                <Label htmlFor="option-name">Nazwa firmy</Label>
-                <Input id="option-name" value={name} onChange={e => setName(e.target.value)} required placeholder="np. Burger King"/>
-            </div>
-            <div>
-                <Label htmlFor="option-link">Link do menu (opcjonalnie)</Label>
-                <Input id="option-link" value={link} onChange={e => setLink(e.target.value)} placeholder="https://example.com/menu"/>
-            </div>
-             <div>
-                <Label htmlFor="option-image">URL obrazka (opcjonalnie)</Label>
-                <Input id="option-image" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://example.com/logo.png"/>
-            </div>
-            <Button type="submit" variant="glass" className="w-full">Dodaj opcję</Button>
-        </form>
-    )
-}
 
 const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, canVote }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean, canVote: boolean }) => {
     const { user, allUsers, toggleVote } = useContext(AppContext);
@@ -96,7 +59,9 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                 </div>
             )}
             <div className="flex items-start gap-4">
-                {option.imageUrl && <Image src={option.imageUrl} alt={option.name} width={64} height={64} className="rounded-md border-2 border-border h-16 w-16 object-cover" />}
+                <div className={cn("h-16 w-16 flex items-center justify-center bg-background/20 rounded-md border-2 border-border", option.link && "text-primary")}>
+                    <LinkIcon className="h-8 w-8 " />
+                </div>
                 <div className="flex-1">
                     <p className="font-bold text-lg text-primary">{option.name}</p>
                      {option.link && (

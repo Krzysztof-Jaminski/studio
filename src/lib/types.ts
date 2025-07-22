@@ -57,7 +57,6 @@ export type VotingOption = {
     id: string;
     name: string;
     link?: string;
-    imageUrl?: string;
     votes: string[]; // array of user IDs
 };
 
