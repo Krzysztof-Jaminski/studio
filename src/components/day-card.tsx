@@ -32,7 +32,7 @@ const UserList = ({ users }: { users: User[] }) => (
                 </Avatar>
                 <span>{user.name}</span>
             </div>
-        )) : <p className="text-xs text-muted-foreground">Nikt jeszcze.</p>}
+        )) : <p className="text-xs text-muted-foreground">No one yet.</p>}
     </div>
 );
 
@@ -54,15 +54,15 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
 
   return (
     <Card className={cn(
-      "flex flex-col transition-all duration-300",
-      isPast || !isReservable ? "bg-muted/50" : "bg-card",
+      "flex flex-col transition-all duration-300 bg-card",
+      isPast || !isReservable ? "opacity-50" : "hover:border-primary/80",
       isToday && isReservable && "border-primary border-2 shadow-lg"
     )}>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle className="font-headline">{format(date, "EEEE", { locale: pl })}</CardTitle>
-          {isToday && isReservable && <Badge>Dzisiaj</Badge>}
-          {!isReservable && !isPast && <Badge variant="outline">Niedostępny</Badge>}
+          <CardTitle className="font-headline text-primary">{format(date, "EEEE", { locale: pl })}</CardTitle>
+          {isToday && isReservable && <Badge variant="default" className="bg-primary/20 text-primary">Today</Badge>}
+          {!isReservable && !isPast && <Badge variant="outline">Unavailable</Badge>}
         </div>
         <CardDescription>{format(date, "d MMMM yyyy", { locale: pl })}</CardDescription>
       </CardHeader>
@@ -72,27 +72,26 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
             <Badge 
                 variant={isBookedByUser === 'office' ? 'default' : 'secondary'} 
                 className={cn(
-                    "w-full justify-center",
-                    isBookedByUser === 'office' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    "w-full justify-center text-white",
+                    isBookedByUser === 'office' ? 'bg-primary hover:bg-primary/90' : 'bg-green-600 hover:bg-green-700'
                 )}
             >
                 {isBookedByUser === 'office' ? <Briefcase className="mr-2"/> : <Globe className="mr-2"/>}
-                Jesteś zapisany/a {isBookedByUser === 'office' ? 'do biura' : 'online'}
+                You are booked {isBookedByUser === 'office' ? 'for the office' : 'for online'}
             </Badge>
         )}
 
-        {/* Attendance Lists */}
         <div className="space-y-2">
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Briefcase className="mr-2" /> 
-                        W biurze ({bookedInOffice}/{MAX_SPOTS})
+                        <Briefcase className="mr-2 text-primary" /> 
+                        In Office ({bookedInOffice}/{MAX_SPOTS})
                         <Users className="ml-auto" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-56">
-                    <p className="font-semibold mb-2 text-sm">W biurze</p>
+                    <p className="font-semibold mb-2 text-sm">In Office</p>
                     <UserList users={officeUsers} />
                 </PopoverContent>
             </Popover>
@@ -100,7 +99,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
-                        <Globe className="mr-2" /> 
+                        <Globe className="mr-2 text-green-500" /> 
                         Online ({onlineUsers.length})
                         <Users className="ml-auto" />
                     </Button>
@@ -111,34 +110,33 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
                 </PopoverContent>
             </Popover>
         </div>
-
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2">
         {isBookedByUser ? (
             <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full"
+                variant="outline"
                 onClick={handleCancel}
                 disabled={isPast || !isReservable}
             >
-                <X className="mr-2"/> Anuluj rezerwację
+                <X className="mr-2"/> Cancel Reservation
             </Button>
         ) : (
             <>
                 <Button
-                    className="w-full"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                     onClick={() => toggleReservation(date, 'office')}
                     disabled={isPast || !isReservable || isOfficeFull}
                 >
-                    <Briefcase className="mr-2" /> Zarezerwuj miejsce w biurze
+                    <Briefcase className="mr-2" /> Book Office Spot
                 </Button>
                 <Button
-                    className="w-full"
-                    variant="secondary"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
                     onClick={() => toggleReservation(date, 'online')}
                     disabled={isPast || !isReservable}
                 >
-                    <Globe className="mr-2" /> Zarezerwuj online
+                    <Globe className="mr-2" /> Book Online
                 </Button>
             </>
         )}

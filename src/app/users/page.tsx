@@ -10,13 +10,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ShieldCheck, UserCircle } from 'lucide-react';
 import type { User } from '@/lib/types';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const UserCard = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }) => {
     return (
-        <Link href={`/users/${user.id}`}>
-            <Card className={`hover:shadow-md transition-shadow cursor-pointer ${isCurrentUser ? 'border-primary border-2' : ''}`}>
+        <Link href={`/users/${user.id}`} className="block">
+            <Card className={cn(
+                "hover:border-primary transition-all cursor-pointer bg-card",
+                isCurrentUser && 'border-primary border-2'
+            )}>
                 <CardContent className="p-4 flex items-center gap-4">
-                    <Avatar className="h-12 w-12">
+                    <Avatar className="h-12 w-12 border-2 border-border">
                         {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
                     </Avatar>
                     <div>
@@ -24,7 +28,7 @@ const UserCard = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean 
                             {user.name}
                             {user.role === 'admin' && <ShieldCheck className="h-5 w-5 text-primary" />}
                         </p>
-                        <p className="text-sm text-muted-foreground">Praktykant</p>
+                        <p className="text-sm text-muted-foreground">Intern</p>
                     </div>
                 </CardContent>
             </Card>
@@ -63,8 +67,8 @@ export default function UsersPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-            <h1 className="text-3xl font-bold font-headline">Praktykanci</h1>
-            <p className="text-muted-foreground">Przeglądaj profile innych uczestników programu.</p>
+            <h1 className="text-3xl font-bold font-headline text-primary">Interns</h1>
+            <p className="text-muted-foreground">Browse the profiles of other program participants.</p>
         </div>
         <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -82,5 +86,3 @@ export default function UsersPage() {
     </motion.div>
   );
 }
-
-    

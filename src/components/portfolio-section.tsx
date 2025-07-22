@@ -43,17 +43,17 @@ export default function PortfolioSection() {
     }
 
     const renderItem = (item: PortfolioItem) => (
-        <Card key={item.id} className={cn("flex flex-col", item.type === 'status' ? "border-green-200" : "border-green-200")}>
-            <CardHeader className={cn("p-4", item.type === 'status' ? "bg-green-50" : "bg-green-50")}>
+        <Card key={item.id} className={cn("flex flex-col bg-card")}>
+            <CardHeader className={cn("p-4 bg-secondary/50")}>
                  <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-900" : "text-green-900")}>{item.title}</CardTitle>
+                        <CardTitle className={cn("font-headline text-lg", item.type === 'status' ? "text-green-400" : "text-green-400")}>{item.title}</CardTitle>
                         <CardDescription>
-                            {item.type === 'status' && item.weekOf && `Status na tydzień ${format(parseISO(item.weekOf), 'd MMMM yyyy', { locale: pl })}`}
-                            {item.type === 'project' && `Dodano ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
+                            {item.type === 'status' && item.weekOf && `Status for week of ${format(parseISO(item.weekOf), 'd MMMM yyyy', { locale: pl })}`}
+                            {item.type === 'project' && `Added on ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
                         </CardDescription>
                     </div>
-                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600 text-white")}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
+                    <Badge variant={item.type === 'status' ? 'default' : 'secondary'} className={cn(item.type === 'status' && "bg-green-600/80 text-white")}>{item.type === 'status' ? 'Status' : 'Project'}</Badge>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-4">
@@ -69,7 +69,7 @@ export default function PortfolioSection() {
                     {item.link && (
                         <Button variant="link" asChild className="p-0 h-auto">
                             <a href={item.link} target="_blank" rel="noopener noreferrer">
-                               <Link className="mr-2" /> Zobacz link
+                               <Link className="mr-2" /> View Link
                             </a>
                         </Button>
                     )}
@@ -79,7 +79,7 @@ export default function PortfolioSection() {
                         {item.isVisible ? <Eye /> : <EyeOff />}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}><Pencil /></Button>
-                    <Button variant="ghost" size="icon" className="hover:bg-orange-100 hover:text-orange-600" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
+                    <Button variant="ghost" size="icon" className="hover:bg-red-500/20 hover:text-red-400" onClick={() => removePortfolioItem(item.id)}><Trash2 /></Button>
                 </div>
             </CardFooter>
         </Card>
@@ -92,16 +92,16 @@ export default function PortfolioSection() {
             {/* Projects Portfolio */}
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold font-headline text-green-800">Portfolio projektów</h3>
+                    <h3 className="text-xl font-bold font-headline text-green-400">Project Portfolio</h3>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
                             <Button onClick={handleAddNew} className="bg-green-600 hover:bg-green-700 text-white">
-                                <PlusCircle className="mr-2" /> Dodaj projekt
+                                <PlusCircle className="mr-2" /> Add Project
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>{editingItem ? "Edytuj projekt" : "Dodaj nowy projekt"}</DialogTitle>
+                                <DialogTitle>{editingItem ? "Edit Project" : "Add New Project"}</DialogTitle>
                             </DialogHeader>
                             <PortfolioItemForm
                               item={editingItem}
@@ -116,7 +116,7 @@ export default function PortfolioSection() {
                         {projects.map(renderItem)}
                     </div>
                 ) : (
-                    <p className="text-muted-foreground text-sm">Nie dodano jeszcze żadnych projektów.</p>
+                    <p className="text-muted-foreground text-sm">No projects added yet.</p>
                 )}
             </div>
 
@@ -124,21 +124,19 @@ export default function PortfolioSection() {
 
             {/* Weekly Statuses */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold font-headline text-green-800">Statusy tygodniowe</h3>
+                <h3 className="text-xl font-bold font-headline text-green-400">Weekly Statuses</h3>
                 {statuses.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-1">
                         {statuses.map(renderItem)}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center">
+                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 text-center">
                         <FileText className="h-12 w-12 text-muted-foreground" />
-                        <p className="mt-4 font-medium">Brak opublikowanych statusów</p>
-                        <p className="text-sm text-muted-foreground">Twoje statusy tygodniowe pojawią się tutaj automatycznie.</p>
+                        <p className="mt-4 font-medium">No Published Statuses</p>
+                        <p className="text-sm text-muted-foreground">Your weekly statuses will appear here automatically.</p>
                     </div>
                 )}
             </div>
         </div>
     );
 }
-
-    

@@ -27,17 +27,17 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
     return (
         <div className={cn(
             "flex items-center gap-3 p-2 rounded-md transition-colors",
-            item.isPaid ? 'bg-orange-100' : 'bg-card'
+            item.isPaid ? 'bg-green-500/20' : 'bg-secondary'
         )}>
             <Avatar className="h-8 w-8">
                  {itemUser?.avatarUrl ? <AvatarImage src={itemUser.avatarUrl} alt={itemUser.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
             </Avatar>
             <div className="flex-1">
                 <div className="flex justify-between items-start">
-                    <p className="font-semibold text-sm">{itemUser?.name || 'Nieznany użytkownik'}</p>
-                    <p className="font-bold text-sm text-orange-700">{item.price.toFixed(2)} zł</p>
+                    <p className="font-semibold text-sm">{itemUser?.name || 'Unknown User'}</p>
+                    <p className="font-bold text-sm text-accent">{item.price.toFixed(2)} zł</p>
                 </div>
-                <p className="text-xs text-muted-foreground">{item.name}</p>
+                <p className="text-xs text-foreground/80">{item.name}</p>
                 {item.details && <p className="text-xs text-muted-foreground">↳ {item.details}</p>}
             </div>
             
@@ -48,7 +48,7 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                         variant={item.isPaid ? "default" : "outline"} 
                         className={cn(
                             "h-7 w-7",
-                            item.isPaid ? "bg-orange-500 hover:bg-orange-600 text-white" : "hover:bg-gray-100"
+                            item.isPaid ? "bg-green-600 hover:bg-green-700 text-white" : "hover:bg-secondary/50"
                         )}
                         onClick={() => togglePaidStatus(orderId, item.id)}
                     >
@@ -59,10 +59,10 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                     <Button 
                         size="icon" 
                         variant="ghost" 
-                        className="h-7 w-7 text-muted-foreground hover:bg-orange-100 hover:text-orange-600"
+                        className="h-7 w-7 text-muted-foreground hover:bg-red-500/20 hover:text-red-400"
                         onClick={() => removeOrderItem(orderId, item.id)}
                     >
-                         {isAdmin && user?.id !== item.userId && <ShieldCheck className="absolute h-3 w-3 -top-1 -right-1 text-orange-500" />}
+                         {isAdmin && user?.id !== item.userId && <ShieldCheck className="absolute h-3 w-3 -top-1 -right-1 text-accent" />}
                         <Trash2 />
                     </Button>
                  )}
@@ -70,5 +70,3 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
         </div>
     );
 }
-
-    

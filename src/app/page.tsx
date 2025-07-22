@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     // This check should be simple. If the user has seen the welcome page, we don't show it again.
-    const welcomeSeen = sessionStorage.getItem('hasSeenWelcome');
+    const welcomeSeen = localStorage.getItem('hasSeenWelcome');
     if (!welcomeSeen) {
       setShowWelcome(true);
     }
@@ -26,7 +26,7 @@ export default function Home() {
   }, []);
 
   const handleWelcomeDone = () => {
-    sessionStorage.setItem('hasSeenWelcome', 'true');
+    localStorage.setItem('hasSeenWelcome', 'true');
     setShowWelcome(false);
   }
   

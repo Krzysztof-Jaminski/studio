@@ -10,7 +10,6 @@ import type { FoodOrder, User, VotingOption } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon } from 'lucide-react';
 import { Badge } from './ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
 import { ScrollArea } from './ui/scroll-area';
@@ -19,17 +18,24 @@ import CountdownTimer from './countdown-timer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 const VoterList = ({ users }: { users: User[] }) => (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1 -space-x-2">
         {users.length > 0 ? users.map(user => (
-            <div key={user.id} className="flex items-center gap-2 text-sm p-1 bg-gray-100 rounded-md">
-                <Avatar className="h-6 w-6">
-                    {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>}
-                </Avatar>
-                <span>{user.name}</span>
-            </div>
-        )) : <p className="text-xs text-muted-foreground">Brak głosów.</p>}
+            <TooltipProvider key={user.id} delayDuration={100}>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                         <Avatar className="h-8 w-8 border-2 border-background">
+                            {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>}
+                        </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{user.name}</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        )) : <p className="text-xs text-muted-foreground pl-2">No votes yet.</p>}
     </div>
 );
 
@@ -53,18 +59,18 @@ const AddOptionForm = ({ eventId, onAdded }: { eventId: string, onAdded: () => v
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <Label htmlFor="option-name">Nazwa firmy</Label>
-                <Input id="option-name" value={name} onChange={e => setName(e.target.value)} required placeholder="np. Burger King"/>
+                <Label htmlFor="option-name">Company Name</Label>
+                <Input id="option-name" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g., Burger King"/>
             </div>
             <div>
-                <Label htmlFor="option-link">Link do menu (opcjonalnie)</Label>
+                <Label htmlFor="option-link">Menu Link (optional)</Label>
                 <Input id="option-link" value={link} onChange={e => setLink(e.target.value)} placeholder="https://example.com/menu"/>
             </div>
              <div>
-                <Label htmlFor="option-image">URL obrazka (opcjonalnie)</Label>
+                <Label htmlFor="option-image">Image URL (optional)</Label>
                 <Input id="option-image" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://example.com/logo.png"/>
             </div>
-            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">Dodaj opcję</Button>
+            <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Add Option</Button>
         </form>
     )
 }
@@ -78,36 +84,40 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
     const votePercentage = totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0;
 
     return (
-        <Card className="flex flex-col space-y-3 relative h-full bg-card p-4 transition-all hover:shadow-md">
+        <Card className={cn(
+            "flex flex-col space-y-3 relative h-full bg-secondary/80 p-4 transition-all hover:shadow-md hover:border-accent",
+            hasVoted && "border-accent",
+            isWinner && "border-yellow-400"
+        )}>
              {isWinner && (
                 <div className="absolute -top-3 -right-3 bg-yellow-400 p-1 rounded-full z-10 shadow-lg">
-                    <Trophy className="h-5 w-5 text-white" />
+                    <Trophy className="h-5 w-5 text-background" />
                 </div>
             )}
             <div className="flex items-start gap-4">
-                {option.imageUrl && <Image src={option.imageUrl} alt={option.name} width={64} height={64} className="rounded-md border h-16 w-16 object-cover" />}
+                {option.imageUrl && <Image src={option.imageUrl} alt={option.name} width={64} height={64} className="rounded-md border-2 border-border h-16 w-16 object-cover" />}
                 <div className="flex-1">
-                    <p className="font-bold text-lg text-orange-800">{option.name}</p>
+                    <p className="font-bold text-lg text-accent">{option.name}</p>
                      {option.link && (
-                        <Button variant="link" asChild className="p-0 h-auto -ml-1 text-orange-600">
+                        <Button variant="link" asChild className="p-0 h-auto -ml-1 text-accent/80 hover:text-accent">
                            <a href={option.link} target="_blank" rel="noopener noreferrer">
-                               <LinkIcon className="mr-1" /> Zobacz menu
+                               <LinkIcon className="mr-1" /> View Menu
                            </a>
                        </Button>
                     )}
                 </div>
             </div>
-             <div className="space-y-2">
-                 <p className="text-sm font-semibold flex items-center gap-2"><Users className="text-muted-foreground"/>Głosy ({option.votes.length})</p>
+             <div className="space-y-2 flex-grow">
+                 <p className="text-sm font-semibold flex items-center gap-2"><Users className="text-muted-foreground"/>Votes ({option.votes.length})</p>
                  <VoterList users={voters} />
              </div>
              
-            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-orange-400")} />}
+            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-accent/80")} />}
             
             {canVote && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white", hasVoted ? "bg-orange-600 hover:bg-orange-700" : "bg-orange-500 hover:bg-orange-600")} >
+                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white", hasVoted ? "bg-accent hover:bg-accent/90" : "bg-accent/60 hover:bg-accent/80")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
-                    {hasVoted ? 'Cofnij Głos' : 'Głosuj'}
+                    {hasVoted ? 'Undo Vote' : 'Vote'}
                 </Button>
             )}
         </Card>
@@ -143,23 +153,23 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     }, [isClosed, event.votingOptions]);
     
     return (
-        <Card className="flex flex-col border-orange-200 w-full h-full">
-            <CardHeader className="bg-orange-50 rounded-t-lg p-4 space-y-2">
+        <Card className="flex flex-col border-accent/30 w-full h-full bg-card">
+            <CardHeader className="bg-secondary/50 rounded-t-lg p-4 space-y-2">
                 <div className="flex justify-between items-start">
                     <div>
-                        <CardTitle className="font-headline text-xl text-orange-900">{event.companyName}</CardTitle>
+                        <CardTitle className="font-headline text-xl text-accent">{event.companyName}</CardTitle>
                         {creator && (
-                            <CardDescription className="flex items-center gap-2 text-xs">
+                            <CardDescription className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Avatar className="h-4 w-4">
                                      {creator.avatarUrl ? <AvatarImage src={creator.avatarUrl} alt={creator.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
                                 </Avatar>
-                                Utworzone przez {creator.name}
+                                Created by {creator.name}
                             </CardDescription>
                         )}
                     </div>
                      {isClosed && (
-                        <Badge className="flex items-center gap-1 bg-orange-600 text-white">
-                            <Trophy className="h-3 w-3" /> Głosowanie zakończone
+                        <Badge className="flex items-center gap-1 bg-red-500/80 text-white">
+                            <Trophy className="h-3 w-3" /> Voting Ended
                         </Badge>
                     )}
                 </div>
@@ -182,22 +192,22 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                 />
                             ))
                         ) : (
-                            <p className="text-sm text-muted-foreground text-center py-8 col-span-full">Brak opcji do głosowania. Dodaj pierwszą!</p>
+                            <p className="text-sm text-muted-foreground text-center py-8 col-span-full">No voting options yet. Add the first one!</p>
                         )}
                     </div>
                 </ScrollArea>
             </CardContent>
-            <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4 bg-orange-50/50">
+            <CardFooter className="flex flex-col gap-2 border-t pt-4 p-4 bg-secondary/30">
                 {canVote && (
                     <Dialog open={isAddOptionOpen} onOpenChange={setIsAddOptionOpen}>
                         <DialogTrigger asChild>
                            <Button variant="outline" className="w-full">
-                                <PlusCircle className="mr-2"/> Dodaj własną propozycję
+                                <PlusCircle className="mr-2"/> Add Your Own Suggestion
                            </Button>
                         </DialogTrigger>
                         <DialogContent>
                              <DialogHeader>
-                                <DialogTitle>Dodaj nową opcję do głosowania</DialogTitle>
+                                <DialogTitle>Add a new voting option</DialogTitle>
                             </DialogHeader>
                             <AddOptionForm eventId={event.id} onAdded={() => setIsAddOptionOpen(false)} />
                         </DialogContent>
@@ -205,17 +215,17 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                 )}
                  {(isCreator || isAdmin) && event.isOpen && (
                      <div className="w-full space-y-2 pt-2 border-t mt-2">
-                        <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
-                        <Button variant="secondary" className="w-full bg-orange-100 text-orange-800 hover:bg-orange-200" onClick={() => toggleOrderState(event.id)}>
-                            <X className="mr-2"/> Zakończ głosowanie
+                        <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>
+                        <Button variant="secondary" className="w-full" onClick={() => toggleOrderState(event.id)}>
+                            <X className="mr-2"/> End Voting
                         </Button>
                      </div>
                 )}
                  {isAdmin && (
-                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-orange-500 mt-2">
-                        <p className="text-xs font-semibold text-orange-500 flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
-                        <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => removeFoodOrder(event.id)}>
-                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
+                    <div className="w-full space-y-2 pt-2 border-t border-dashed border-accent mt-2">
+                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(event.id)}>
+                            <Trash2 className="mr-2" /> Delete Entire Event
                         </Button>
                     </div>
                 )}
@@ -223,5 +233,3 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         </Card>
     );
 }
-
-    

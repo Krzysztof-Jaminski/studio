@@ -42,18 +42,18 @@ const CountdownTimer = ({ deadline }: { deadline: string }) => {
              <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-sm font-medium text-orange-600 bg-orange-100 p-2 rounded-md flex items-center justify-center gap-2"
+                className="text-sm font-medium text-accent bg-accent/20 p-2 rounded-md flex items-center justify-center gap-2 mt-2"
             >
                 <Clock className="h-4 w-4" />
-                Czas dobiegł końca!
+                Time's up!
             </motion.div>
         );
     }
 
     return (
-        <div className="text-sm font-medium text-orange-800 bg-orange-100 p-2 rounded-md flex items-center justify-center gap-2">
-            <Clock className="h-4 w-4" />
-            <span>Koniec za:</span>
+        <div className="text-sm font-medium text-accent-foreground bg-accent/20 p-2 rounded-md flex items-center justify-center gap-2 mt-2">
+            <Clock className="h-4 w-4 text-accent" />
+            <span className="text-muted-foreground">Ends in:</span>
             {timeLeft.days > 0 && <span className="font-bold">{timeLeft.days}d</span>}
             <span className="font-bold">{formatTime(timeLeft.hours)}h</span>
             <span className="font-bold">{formatTime(timeLeft.minutes)}m</span>
