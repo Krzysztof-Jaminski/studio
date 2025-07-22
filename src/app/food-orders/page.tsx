@@ -4,10 +4,9 @@
 import { useState, useContext, useMemo } from 'react';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { PlusCircle, UtensilsCrossed, Vote } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AppContext } from '@/contexts/app-context';
-import FoodOrderForm from '@/components/food-order-form';
 import type { FoodOrder } from '@/lib/types';
 import FoodOrderCard from '@/components/food-order-card';
 import VotingEventCard from '@/components/voting-event-card';
@@ -15,18 +14,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import GroupOrderForm from '@/components/group-order-form';
+import VotingEventForm from '@/components/voting-event-form';
 
+type EventType = 'order' | 'voting';
 
 export default function FoodOrdersPage() {
     const { foodOrders, addFoodOrder, storedOrderDetails } = useContext(AppContext);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('active');
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedEventType, setSelectedEventType] = useState<EventType | null>(null);
 
     const handleFormSubmit = (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
         addFoodOrder(order);
-        setIsFormOpen(false);
+        setIsDialogOpen(false);
+        setSelectedEventType(null);
     };
+    
+    const handleOpenDialog = (type: EventType) => {
+        setSelectedEventType(type);
+        setIsDialogOpen(true);
+    }
+    
+    const handleDialogChange = (open: boolean) => {
+        if (!open) {
+            setSelectedEventType(null);
+        }
+        setIsDialogOpen(open);
+    }
 
     const activeVotingEvent = useMemo(() => foodOrders.find(order => order.type === 'voting' && order.isOpen), [foodOrders]);
     const activeOrderEvents = useMemo(() => foodOrders.filter(order => order.type === 'order' && order.isOpen), [foodOrders]);
@@ -35,6 +50,7 @@ export default function FoodOrdersPage() {
     const historicVotings = historicEvents.filter(o => o.type === 'voting');
     const historicOrders = historicEvents.filter(o => o.type === 'order');
 
+    const [activeTab, setActiveTab] = useState('active');
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -152,6 +168,58 @@ export default function FoodOrdersPage() {
         </motion.div>
     );
 
+    const renderDialogContent = () => {
+        if (selectedEventType === 'order') {
+            return (
+                <>
+                    <DialogHeader>
+                        <DialogTitle>Utwórz nowe zamówienie grupowe</DialogTitle>
+                        <DialogDescription>Wypełnij poniższe pola, aby rozpocząć zbieranie zamówień.</DialogDescription>
+                    </DialogHeader>
+                    <GroupOrderForm
+                        onSubmit={handleFormSubmit}
+                        onCancel={() => handleDialogChange(false)}
+                        storedDetails={storedOrderDetails}
+                    />
+                </>
+            );
+        }
+        if (selectedEventType === 'voting') {
+            return (
+                <>
+                    <DialogHeader>
+                        <DialogTitle>Utwórz nowe głosowanie</DialogTitle>
+                         <DialogDescription>Zaproponuj restauracje i pozwól społeczności zdecydować.</DialogDescription>
+                    </DialogHeader>
+                    <VotingEventForm
+                        onSubmit={handleFormSubmit}
+                        onCancel={() => handleDialogChange(false)}
+                    />
+                </>
+            );
+        }
+        return (
+            <>
+                <DialogHeader>
+                    <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
+                    <DialogDescription>Wybierz typ wydarzenia, które chcesz utworzyć.</DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+                    <Card onClick={() => handleOpenDialog('order')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
+                        <UtensilsCrossed className="h-12 w-12 mb-4 text-primary" />
+                        <h3 className="text-lg font-bold">Zamówienie grupowe</h3>
+                        <p className="text-sm text-muted-foreground">Utwórz zamówienie z jednej, konkretnej restauracji.</p>
+                    </Card>
+                    <Card onClick={() => handleOpenDialog('voting')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
+                        <Vote className="h-12 w-12 mb-4 text-accent" />
+                        <h3 className="text-lg font-bold">Głosowanie na restaurację</h3>
+                        <p className="text-sm text-muted-foreground">Pozwól społeczności wybrać, skąd chcecie zamówić jedzenie.</p>
+                    </Card>
+                </div>
+            </>
+        );
+    }
+
     return (
         <motion.div 
             initial={{ opacity: 0 }}
@@ -168,21 +236,14 @@ export default function FoodOrdersPage() {
                                 <h1 className="text-3xl font-bold font-headline text-gradient">Wydarzenia jedzeniowe</h1>
                                 <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
                             </div>
-                             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                             <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
                                 <DialogTrigger asChild>
                                     <Button variant="glass">
                                         <PlusCircle className="mr-2" /> Utwórz wydarzenie
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[90vw] md:max-w-[50vw]">
-                                    <DialogHeader>
-                                        <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
-                                    </DialogHeader>
-                                    <FoodOrderForm
-                                        onSubmit={handleFormSubmit}
-                                        onCancel={() => setIsFormOpen(false)}
-                                        storedDetails={storedOrderDetails}
-                                    />
+                                    {renderDialogContent()}
                                 </DialogContent>
                             </Dialog>
                         </div>
