@@ -5,7 +5,7 @@ import { useState, useContext, useMemo } from 'react';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, UtensilsCrossed, Vote } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder } from '@/lib/types';
 import FoodOrderCard from '@/components/food-order-card';
@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import GroupOrderForm from '@/components/group-order-form';
 import VotingEventForm from '@/components/voting-event-form';
 
