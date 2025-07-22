@@ -23,13 +23,14 @@ type AppContextType = {
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
-  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link: string, imageUrl?: string }[] }) => void;
+  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
   togglePaidStatus: (orderId: string, itemId: string | 'all') => void;
   toggleOrderState: (orderId: string) => void;
   toggleVote: (eventId: string, optionId: string) => void;
+  addVotingOption: (eventId: string, optionData: { name: string, link?: string, imageUrl?: string }) => void;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -55,6 +56,7 @@ export const AppContext = createContext<AppContextType>({
   togglePaidStatus: () => {},
   toggleOrderState: () => {},
   toggleVote: () => {},
+  addVotingOption: () => {},
 });
 
 const INTERNSHIP_START_DATE = new Date('2025-07-07');
@@ -132,6 +134,7 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
         type: 'voting',
         creatorId: 'admin1',
         companyName: 'Głosowanie na lunch w piątek',
+        description: "Głosujemy na miejsce na dzisiejszy lunch. Po wyborze, osoba z największą liczbą głosów zamawia dla wszystkich. Płatność BLIK na numer 123-456-789.",
         isOpen: true,
         deadline: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(), // 2 hours from now
         votingOptions: [
@@ -384,7 +387,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   // Food Order Functions
-  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link: string, imageUrl?: string }[] }) => {
+  const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
     if (!user) return;
     
     let newEvent: FoodOrder;
@@ -400,6 +403,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         newEvent = {
             ...baseEvent,
             type: 'voting',
+            description: orderData.description,
             votingOptions: orderData.votingOptions?.map((opt, index) => ({
                 id: `opt-${Date.now()}-${index}`,
                 name: opt.name,
@@ -522,6 +526,27 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       }));
   }
 
+  const addVotingOption = (eventId: string, optionData: { name: string, link?: string, imageUrl?: string }) => {
+    if (!user) return;
+    
+    const newOption: VotingOption = {
+        id: `opt-${Date.now()}`,
+        name: optionData.name,
+        link: optionData.link,
+        imageUrl: optionData.imageUrl || 'https://placehold.co/100x100.png',
+        votes: [user.id], // The user who adds the option automatically votes for it
+    };
+
+    setFoodOrders(prev => prev.map(event => {
+        if (event.id === eventId && event.type === 'voting' && event.isOpen) {
+            const options = event.votingOptions ? [...event.votingOptions, newOption] : [newOption];
+            return { ...event, votingOptions: options };
+        }
+        return event;
+    }));
+    toast({ title: "Dodano nową opcję", description: `Twoja propozycja "${optionData.name}" została dodana do głosowania.` });
+  };
+
 
   return (
     <AppContext.Provider
@@ -548,6 +573,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         togglePaidStatus,
         toggleOrderState,
         toggleVote,
+        addVotingOption,
       }}
     >
       {children}

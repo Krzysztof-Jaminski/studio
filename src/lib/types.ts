@@ -1,4 +1,5 @@
 
+
 export type User = {
   id: string;
   name: string;
@@ -65,6 +66,7 @@ export type FoodOrder = {
     isOpen: boolean;
     type: 'order' | 'voting';
     deadline?: string; // ISO string for the deadline
+    description?: string; // For voting events
     // Order specific
     link?: string;
     creatorPhoneNumber?: string;

@@ -14,23 +14,25 @@ import { Separator } from "./ui/separator";
 import { Card } from "./ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import { cn } from "@/lib/utils";
+import { Textarea } from "./ui/textarea";
 
 const formSchema = z.object({
     type: z.enum(['order', 'voting'], { required_error: "Musisz wybrać typ wydarzenia."}),
     companyName: z.string().min(2, "Tytuł musi mieć co najmniej 2 znaki."),
+    description: z.string().optional(),
     link: z.string().url("Proszę podać prawidłowy adres URL.").optional().or(z.literal('')),
     creatorPhoneNumber: z.string().min(5, "Proszę podać prawidłowy numer telefonu.").optional().or(z.literal('')),
     imageUrl: z.string().url("Proszę podać prawidłowy adres URL obrazka.").optional().or(z.literal('')),
     deadline: z.string().optional(),
     votingOptions: z.array(z.object({
         name: z.string().min(1, "Nazwa firmy jest wymagana."),
-        link: z.string().url("Wymagany jest prawidłowy link."),
+        link: z.string().url("Proszę podać prawidłowy adres URL.").optional().or(z.literal('')),
         imageUrl: z.string().url("Wymagany jest prawidłowy adres URL obrazka.").optional().or(z.literal(''))
     })).min(1, "Musisz podać co najmniej jedną opcję do głosowania.").optional()
 });
 
 type FoodOrderFormProps = {
-    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link: string, imageUrl?: string }[] }) => void;
+    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => void;
     onCancel: () => void;
 };
 
@@ -40,6 +42,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
         defaultValues: {
             type: "order",
             companyName: "",
+            description: "",
             link: "",
             creatorPhoneNumber: "",
             imageUrl: "",
@@ -68,7 +71,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
         };
 
         if (values.type === 'order') {
-            const { votingOptions, ...orderData } = dataToSubmit;
+            const { votingOptions, description, ...orderData } = dataToSubmit;
             onSubmit(orderData);
         } else {
              const { link, creatorPhoneNumber, imageUrl, ...votingData } = dataToSubmit;
@@ -173,74 +176,87 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                         />
                     </>
                 ) : (
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                            <FormLabel>Opcje do głosowania</FormLabel>
-                             <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
-                                <PlusCircle className="mr-2" /> Dodaj opcję
-                            </Button>
-                        </div>
-                         <Carousel className="w-full">
-                            <CarouselContent>
-                                {fields.map((field, index) => (
-                                    <CarouselItem key={field.id}>
-                                         <Card className="p-4 space-y-3 relative w-full whitespace-normal">
-                                            <h4 className="font-semibold">Opcja {index + 1}</h4>
-                                            <FormField
-                                                control={form.control}
-                                                name={`votingOptions.${index}.name`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                         <FormLabel className="text-xs">Nazwa</FormLabel>
-                                                         <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
-                                                         <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                             <FormField
-                                                control={form.control}
-                                                name={`votingOptions.${index}.link`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                         <FormLabel className="text-xs">Link do menu</FormLabel>
-                                                         <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
-                                                         <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name={`votingOptions.${index}.imageUrl`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                         <FormLabel className="text-xs">URL obrazka (opcjonalnie)</FormLabel>
-                                                         <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
-                                                         <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            {fields.length > 1 && (
-                                                <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-orange-100 hover:text-orange-600" onClick={() => remove(index)}>
-                                                    <Trash2 />
-                                                </Button>
-                                            )}
-                                         </Card>
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            <CarouselPrevious />
-                            <CarouselNext />
-                        </Carousel>
+                    <>
                         <FormField
                             control={form.control}
-                            name="votingOptions"
-                            render={() => (
+                            name="description"
+                            render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>Opis głosowania (opcjonalnie)</FormLabel>
+                                    <FormControl><Textarea placeholder="np. instrukcje organizacyjne, numer BLIK do płatności, informacje o zamówieniu" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                    </div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <FormLabel>Opcje do głosowania</FormLabel>
+                                <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '', imageUrl: '' })}>
+                                    <PlusCircle className="mr-2" /> Dodaj opcję
+                                </Button>
+                            </div>
+                            <Carousel className="w-full">
+                                <CarouselContent>
+                                    {fields.map((field, index) => (
+                                        <CarouselItem key={field.id}>
+                                            <Card className="p-4 space-y-3 relative w-full whitespace-normal">
+                                                <h4 className="font-semibold">Opcja {index + 1}</h4>
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`votingOptions.${index}.name`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs">Nazwa</FormLabel>
+                                                            <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`votingOptions.${index}.link`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs">Link do menu (opcjonalnie)</FormLabel>
+                                                            <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`votingOptions.${index}.imageUrl`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs">URL obrazka (opcjonalnie)</FormLabel>
+                                                            <FormControl><Input placeholder="https://sushiworld.com/logo.png" {...field} /></FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                {fields.length > 1 && (
+                                                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-orange-100 hover:text-orange-600" onClick={() => remove(index)}>
+                                                        <Trash2 />
+                                                    </Button>
+                                                )}
+                                            </Card>
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
+                            <FormField
+                                control={form.control}
+                                name="votingOptions"
+                                render={() => (
+                                    <FormItem>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </>
                 )}
 
 
