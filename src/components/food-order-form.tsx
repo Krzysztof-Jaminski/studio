@@ -74,7 +74,7 @@ export default function FoodOrderForm({ onSubmit, onCancel, storedDetails }: Foo
 
     const eventType = form.watch("type");
 
-    const handleSubmit = (values: z.infer<typeof formSchema>>) => {
+    const handleSubmit = (values: z.infer<typeof formSchema>) => {
         const deadlineDate = values.deadline ? new Date() : undefined;
         if (deadlineDate && values.deadline) {
             const [hours, minutes] = values.deadline.split(':').map(Number);
