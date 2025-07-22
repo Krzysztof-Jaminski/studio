@@ -171,11 +171,11 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 {(isCreator || isAdmin) && (
                      <div className="w-full space-y-2 pt-2 border-t">
                         <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                             <Button variant="secondary" className="flex-1" onClick={() => togglePaidStatus(order.id, 'all')}>
+                        <div className="flex flex-wrap gap-2">
+                             <Button variant="secondary" onClick={() => togglePaidStatus(order.id, 'all')}>
                                 <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
                             </Button>
-                             <Button variant="outline" className="flex-1" onClick={() => toggleOrderState(order.id)}>
+                             <Button variant="outline" onClick={() => toggleOrderState(order.id)}>
                                 {order.isOpen ? <X className="mr-2"/> : <Check className="mr-2" />}
                                 {order.isOpen ? "Zamknij zamówienie" : "Otwórz ponownie"}
                             </Button>
@@ -214,5 +214,3 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         </Card>
     );
 }
-
-    
