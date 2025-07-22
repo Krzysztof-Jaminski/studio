@@ -60,6 +60,10 @@ export default function AnimatedBackground() {
                 className="absolute bottom-[5%] left-[10%] w-[30vw] h-[30vw] rounded-full filter blur-3xl animate-pulse"
                 style={{ background: 'radial-gradient(circle, hsla(28, 100%, 50%, var(--bg-glow-orange-opacity)), transparent 70%)'}}
             ></div>
+             <div 
+                className="absolute top-[5%] right-[10%] w-[40vw] h-[40vw] rounded-full filter blur-3xl animate-pulse"
+                style={{ background: 'radial-gradient(circle, hsla(28, 100%, 50%, var(--bg-glow-orange-opacity)), transparent 70%)'}}
+            ></div>
 
 
             {/* Animated squares */}

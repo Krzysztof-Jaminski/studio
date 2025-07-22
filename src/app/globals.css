@@ -28,7 +28,7 @@
 
     --bg-square-opacity: 0.1;
     --bg-glow-opacity: 0.2;
-    --bg-glow-orange-opacity: 0.15;
+    --bg-glow-orange-opacity: 0.2;
   }
 }
 
@@ -39,4 +39,16 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+    .animate-pulse {
+        animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+        50% {
+            opacity: .5;
+        }
+    }
 }
