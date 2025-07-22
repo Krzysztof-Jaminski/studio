@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { AppContext } from "@/contexts/app-context";
 import { Logo } from './icons';
-import { DialogHeader, DialogTitle } from './ui/dialog';
+import { DialogHeader } from './ui/dialog';
 
 // Dummy SVG icons for providers
 const GoogleIcon = () => (
@@ -19,7 +19,7 @@ const GoogleIcon = () => (
 );
 
 const DiscordIcon = () => (
-    <svg className="mr-2 h-5 w-5" fill="#5865F2" viewBox="0 0 28 21" role="img" xmlns="http://www.w3.org/2000/svg">
+    <svg className="mr-2 h-5 w-5" fill="#5865F2" viewBox="0 0 28 21" xmlns="http://www.w3.org/2000/svg">
         <path d="M23.021 1.629C21.31 0.61 19.465 0 17.5 0C17.5 0 17.438 0.063 17.376 0.126C15.39 1.94 14.015 3.896 13.985 3.958C11.514 3.313 9.043 3.313 6.572 3.958C6.542 3.896 5.167 1.94 3.125 0.126C3.063 0.063 3 0 3 0C1.036 0 0.128 0.58 0.128 0.58C0.128 0.58 -0.015 2.14 0.001 4.2C0.032 6.816 1.637 9.247 3.84 10.468C3.84 10.468 4.62 9.89 5.244 9.405C4.336 8.56 3.614 7.55 3.155 6.46C3.125 6.398 3.155 6.335 3.186 6.335C3.216 6.335 3.247 6.367 3.277 6.398C5.55 8.12 8.337 8.9 11.124 8.9H11.25C14.037 8.9 16.824 8.12 19.128 6.398C19.158 6.367 19.188 6.335 19.219 6.335C19.281 6.335 19.281 6.398 19.281 6.49C18.822 7.58 18.07 8.59 17.193 9.405C17.786 9.89 18.597 10.468 18.597 10.468C20.832 9.247 22.406 6.816 22.437 4.2C22.468 2.14 22.325 0.58 22.325 0.58C22.325 0.58 21.418 0 19.453 0C19.453 0 19.423 0.03 19.392 0.062C17.84 1.278 16.643 2.585 15.98 3.442C15.98 3.442 15.44 3.66 15.013 3.854L15.044 3.885C15.013 3.916 14.015 3.896 13.985 3.958ZM9.215 6.553C8.245 6.553 7.434 5.71 7.434 4.708C7.434 3.707 8.245 2.863 9.215 2.863C10.185 2.863 11 3.707 10.97 4.708C10.97 5.71 10.185 6.553 9.215 6.553ZM16.222 6.553C15.252 6.553 14.441 5.71 14.441 4.708C14.441 3.707 15.252 2.863 16.222 2.863C17.192 2.863 18 3.707 17.97 4.708C17.97 5.71 17.192 6.553 16.222 6.553Z" />
     </svg>
 );
@@ -60,7 +60,7 @@ export default function Login() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Logo className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="font-headline text-3xl">Witaj w PraktykanciHub</CardTitle>
+            <CardTitle className="font-headline text-3xl">Witaj w Praktykanci<span className="text-primary">Hub</span>!</CardTitle>
             <CardDescription>Zaloguj się, aby zarezerwować miejsce i dołączyć do społeczności.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
