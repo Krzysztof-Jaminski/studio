@@ -172,7 +172,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             description: `Witaj z powrotem, ${user.name}!`,
         });
     }
-  }, [user?.id]);
+  }, [user?.id, toast]);
 
 
   const login = (userId: string, provider: 'google' | 'discord' | 'microsoft') => {
@@ -434,8 +434,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   const removeFoodOrder = (orderId: string) => {
-    if (user?.role !== 'admin') {
-      toast({ variant: 'destructive', title: 'Brak uprawnień', description: 'Tylko administrator może usunąć wydarzenie.' });
+    if (!user) return;
+    if (user.role !== 'admin' && user.id !== foodOrders.find(o => o.id === orderId)?.creatorId) {
+      toast({ variant: 'destructive', title: 'Brak uprawnień', description: 'Tylko administrator lub twórca może usunąć wydarzenie.' });
       return;
     }
     setFoodOrders(prev => prev.filter(order => order.id !== orderId));
@@ -620,3 +621,5 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 }
 
     
+
+  
