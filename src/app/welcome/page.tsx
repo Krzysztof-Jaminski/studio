@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: number }) => (
     <motion.div 
-        className="p-6 rounded-lg bg-card/50 backdrop-blur-sm border border-border/20 flex flex-col items-center text-center shadow-lg"
+        className="p-8 rounded-lg bg-card/50 backdrop-blur-sm border border-border/20 flex flex-col items-center text-center shadow-lg"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: delay, ease: "easeOut" }}
@@ -20,7 +20,7 @@ const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNod
         <div className="p-3 rounded-full bg-primary/10 mb-4 text-primary">
             {icon}
         </div>
-        <h3 className="text-xl font-bold font-headline mb-2 text-primary">{title}</h3>
+        <h3 className="text-xl font-bold font-headline mb-2 text-white">{title}</h3>
         <p className="text-muted-foreground">{description}</p>
     </motion.div>
 );

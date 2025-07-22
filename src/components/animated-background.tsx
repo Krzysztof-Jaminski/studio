@@ -29,7 +29,7 @@ const AnimatedSquare = ({
         }}
         initial={{ opacity: 0, y: 50, rotate: 0 }}
         animate={{
-            opacity: [0, 0.5, 0],
+            opacity: [0, 1, 0],
             y: [50, -50, 50],
             x: [0, 20, -20, 0],
             rotate: [0, 90, 180],
@@ -56,6 +56,11 @@ export default function AnimatedBackground() {
                 className="absolute bottom-[-20%] right-[-20%] w-[50vw] h-[50vw] rounded-full filter blur-3xl animate-pulse delay-1000"
                 style={{ background: 'radial-gradient(circle, hsla(var(--accent) / var(--bg-glow-opacity)), transparent 60%)'}}
             ></div>
+            <div 
+                className="absolute bottom-[5%] left-[10%] w-[30vw] h-[30vw] rounded-full filter blur-3xl animate-pulse delay-500"
+                style={{ background: 'radial-gradient(circle, hsla(28, 100%, 50%, var(--bg-glow-orange-opacity)), transparent 70%)'}}
+            ></div>
+
 
             {/* Animated squares */}
             {/* Large and slow */}

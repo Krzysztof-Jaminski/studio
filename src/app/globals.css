@@ -27,6 +27,7 @@
 
     --bg-square-opacity: 0.1;
     --bg-glow-opacity: 0.2;
+    --bg-glow-orange-opacity: 0.15;
   }
 }
 
@@ -41,7 +42,7 @@
 
 @layer components {
   .btn-gradient {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white;
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold;
   }
   .text-gradient {
     @apply bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text;

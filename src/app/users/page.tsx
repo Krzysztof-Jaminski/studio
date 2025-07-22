@@ -24,11 +24,11 @@ const UserCard = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean 
                         {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
                     </Avatar>
                     <div>
-                        <p className="font-semibold text-lg flex items-center gap-2">
+                        <p className="font-semibold text-lg flex items-center gap-2 text-white">
                             {user.name}
                             {user.role === 'admin' && <ShieldCheck className="h-5 w-5 text-primary" />}
                         </p>
-                        <p className="text-sm text-muted-foreground">Intern</p>
+                        <p className="text-sm text-muted-foreground">Praktykant</p>
                     </div>
                 </CardContent>
             </Card>
@@ -67,8 +67,8 @@ export default function UsersPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-            <h1 className="text-3xl font-bold font-headline text-primary">Interns</h1>
-            <p className="text-muted-foreground">Browse the profiles of other program participants.</p>
+            <h1 className="text-3xl font-bold font-headline text-gradient">Praktykanci</h1>
+            <p className="text-muted-foreground">Przeglądaj profile innych uczestników programu.</p>
         </div>
         <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"

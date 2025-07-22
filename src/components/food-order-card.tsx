@@ -75,13 +75,13 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                                 <Avatar className="h-4 w-4">
                                    {creator.avatarUrl ? <AvatarImage src={creator.avatarUrl} alt={creator.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
                                 </Avatar>
-                                Created by {creator.name}
+                                Stworzone przez {creator.name}
                             </CardDescription>
                         ) : (
-                           <CardDescription className="text-xs text-muted-foreground">Creator not found</CardDescription>
+                           <CardDescription className="text-xs text-muted-foreground">Nie znaleziono twórcy</CardDescription>
                         )}
                     </div>
-                    {!order.isOpen && <Badge variant="destructive" className="bg-red-500/80">Closed</Badge>}
+                    {!order.isOpen && <Badge variant="destructive" className="bg-red-500/80">Zamknięte</Badge>}
                 </div>
                  {order.deadline && <CountdownTimer deadline={order.deadline} />}
             </CardHeader>
@@ -93,13 +93,13 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             <OrderItem key={item.id} item={item} orderId={order.id} isCreator={isCreator} isAdmin={isAdmin}/>
                         ))}
                          {order.orders.length === 0 && (
-                            <p className="text-sm text-muted-foreground text-center py-8">No orders yet. Be the first!</p>
+                            <p className="text-sm text-muted-foreground text-center py-8">Brak zamówień. Bądź pierwszy!</p>
                         )}
                     </div>
                 </ScrollArea>
                  <Separator className="mt-auto" />
                 <div className="flex justify-between items-center font-bold pt-2">
-                    <span>Total:</span>
+                    <span>Suma:</span>
                     <span>{totalAmount.toFixed(2)} zł</span>
                 </div>
             </CardContent>
@@ -107,7 +107,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
             <CardFooter className="flex flex-col items-start gap-3 border-t p-4 bg-secondary/30">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
                     <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-accent transition-colors">
-                        <LinkIcon /> Menu Link
+                        <LinkIcon /> Link do Menu
                     </a>
                     <span className="flex items-center gap-1">
                         <Phone /> {order.creatorPhoneNumber}
@@ -117,68 +117,68 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 {canOrder ? (
                     <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"><ShoppingCart className="mr-2" /> Add Your Order</Button>
+                            <Button className="w-full btn-gradient"><ShoppingCart className="mr-2" /> Dodaj zamówienie</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Add to order "{order.companyName}"</DialogTitle>
+                                <DialogTitle>Dodaj do zamówienia "{order.companyName}"</DialogTitle>
                                 <DialogDescription>
-                                    You can add an order for yourself or for a guest who isn't in the app.
+                                    Możesz dodać zamówienie dla siebie lub dla gościa, który nie jest w aplikacji.
                                     <Button variant="link" asChild className="p-0 h-auto ml-1 text-accent">
-                                        <a href={order.link} target="_blank" rel="noopener noreferrer">View Menu</a>
+                                        <a href={order.link} target="_blank" rel="noopener noreferrer">Zobacz menu</a>
                                     </Button>
                                 </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleAddOrderItem} className="space-y-4">
                                 <Separator />
                                 <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Guest Order</h4>
-                                    <Label htmlFor="guest-name">Guest Name (optional)</Label>
-                                    <Input id="guest-name" value={guestName} onChange={e => setGuestName(e.target.value)} placeholder="e.g., Jan Kowalski" />
-                                    <p className="text-xs text-muted-foreground">If you leave this empty, the order will be assigned to you.</p>
+                                    <h4 className="font-medium text-sm">Zamówienie dla gościa</h4>
+                                    <Label htmlFor="guest-name">Imię i nazwisko gościa (opcjonalnie)</Label>
+                                    <Input id="guest-name" value={guestName} onChange={e => setGuestName(e.target.value)} placeholder="np. Jan Kowalski" />
+                                    <p className="text-xs text-muted-foreground">Jeśli zostawisz puste, zamówienie zostanie przypisane do Ciebie.</p>
                                 </div>
                                 <Separator />
                                 <div>
-                                    <Label htmlFor="item-name">Product Name</Label>
+                                    <Label htmlFor="item-name">Nazwa produktu</Label>
                                     <Input id="item-name" value={newItem.name} onChange={e => setNewItem(prev => ({ ...prev, name: e.target.value }))} required />
                                 </div>
                                 <div>
-                                    <Label htmlFor="item-details">Details (optional)</Label>
-                                    <Input id="item-details" value={newItem.details} onChange={e => setNewItem(prev => ({ ...prev, details: e.target.value }))} placeholder="e.g., extra cheese, no onions" />
+                                    <Label htmlFor="item-details">Szczegóły (opcjonalnie)</Label>
+                                    <Input id="item-details" value={newItem.details} onChange={e => setNewItem(prev => ({ ...prev, details: e.target.value }))} placeholder="np. dodatkowy ser, bez cebuli" />
                                 </div>
                                 <div>
-                                    <Label htmlFor="item-price">Price</Label>
+                                    <Label htmlFor="item-price">Cena</Label>
                                     <Input id="item-price" type="number" step="0.01" value={newItem.price} onChange={e => setNewItem(prev => ({ ...prev, price: e.target.value }))} required />
                                 </div>
-                                <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Add Order</Button>
+                                <Button type="submit" className="w-full btn-gradient">Dodaj zamówienie</Button>
                             </form>
                         </DialogContent>
                     </Dialog>
                 ) : (
                     <Button className="w-full" disabled>
-                        {isDeadlinePassed ? 'Order collection has ended' : 'Event is closed'}
+                        {isDeadlinePassed ? 'Zbiórka zamówień zakończona' : 'Wydarzenie zamknięte'}
                     </Button>
                 )}
                 
                 {(isCreator || isAdmin) && (
                      <div className="w-full space-y-2 pt-2 border-t">
-                        <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
                         <div className="flex gap-2">
                              <Button variant="secondary" className="flex-1" onClick={() => togglePaidStatus(order.id, 'all')}>
-                                <Check className="mr-2" /> Mark all as paid
+                                <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
                             </Button>
                             <Button variant="outline" className="flex-1" onClick={() => toggleOrderState(order.id)}>
                                 {order.isOpen ? <X className="mr-2"/> : <Check className="mr-2" />}
-                                {order.isOpen ? "Close Order" : "Reopen Order"}
+                                {order.isOpen ? "Zamknij zamówienie" : "Otwórz ponownie"}
                             </Button>
                         </div>
                      </div>
                 )}
                 {isAdmin && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-accent">
-                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
                         <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(order.id)}>
-                            <Trash2 className="mr-2" /> Delete Entire Event
+                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
                         </Button>
                     </div>
                 )}

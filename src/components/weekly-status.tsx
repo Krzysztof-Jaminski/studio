@@ -41,11 +41,11 @@ export default function WeeklyStatus() {
   return (
     <Card className="w-full border-green-500/30 bg-card">
       <CardHeader className="bg-secondary/50 rounded-t-lg">
-        <CardTitle className="font-headline text-2xl text-green-400">Weekly Status - Week {weekNumber}</CardTitle>
+        <CardTitle className="font-headline text-2xl text-white">Status tygodniowy - Tydzień {weekNumber}</CardTitle>
         <CardDescription>
           {isPublished 
-            ? "Your status for this week has been published."
-            : "Share your progress and what you've learned this week. You can edit this entry until Friday at 6:00 PM."
+            ? "Twój status na ten tydzień został opublikowany."
+            : "Podziel się postępami i tym, czego nauczyłeś się w tym tygodniu. Możesz edytować ten wpis do piątku do 18:00."
           }
         </CardDescription>
       </CardHeader>
@@ -53,22 +53,22 @@ export default function WeeklyStatus() {
         {isPublished ? (
            <Alert variant="default" className="bg-green-500/10 border-green-500/30">
              <CheckCircle className="h-4 w-4 !text-green-400" />
-             <AlertTitle className="text-green-300">Status Published!</AlertTitle>
+             <AlertTitle className="text-white">Status opublikowany!</AlertTitle>
              <AlertDescription className="text-green-400/80">
-                Your status has been added to your portfolio. You can still edit or expand it from your profile.
+                Twój status został dodany do Twojego portfolio. Nadal możesz go edytować lub rozszerzać z poziomu swojego profilu.
              </AlertDescription>
            </Alert>
         ) : (
           <div className="space-y-4">
             <Alert className="bg-primary/10 border-primary/20">
               <Info className="h-4 w-4 text-primary" />
-              <AlertTitle>Heads up!</AlertTitle>
+              <AlertTitle>Uwaga!</AlertTitle>
               <AlertDescription>
-                Your status will be automatically published on Friday at 6:00 PM. If you don't fill it out, a default entry "No status for this week" will be published.
+                Twój status zostanie automatycznie opublikowany w piątek o 18:00. Jeśli go nie wypełnisz, opublikowany zostanie domyślny wpis "Brak statusu na ten tydzień".
               </AlertDescription>
             </Alert>
             <Textarea
-              placeholder="What did you work on this week? What did you learn?"
+              placeholder="Nad czym pracowałeś/aś w tym tygodniu? Czego się nauczyłeś/aś?"
               value={statusText}
               onChange={(e) => setStatusText(e.target.value)}
               className="min-h-[120px]"
@@ -80,10 +80,10 @@ export default function WeeklyStatus() {
       {!isPublished && (
         <CardFooter className="flex justify-end gap-2">
             <Button variant="outline" onClick={handleSave}>
-              <Clock className="mr-2" /> Save Draft
+              <Clock className="mr-2" /> Zapisz wersję roboczą
             </Button>
-            <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 text-white">
-              <CheckCircle className="mr-2" /> Publish Now
+            <Button onClick={handlePublish} className="btn-gradient">
+              <CheckCircle className="mr-2" /> Opublikuj teraz
             </Button>
         </CardFooter>
       )}

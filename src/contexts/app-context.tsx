@@ -219,7 +219,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setWeeklyStatus(null);
     setPortfolio([]);
-    window.location.href = '/'; 
   };
 
   const toggleReservation = (date: Date, type: 'office' | 'online') => {

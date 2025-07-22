@@ -56,21 +56,21 @@ export default function FoodOrdersPage() {
             <main className="container mx-auto px-4 py-8 flex-grow flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold font-headline text-primary">Food Events</h1>
-                        <p className="text-muted-foreground">Organize group orders and vote for restaurants.</p>
+                        <h1 className="text-3xl font-bold font-headline text-gradient">Wydarzenia jedzeniowe</h1>
+                        <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
                     </div>
                 </div>
 
                 <div className="text-center mb-8">
                      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                                <PlusCircle className="mr-2" /> Create Event
+                            <Button className="btn-gradient">
+                                <PlusCircle className="mr-2" /> Utwórz wydarzenie
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[600px]">
                             <DialogHeader>
-                                <DialogTitle>Create a new food event</DialogTitle>
+                                <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
                             </DialogHeader>
                             <FoodOrderForm
                                 onSubmit={handleFormSubmit}
@@ -96,9 +96,9 @@ export default function FoodOrdersPage() {
                             !activeOrderEvents.length && (
                                 <Alert className="mb-8 border-accent/50 bg-accent/10 text-accent-foreground">
                                     <Info className="h-4 w-4 !text-accent" />
-                                    <AlertTitle>No Active Events</AlertTitle>
+                                    <AlertTitle>Brak aktywnych wydarzeń</AlertTitle>
                                     <AlertDescription>
-                                        There are no active voting or order events. You can create one to get started!
+                                        Obecnie nie ma aktywnych głosowań ani zamówień. Możesz utworzyć nowe, aby coś się działo!
                                     </AlertDescription>
                                 </Alert>
                             )
@@ -106,7 +106,7 @@ export default function FoodOrdersPage() {
                         
                         {activeOrderEvents.length > 0 && (
                             <div className="space-y-4">
-                                <h2 className="text-2xl font-bold font-headline">Active Orders</h2>
+                                <h2 className="text-2xl font-bold font-headline text-white">Aktywne zamówienia</h2>
                                 <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                                     {activeOrderEvents.map(order => (
                                         <motion.div key={`active-order-${order.id}`} variants={itemVariants} layout>

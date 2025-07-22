@@ -75,7 +75,7 @@ export default function FoodOrdersPage() {
             
             {activeOrderEvents.length > 0 ? (
                 <div className="space-y-4">
-                    <h2 className="text-2xl font-bold font-headline">Aktywne zamówienia</h2>
+                    <h2 className="text-2xl font-bold font-headline text-white">Aktywne zamówienia</h2>
                     <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {activeOrderEvents.map(order => (
                             <motion.div key={`active-order-${order.id}`} variants={itemVariants}>
@@ -105,7 +105,7 @@ export default function FoodOrdersPage() {
             className="space-y-8"
         >
             <div className="space-y-4">
-                <h2 className="text-2xl font-bold font-headline">Zakończone głosowania</h2>
+                <h2 className="text-2xl font-bold font-headline text-white">Zakończone głosowania</h2>
                 {historicVotings.length > 0 ? (
                     <motion.div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {historicVotings.map(event => (
@@ -119,7 +119,7 @@ export default function FoodOrdersPage() {
                 )}
             </div>
             <div className="space-y-4">
-                <h2 className="text-2xl font-bold font-headline">Zakończone zamówienia</h2>
+                <h2 className="text-2xl font-bold font-headline text-white">Zakończone zamówienia</h2>
                 {historicOrders.length > 0 ? (
                     <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {historicOrders.map(order => (
@@ -146,7 +146,7 @@ export default function FoodOrdersPage() {
             <main className="container mx-auto px-4 py-8 flex-grow flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold font-headline text-primary">Wydarzenia jedzeniowe</h1>
+                        <h1 className="text-3xl font-bold font-headline text-gradient">Wydarzenia jedzeniowe</h1>
                         <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
                     </div>
                 </div>
@@ -154,7 +154,7 @@ export default function FoodOrdersPage() {
                 <div className="text-center mb-8">
                      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                            <Button className="btn-gradient">
                                 <PlusCircle className="mr-2" /> Utwórz wydarzenie
                             </Button>
                         </DialogTrigger>

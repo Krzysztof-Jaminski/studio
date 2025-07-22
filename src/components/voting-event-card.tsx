@@ -35,7 +35,7 @@ const VoterList = ({ users }: { users: User[] }) => (
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-        )) : <p className="text-xs text-muted-foreground pl-2">No votes yet.</p>}
+        )) : <p className="text-xs text-muted-foreground pl-2">Brak głosów.</p>}
     </div>
 );
 
@@ -59,18 +59,18 @@ const AddOptionForm = ({ eventId, onAdded }: { eventId: string, onAdded: () => v
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <Label htmlFor="option-name">Company Name</Label>
-                <Input id="option-name" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g., Burger King"/>
+                <Label htmlFor="option-name">Nazwa firmy</Label>
+                <Input id="option-name" value={name} onChange={e => setName(e.target.value)} required placeholder="np. Burger King"/>
             </div>
             <div>
-                <Label htmlFor="option-link">Menu Link (optional)</Label>
+                <Label htmlFor="option-link">Link do menu (opcjonalnie)</Label>
                 <Input id="option-link" value={link} onChange={e => setLink(e.target.value)} placeholder="https://example.com/menu"/>
             </div>
              <div>
-                <Label htmlFor="option-image">Image URL (optional)</Label>
+                <Label htmlFor="option-image">URL obrazka (opcjonalnie)</Label>
                 <Input id="option-image" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://example.com/logo.png"/>
             </div>
-            <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Add Option</Button>
+            <Button type="submit" className="w-full btn-gradient">Dodaj opcję</Button>
         </form>
     )
 }
@@ -101,23 +101,23 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                      {option.link && (
                         <Button variant="link" asChild className="p-0 h-auto -ml-1 text-accent/80 hover:text-accent">
                            <a href={option.link} target="_blank" rel="noopener noreferrer">
-                               <LinkIcon className="mr-1" /> View Menu
+                               <LinkIcon className="mr-1" /> Zobacz menu
                            </a>
                        </Button>
                     )}
                 </div>
             </div>
              <div className="space-y-2 flex-grow">
-                 <p className="text-sm font-semibold flex items-center gap-2"><Users className="text-muted-foreground"/>Votes ({option.votes.length})</p>
+                 <p className="text-sm font-semibold flex items-center gap-2"><Users className="text-muted-foreground"/>Głosy ({option.votes.length})</p>
                  <VoterList users={voters} />
              </div>
              
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-accent/80")} />}
             
             {canVote && (
-                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white", hasVoted ? "bg-accent hover:bg-accent/90" : "bg-accent/60 hover:bg-accent/80")} >
+                <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white btn-gradient")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
-                    {hasVoted ? 'Undo Vote' : 'Vote'}
+                    {hasVoted ? 'Cofnij głos' : 'Głosuj'}
                 </Button>
             )}
         </Card>
@@ -163,13 +163,13 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                 <Avatar className="h-4 w-4">
                                      {creator.avatarUrl ? <AvatarImage src={creator.avatarUrl} alt={creator.name} /> : <AvatarFallback><UserCircle /></AvatarFallback>}
                                 </Avatar>
-                                Created by {creator.name}
+                                Stworzone przez {creator.name}
                             </CardDescription>
                         )}
                     </div>
                      {isClosed && (
                         <Badge className="flex items-center gap-1 bg-red-500/80 text-white">
-                            <Trophy className="h-3 w-3" /> Voting Ended
+                            <Trophy className="h-3 w-3" /> Głosowanie zakończone
                         </Badge>
                     )}
                 </div>
@@ -192,7 +192,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                 />
                             ))
                         ) : (
-                            <p className="text-sm text-muted-foreground text-center py-8 col-span-full">No voting options yet. Add the first one!</p>
+                            <p className="text-sm text-muted-foreground text-center py-8 col-span-full">Brak opcji do głosowania. Dodaj pierwszą!</p>
                         )}
                     </div>
                 </ScrollArea>
@@ -202,12 +202,12 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                     <Dialog open={isAddOptionOpen} onOpenChange={setIsAddOptionOpen}>
                         <DialogTrigger asChild>
                            <Button variant="outline" className="w-full">
-                                <PlusCircle className="mr-2"/> Add Your Own Suggestion
+                                <PlusCircle className="mr-2"/> Dodaj własną propozycję
                            </Button>
                         </DialogTrigger>
                         <DialogContent>
                              <DialogHeader>
-                                <DialogTitle>Add a new voting option</DialogTitle>
+                                <DialogTitle>Dodaj nową opcję do głosowania</DialogTitle>
                             </DialogHeader>
                             <AddOptionForm eventId={event.id} onAdded={() => setIsAddOptionOpen(false)} />
                         </DialogContent>
@@ -215,17 +215,17 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                 )}
                  {(isCreator || isAdmin) && event.isOpen && (
                      <div className="w-full space-y-2 pt-2 border-t mt-2">
-                        <p className="text-xs font-semibold text-muted-foreground">Creator Actions</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
                         <Button variant="secondary" className="w-full" onClick={() => toggleOrderState(event.id)}>
-                            <X className="mr-2"/> End Voting
+                            <X className="mr-2"/> Zakończ głosowanie
                         </Button>
                      </div>
                 )}
                  {isAdmin && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-accent mt-2">
-                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Admin Actions</p>
+                        <p className="text-xs font-semibold text-accent flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
                         <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(event.id)}>
-                            <Trash2 className="mr-2" /> Delete Entire Event
+                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
                         </Button>
                     </div>
                 )}

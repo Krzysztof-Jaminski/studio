@@ -22,13 +22,13 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
         <CardHeader className="bg-secondary/50">
             <div className="flex justify-between items-start">
                 <div>
-                    <CardTitle className="font-headline text-lg text-green-400">{item.title}</CardTitle>
+                    <CardTitle className="font-headline text-lg text-white">{item.title}</CardTitle>
                     <CardDescription>
-                        {item.type === 'status' && item.weekOf && `Status for week of ${format(parseISO(item.weekOf), 'd MMMM yyyy', { locale: pl })}`}
-                        {item.type === 'project' && `Added on ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
+                        {item.type === 'status' && item.weekOf && `Status na tydzień ${format(parseISO(item.weekOf), 'd MMMM yyyy', { locale: pl })}`}
+                        {item.type === 'project' && `Dodano ${format(parseISO(item.date), 'd MMMM yyyy', { locale: pl })}`}
                     </CardDescription>
                 </div>
-                <Badge variant={item.type === 'status' ? 'secondary' : 'default'} className={cn(item.type === 'status' ? 'bg-green-600/80 text-white' : 'bg-primary/80 text-white')}>{item.type === 'status' ? 'Status' : 'Project'}</Badge>
+                <Badge variant={item.type === 'status' ? 'secondary' : 'default'} className={cn(item.type === 'status' ? 'bg-green-600/80 text-white' : 'bg-primary/80 text-white')}>{item.type === 'status' ? 'Status' : 'Projekt'}</Badge>
             </div>
         </CardHeader>
         <CardContent className="flex-grow pt-4">
@@ -43,7 +43,7 @@ const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
             <CardFooter>
                  <Button variant="link" asChild className="p-0 h-auto">
                     <a href={item.link} target="_blank" rel="noopener noreferrer">
-                        <LinkIcon className="mr-2" /> View Link
+                        <LinkIcon className="mr-2" /> Zobacz link
                     </a>
                 </Button>
             </CardFooter>
@@ -125,8 +125,8 @@ export default function UserProfilePage() {
       <div className="min-h-screen bg-background text-foreground">
         <Header />
         <main className="container mx-auto px-4 py-8 text-center">
-            <p className="text-lg">User not found.</p>
-            <Button onClick={() => router.push('/users')} className="mt-4">Back to list</Button>
+            <p className="text-lg">Nie znaleziono użytkownika.</p>
+            <Button onClick={() => router.push('/users')} className="mt-4 btn-gradient">Wróć do listy</Button>
         </main>
       </div>
     );
@@ -142,27 +142,27 @@ export default function UserProfilePage() {
         <main className="container mx-auto px-4 py-8">
             <Button variant="outline" onClick={() => router.back()} className="mb-6">
                 <ArrowLeft className="mr-2" />
-                Back
+                Wróć
             </Button>
             <div className="flex items-center gap-6 mb-8">
                 <Avatar className="h-24 w-24 border-2 border-primary">
                    {profileUser.avatarUrl ? <AvatarImage src={profileUser.avatarUrl} alt={profileUser.name} /> : <AvatarFallback className="text-muted-foreground"><UserCircle className="h-full w-full" /></AvatarFallback> }
                 </Avatar>
                 <div>
-                    <h1 className="text-4xl font-bold font-headline flex items-center gap-2 text-primary">
+                    <h1 className="text-4xl font-bold font-headline flex items-center gap-2 text-gradient">
                         {profileUser.name}
                         {profileUser.role === 'admin' && <ShieldCheck className="h-8 w-8 text-primary" />}
                     </h1>
-                    <p className="text-lg text-muted-foreground">Intern at PraktykanciHub</p>
+                    <p className="text-lg text-muted-foreground">Praktykant w PraktykanciHub</p>
                 </div>
             </div>
 
             <div className="mb-8">
-                <h2 className="text-2xl font-bold font-headline mb-4">Presence Statistics</h2>
+                <h2 className="text-2xl font-bold font-headline mb-4 text-white">Statystyki obecności</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <StatCard icon={<Briefcase className="h-6 w-6 text-primary-foreground" />} label="Days in office" value={userStats.office} colorClass="bg-primary" />
-                    <StatCard icon={<Globe className="h-6 w-6 text-primary-foreground" />} label="Days online" value={userStats.online} colorClass="bg-green-500" />
-                    <StatCard icon={<Sigma className="h-6 w-6 text-primary-foreground" />} label="Total reservations" value={userStats.total} colorClass="bg-accent" />
+                    <StatCard icon={<Briefcase className="h-6 w-6 text-primary-foreground" />} label="Dni w biurze" value={userStats.office} colorClass="bg-primary" />
+                    <StatCard icon={<Globe className="h-6 w-6 text-primary-foreground" />} label="Dni online" value={userStats.online} colorClass="bg-green-500" />
+                    <StatCard icon={<Sigma className="h-6 w-6 text-primary-foreground" />} label="Wszystkie rezerwacje" value={userStats.total} colorClass="bg-accent" />
                 </div>
             </div>
 
@@ -171,13 +171,13 @@ export default function UserProfilePage() {
              <div className="space-y-8">
                  {/* Projects */}
                 <div className="space-y-4">
-                    <h2 className="text-2xl font-bold font-headline">Project Portfolio</h2>
+                    <h2 className="text-2xl font-bold font-headline text-white">Portfolio projektów</h2>
                     {projects.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {projects.map(item => <PortfolioCard key={item.id} item={item} />)}
                         </div>
                     ) : (
-                        <p className="text-muted-foreground text-sm">This user has not added any projects yet.</p>
+                        <p className="text-muted-foreground text-sm">Ten użytkownik nie dodał jeszcze żadnych projektów.</p>
                     )}
                 </div>
 
@@ -185,7 +185,7 @@ export default function UserProfilePage() {
 
                 {/* Weekly Statuses */}
                 <div className="space-y-4">
-                    <h2 className="text-2xl font-bold font-headline">Weekly Statuses</h2>
+                    <h2 className="text-2xl font-bold font-headline text-white">Statusy tygodniowe</h2>
                     {statuses.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {statuses.map(item => <PortfolioCard key={item.id} item={item} />)}
@@ -193,8 +193,8 @@ export default function UserProfilePage() {
                     ) : (
                          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 text-center">
                             <FileText className="h-12 w-12 text-muted-foreground" />
-                            <p className="mt-4 font-medium">No Public Statuses</p>
-                            <p className="text-sm text-muted-foreground">This user has not published any statuses yet.</p>
+                            <p className="mt-4 font-medium">Brak publicznych statusów</p>
+                            <p className="text-sm text-muted-foreground">Ten użytkownik nie opublikował jeszcze żadnych statusów.</p>
                         </div>
                     )}
                 </div>
