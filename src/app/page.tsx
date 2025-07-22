@@ -14,29 +14,26 @@ import WelcomePage from './welcome/page';
 
 export default function Home() {
   const { user } = useContext(AppContext);
-  const router = useRouter();
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [hasSeenWelcome, setHasSeenWelcome] = useState(true);
 
   useEffect(() => {
-    if (user) {
-        const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-        if (!hasSeenWelcome) {
-            setShowWelcome(true);
-        }
+    const welcomeSeen = localStorage.getItem('hasSeenWelcome');
+    if (!welcomeSeen) {
+      setHasSeenWelcome(false);
     }
-  }, [user]);
+  }, []);
 
   const handleWelcomeDone = () => {
     localStorage.setItem('hasSeenWelcome', 'true');
-    setShowWelcome(false);
+    setHasSeenWelcome(true);
   }
 
-  if (!user) {
-    return <Login />;
+  if (!hasSeenWelcome) {
+    return <WelcomePage onDone={handleWelcomeDone} />;
   }
   
-  if (showWelcome) {
-      return <WelcomePage onDone={handleWelcomeDone} />
+  if (!user) {
+    return <Login />;
   }
 
   return (
