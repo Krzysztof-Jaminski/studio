@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 
 export default function FoodOrdersPage() {
@@ -144,32 +145,33 @@ export default function FoodOrdersPage() {
         >
             <Header />
             <main className="container mx-auto px-4 py-8 flex-grow flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold font-headline text-gradient">Wydarzenia jedzeniowe</h1>
-                        <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
-                    </div>
-                </div>
-
-                <div className="text-center mb-8">
-                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                        <DialogTrigger asChild>
-                            <Button variant="glass">
-                                <PlusCircle className="mr-2" /> Utwórz wydarzenie
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[600px]">
-                            <DialogHeader>
-                                <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
-                            </DialogHeader>
-                            <FoodOrderForm
-                                onSubmit={handleFormSubmit}
-                                onCancel={() => setIsFormOpen(false)}
-                                storedDetails={storedOrderDetails}
-                            />
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                <Card className="bg-card/50 border-border/20 mb-8">
+                    <CardHeader>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h1 className="text-3xl font-bold font-headline text-gradient">Wydarzenia jedzeniowe</h1>
+                                <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
+                            </div>
+                             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="glass">
+                                        <PlusCircle className="mr-2" /> Utwórz wydarzenie
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[600px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
+                                    </DialogHeader>
+                                    <FoodOrderForm
+                                        onSubmit={handleFormSubmit}
+                                        onCancel={() => setIsFormOpen(false)}
+                                        storedDetails={storedOrderDetails}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    </CardHeader>
+                </Card>
                 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
                     <TabsList className="grid w-full grid-cols-2">

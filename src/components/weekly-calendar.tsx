@@ -11,6 +11,7 @@ import { Loader2, ChevronLeft, ChevronRight, CalendarDays, Info } from 'lucide-r
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader } from './ui/card';
 
 
 // Define the reservation period
@@ -101,32 +102,39 @@ export default function WeeklyCalendar() {
   }
 
   return (
-    <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h1 className="text-3xl font-bold font-headline">Rezerwacje</h1>
-                <p className="text-muted-foreground">Zadeklaruj swoją obecność w dowolnym tygodniu w okresie trwania praktyk.</p>
-            </div>
-            <div className="flex items-center gap-2">
-                <Select value={getMonth(currentDate).toString()} onValueChange={handleMonthChange}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Wybierz miesiąc" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {months.map(m => <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>)}
-                    </SelectContent>
-                </Select>
-                <Button variant="outline" size="icon" onClick={() => changeWeek('prev')}><ChevronLeft/></Button>
-                <Button variant="outline" size="icon" onClick={() => changeWeek('next')}><ChevronRight/></Button>
-            </div>
-        </div>
-        <Alert>
-              <CalendarDays className="h-4 w-4" />
-              <AlertTitle>Jak działają rezerwacje?</AlertTitle>
-              <AlertDescription>
-                Możesz zarezerwować swoje miejsce w biurze lub online na dowolny dzień roboczy w okresie od <b>7 lipca</b> do <b>1 października 2025</b>. Pamiętaj, że liczba miejsc w biurze jest ograniczona. Możesz anulować swoją rezerwację w każdej chwili.
-              </AlertDescription>
-        </Alert>
+    <div className="space-y-4">
+        <Card className="bg-card/50 border-border/20">
+            <CardHeader>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold font-headline">Rezerwacje</h1>
+                        <p className="text-muted-foreground">Zadeklaruj swoją obecność w dowolnym tygodniu w okresie trwania praktyk.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Select value={getMonth(currentDate).toString()} onValueChange={handleMonthChange}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Wybierz miesiąc" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {months.map(m => <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <Button variant="outline" size="icon" onClick={() => changeWeek('prev')}><ChevronLeft/></Button>
+                        <Button variant="outline" size="icon" onClick={() => changeWeek('next')}><ChevronRight/></Button>
+                    </div>
+                </div>
+            </CardHeader>
+             <CardContent>
+                <Alert className="bg-background/50 border-border/30">
+                    <CalendarDays className="h-4 w-4" />
+                    <AlertTitle>Jak działają rezerwacje?</AlertTitle>
+                    <AlertDescription>
+                        Możesz zarezerwować swoje miejsce w biurze lub online na dowolny dzień roboczy w okresie od <b>7 lipca</b> do <b>1 października 2025</b>. Pamiętaj, że liczba miejsc w biurze jest ograniczona. Możesz anulować swoją rezerwację w każdej chwili.
+                    </AlertDescription>
+                </Alert>
+            </CardContent>
+        </Card>
+        
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {displayedDays.map((day) => {
           const reservation = reservations.find(r => r.date === format(day.date, "yyyy-MM-dd"));
