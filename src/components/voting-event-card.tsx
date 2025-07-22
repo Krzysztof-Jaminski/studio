@@ -56,6 +56,8 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
     const voters = option.votes.map(id => allUsers.find(u => u.id === id)).filter(Boolean) as User[];
     const hasVoted = option.votes.includes(user.id);
     const votePercentage = totalVotes > 0 ? (option.votes.length / totalVotes) * 100 : 0;
+    const addedByUser = allUsers.find(u => u.id === option.addedById);
+
 
     return (
         <Card className={cn(
@@ -81,6 +83,14 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                                <LinkIcon className="mr-1" /> Zobacz menu
                            </a>
                        </Button>
+                    )}
+                     {addedByUser && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                            <Avatar className="h-4 w-4">
+                                {addedByUser.avatarUrl ? <AvatarImage src={addedByUser.avatarUrl} alt={addedByUser.name} /> : <AvatarFallback className="text-xs"><UserCircle /></AvatarFallback>}
+                            </Avatar>
+                            <span>Dodane przez {addedByUser.name}</span>
+                        </div>
                     )}
                 </div>
             </div>
@@ -122,8 +132,9 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     const isClosed = !event.isOpen || isDeadlinePassed;
 
     const totalVotes = useMemo(() => {
+        if (!event.votingOptions) return 0;
         const allVoters = new Set<string>();
-        event.votingOptions?.forEach(opt => opt.votes.forEach(voterId => allVoters.add(voterId)));
+        event.votingOptions.forEach(opt => opt.votes.forEach(voterId => allVoters.add(voterId)));
         return allVoters.size;
     }, [event.votingOptions]);
     

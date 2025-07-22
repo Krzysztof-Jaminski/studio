@@ -58,6 +58,7 @@ export type VotingOption = {
     name: string;
     link?: string;
     votes: string[]; // array of user IDs
+    addedById: string;
 };
 
 export type FoodOrder = {

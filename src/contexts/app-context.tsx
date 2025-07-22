@@ -422,6 +422,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 name: opt.name,
                 link: opt.link,
                 votes: [],
+                addedById: user.id,
             })),
             orders: [] // Ensure orders is not undefined for type consistency
         };
@@ -578,6 +579,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                         return { ...opt, votes: [...opt.votes, user.id] };
                     }
                 }
+                // Allow voting for multiple options
                 return opt;
             });
             return { ...event, votingOptions: newOptions };
@@ -593,7 +595,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         id: `opt-${Date.now()}`,
         name: optionData.name,
         link: optionData.link,
-        votes: [user.id], 
+        votes: [], // User who adds doesn't vote automatically
+        addedById: user.id,
     };
 
     setFoodOrders(prev => prev.map(event => {
@@ -666,4 +669,3 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
- 
