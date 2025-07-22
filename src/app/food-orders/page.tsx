@@ -90,7 +90,7 @@ export default function FoodOrdersPage() {
                     <Info className="h-4 w-4 !text-primary" />
                     <AlertTitle>Brak aktywnych zamówień</AlertTitle>
                     <AlertDescription>
-                        Możesz utworzyć bezpośrednie zamówienie, jeśli nie ma potrzeby głosowania.
+                        Możesz utworzyć zamówienie grupowe, jeśli nie ma potrzeby głosowania.
                     </AlertDescription>
                 </Alert>
             )}
@@ -174,7 +174,7 @@ export default function FoodOrdersPage() {
                                         <PlusCircle className="mr-2" /> Utwórz wydarzenie
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[600px]">
+                                <DialogContent className="sm:max-w-[90vw] md:max-w-[50vw]">
                                     <DialogHeader>
                                         <DialogTitle>Utwórz nowe wydarzenie jedzeniowe</DialogTitle>
                                     </DialogHeader>
