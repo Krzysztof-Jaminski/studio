@@ -16,7 +16,7 @@ export type StoredOrderDetails = {
 
 type AppContextType = {
   user: User | null;
-  login: (userId: string, provider: 'google' | 'discord') => void;
+  login: (userId: string, provider: 'google' | 'discord' | 'microsoft') => void;
   logout: () => void;
   reservations: Reservation[];
   toggleReservation: (date: Date, type: 'office' | 'online') => void;
@@ -173,7 +173,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }, [user?.id]);
 
 
-  const login = (userId: string, provider: 'google' | 'discord') => {
+  const login = (userId: string, provider: 'google' | 'discord' | 'microsoft') => {
     let potentialUser = allUsers.find(u => u.id === userId);
 
     if (!potentialUser) {

@@ -33,15 +33,26 @@ const DiscordIcon = () => (
     </svg>
 );
 
+const MicrosoftIcon = () => (
+    <svg className="mr-2 h-5 w-5" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1H10.2321V10.2321H1V1Z" fill="#F25022"/>
+        <path d="M12.7679 1H22V10.2321H12.7679V1Z" fill="#7FBA00"/>
+        <path d="M1 12.7679H10.2321V22H1V12.7679Z" fill="#00A4EF"/>
+        <path d="M12.7679 12.7679H22V22H12.7679V12.7679Z" fill="#FFB900"/>
+    </svg>
+);
+
 
 export default function Login() {
   const { login } = useContext(AppContext);
 
-  const handleLogin = (provider: 'google' | 'discord') => {
+  const handleLogin = (provider: 'google' | 'discord' | 'microsoft') => {
     // In a real app, this would trigger the OAuth flow.
     // For this prototype, we'll simulate it by logging in a mock user.
     if (provider === 'google') {
       login('user-2', 'google'); // Anna Nowak as Google user
+    } else if (provider === 'microsoft') {
+        login('user-3', 'microsoft'); // Piotr Zieliński as Microsoft user
     } else {
       login('user-1', 'discord'); // Jan Kowalski as Discord user
     }
@@ -66,6 +77,9 @@ export default function Login() {
             </Button>
             <Button variant="glass" className="w-full" onClick={() => handleLogin('discord')}>
               <DiscordIcon /> Zaloguj przez Discord
+            </Button>
+            <Button variant="glass" className="w-full" onClick={() => handleLogin('microsoft')}>
+              <MicrosoftIcon /> Zaloguj przez Microsoft
             </Button>
           </CardContent>
            <CardFooter className="text-center text-xs text-muted-foreground pt-4">
