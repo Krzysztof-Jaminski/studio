@@ -126,7 +126,7 @@ export default function FoodOrdersPage() {
                              >
                                 {closedEvents.length > 0 ? (
                                     closedEvents.map(order => 
-                                        <motion.div variants={itemVariants} key={order.id}>
+                                        <motion.div variants={itemVariants} key={`${order.type}-${order.id}`}>
                                             {order.type === 'voting' 
                                             ? <VotingEventCard event={order} />
                                             : <FoodOrderCard order={order} />}
