@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ShieldCheck, UserCircle } from 'lucide-react';
 import type { User } from '@/lib/types';
+import { motion } from 'framer-motion';
 
 const UserCard = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }) => {
     return (
@@ -34,20 +35,50 @@ const UserCard = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean 
 export default function UsersPage() {
   const { allUsers, user: currentUser } = useContext(AppContext);
   
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen bg-background text-foreground"
+    >
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
             <h1 className="text-3xl font-bold font-headline">Praktykanci</h1>
             <p className="text-muted-foreground">Przeglądaj profile innych uczestników programu.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
             {allUsers.map(user => (
-                <UserCard key={user.id} user={user} isCurrentUser={user.id === currentUser?.id} />
+                <motion.div key={user.id} variants={itemVariants}>
+                    <UserCard user={user} isCurrentUser={user.id === currentUser?.id} />
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
       </main>
-    </div>
+    </motion.div>
   );
 }

@@ -133,6 +133,7 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
         creatorId: 'admin1',
         companyName: 'Głosowanie na lunch w piątek',
         isOpen: true,
+        deadline: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(), // 2 hours from now
         votingOptions: [
             { id: 'opt-1', name: 'Mexican Grill', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-1', 'user-4'] },
             { id: 'opt-2', name: 'Italian Pasta', link: 'https://example.com', imageUrl: 'https://placehold.co/100x100.png', votes: ['user-2'] },
@@ -393,6 +394,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         creatorId: user.id,
         companyName: orderData.companyName,
         isOpen: true,
+        deadline: orderData.deadline
     };
 
     if (orderData.type === 'voting') {

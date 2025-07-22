@@ -17,6 +17,8 @@ import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { isPast } from 'date-fns';
+import CountdownTimer from './countdown-timer';
 
 export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder } = useContext(AppContext);
@@ -28,6 +30,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const creator = allUsers.find(u => u.id === order.creatorId);
     const isCreator = user.id === order.creatorId;
     const isAdmin = user.role === 'admin';
+    const isDeadlinePassed = order.deadline ? isPast(new Date(order.deadline)) : false;
 
     const handleAddOrderItem = (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,6 +47,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     };
 
     const totalAmount = order.orders.reduce((sum, item) => sum + item.price, 0);
+    const canOrder = order.isOpen && !isDeadlinePassed;
 
     return (
         <Card className="flex flex-col border-orange-200">
@@ -74,6 +78,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                     </div>
                     {!order.isOpen && <Badge className="bg-orange-600 text-white">Zamknięte</Badge>}
                 </div>
+                 {order.deadline && <CountdownTimer deadline={order.deadline} />}
             </CardHeader>
 
             <CardContent className="flex-grow space-y-4 flex flex-col min-h-0 p-4">
@@ -104,7 +109,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                     </span>
                 </div>
 
-                {order.isOpen && (
+                {canOrder ? (
                     <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                         <DialogTrigger asChild>
                             <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white"><ShoppingCart className="mr-2" /> Dodaj swoje zamówienie</Button>
@@ -130,6 +135,10 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             </form>
                         </DialogContent>
                     </Dialog>
+                ) : (
+                    <Button className="w-full" disabled>
+                        {isDeadlinePassed ? 'Zakończono zbieranie zamówień' : 'Wydarzenie jest zamknięte'}
+                    </Button>
                 )}
                 
                 {(isCreator || isAdmin) && (

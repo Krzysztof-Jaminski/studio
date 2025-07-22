@@ -21,6 +21,7 @@ const formSchema = z.object({
     link: z.string().url("Proszę podać prawidłowy adres URL.").optional().or(z.literal('')),
     creatorPhoneNumber: z.string().min(5, "Proszę podać prawidłowy numer telefonu.").optional().or(z.literal('')),
     imageUrl: z.string().url("Proszę podać prawidłowy adres URL obrazka.").optional().or(z.literal('')),
+    deadline: z.string().optional(),
     votingOptions: z.array(z.object({
         name: z.string().min(1, "Nazwa firmy jest wymagana."),
         link: z.string().url("Wymagany jest prawidłowy link."),
@@ -42,6 +43,7 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
             link: "",
             creatorPhoneNumber: "",
             imageUrl: "",
+            deadline: "",
             votingOptions: [{ name: '', link: '', imageUrl: '' }],
         },
     });
@@ -54,11 +56,22 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
     const eventType = form.watch("type");
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
+        const deadlineDate = values.deadline ? new Date() : undefined;
+        if (deadlineDate && values.deadline) {
+            const [hours, minutes] = values.deadline.split(':').map(Number);
+            deadlineDate.setHours(hours, minutes, 0, 0);
+        }
+
+        const dataToSubmit = {
+            ...values,
+            deadline: deadlineDate?.toISOString()
+        };
+
         if (values.type === 'order') {
-            const { votingOptions, ...orderData } = values;
+            const { votingOptions, ...orderData } = dataToSubmit;
             onSubmit(orderData);
         } else {
-             const { link, creatorPhoneNumber, imageUrl, ...votingData } = values;
+             const { link, creatorPhoneNumber, imageUrl, ...votingData } = dataToSubmit;
              onSubmit(votingData);
         }
     };
@@ -104,6 +117,22 @@ export default function FoodOrderForm({ onSubmit, onCancel }: FoodOrderFormProps
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={form.control}
+                    name="deadline"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Godzina zakończenia (opcjonalnie)</FormLabel>
+                            <FormControl><Input type="time" {...field} /></FormControl>
+                            <FormDescription>
+                                {eventType === 'order' ? 'Po tej godzinie nie będzie można dodawać zamówień.' : 'Po tej godzinie głosowanie zostanie zamknięte.'}
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
 
                 {eventType === 'order' ? (
                     <>

@@ -9,6 +9,7 @@ import WeeklyCalendar from '@/components/weekly-calendar';
 import WeeklyStatus from '@/components/weekly-status';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const { user } = useContext(AppContext);
@@ -19,15 +20,32 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <motion.div 
+        className="min-h-screen bg-background text-foreground"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+    >
         <>
           <Header />
           <main className="container mx-auto px-4 py-8">
-            <WeeklyStatus />
+             <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+             >
+                <WeeklyStatus />
+            </motion.div>
             <Separator className="my-8" />
-            <WeeklyCalendar />
+             <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+             >
+                <WeeklyCalendar />
+            </motion.div>
           </main>
         </>
-    </div>
+    </motion.div>
   );
 }

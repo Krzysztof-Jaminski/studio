@@ -64,6 +64,7 @@ export type FoodOrder = {
     companyName: string; // Also used for Voting Title
     isOpen: boolean;
     type: 'order' | 'voting';
+    deadline?: string; // ISO string for the deadline
     // Order specific
     link?: string;
     creatorPhoneNumber?: string;

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,8 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
 import { ScrollArea } from './ui/scroll-area';
+import { isPast } from 'date-fns';
+import CountdownTimer from './countdown-timer';
 
 const UserList = ({ users }: { users: User[] }) => (
     <div className="space-y-2">
@@ -28,7 +30,7 @@ const UserList = ({ users }: { users: User[] }) => (
     </div>
 );
 
-const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean }) => {
+const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, canVote }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean, canVote: boolean }) => {
     const { user, allUsers, toggleVote } = useContext(AppContext);
     if (!user) return null;
 
@@ -60,11 +62,13 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed }: {
                 </Popover>
             </div>
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-orange-400")} />}
-            {!isClosed && (
+            {canVote ? (
                 <Button onClick={() => toggleVote(eventId, option.id)} className={cn("w-full mt-auto text-white", hasVoted ? "bg-orange-600 hover:bg-orange-700" : "bg-orange-500 hover:bg-orange-600")} >
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Zagłosowano' : 'Głosuj'}
                 </Button>
+            ) : (
+                !isClosed && <Button disabled className="w-full mt-auto">Głosowanie zablokowane</Button>
             )}
         </div>
     );
@@ -78,21 +82,25 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     const creator = allUsers.find(u => u.id === event.creatorId);
     const isCreator = user.id === event.creatorId;
     const isAdmin = user.role === 'admin';
+    const isDeadlinePassed = event.deadline ? isPast(new Date(event.deadline)) : false;
+
+    const canVote = event.isOpen && !isDeadlinePassed;
+    const isClosed = !event.isOpen || isDeadlinePassed;
 
     const totalVotes = useMemo(() => {
         return event.votingOptions?.reduce((sum, opt) => sum + opt.votes.length, 0) || 0;
     }, [event.votingOptions]);
 
     const winningVoteCount = useMemo(() => {
-        if (!event.isOpen) {
+        if (isClosed) {
              return Math.max(...(event.votingOptions?.map(opt => opt.votes.length) || [0]));
         }
         return 0;
-    }, [event.isOpen, event.votingOptions]);
+    }, [isClosed, event.votingOptions]);
     
     return (
         <Card className="flex flex-col border-orange-200">
-            <CardHeader className="bg-orange-50 rounded-t-lg p-4">
+            <CardHeader className="bg-orange-50 rounded-t-lg p-4 space-y-2">
                 <div className="flex justify-between items-start">
                     <div>
                         <CardTitle className="font-headline text-xl text-orange-900">{event.companyName}</CardTitle>
@@ -105,12 +113,13 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                             </CardDescription>
                         )}
                     </div>
-                     {!event.isOpen && (
+                     {isClosed && (
                         <Badge className="flex items-center gap-1 bg-orange-600 text-white">
                             <Trophy className="h-3 w-3" /> Głosowanie zakończone
                         </Badge>
                     )}
                 </div>
+                {event.deadline && <CountdownTimer deadline={event.deadline} />}
             </CardHeader>
             <CardContent className="flex-grow flex flex-col min-h-0 p-4">
                  <ScrollArea className="flex-grow pr-4 -mr-4">
@@ -122,8 +131,9 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                     option={opt}
                                     eventId={event.id}
                                     totalVotes={totalVotes}
-                                    isWinner={!event.isOpen && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
-                                    isClosed={!event.isOpen}
+                                    isWinner={isClosed && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
+                                    isClosed={isClosed}
+                                    canVote={canVote}
                                 />
                             ))
                         ) : (
