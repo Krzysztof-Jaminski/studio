@@ -15,6 +15,7 @@ import { format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 const PortfolioCard = ({ item }: { item: PortfolioItem }) => (
     <Card className="flex flex-col bg-card">
