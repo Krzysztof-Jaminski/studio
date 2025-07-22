@@ -69,11 +69,11 @@ export default function WelcomePage() {
             </div>
 
             {/* Animated background elements */}
-            <AnimatedSquare size={80} initialX="10%" initialY="20%" duration={15} delay={0} />
-            <AnimatedSquare size={50} initialX="80%" initialY="15%" duration={12} delay={0} />
-            <AnimatedSquare size={100} initialX="15%" initialY="70%" duration={18} delay={0} />
-            <AnimatedSquare size={60} initialX="90%" initialY="80%" duration={10} delay={0} />
-            <AnimatedSquare size={40} initialX="50%" initialY="50%" duration={20} delay={0} />
+            <AnimatedSquare size={120} initialX="10%" initialY="20%" duration={25} delay={0} />
+            <AnimatedSquare size={80} initialX="80%" initialY="15%" duration={22} delay={0} />
+            <AnimatedSquare size={150} initialX="15%" initialY="70%" duration={28} delay={0} />
+            <AnimatedSquare size={100} initialX="90%" initialY="80%" duration={20} delay={0} />
+            <AnimatedSquare size={60} initialX="50%" initialY="50%" duration={30} delay={0} />
 
 
             <div className="container mx-auto px-4 py-12 z-10">
