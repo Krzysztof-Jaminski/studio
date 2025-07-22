@@ -160,9 +160,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkDate = () => {
         const now = new Date();
-        const endOfFriday = endOfDay(now);
-        
-        setShowStatusPrompt(true); // Always show prompt for simplicity now
+        const dayOfWeek = getDay(now); // 0 (Sunday) to 6 (Saturday), 5 is Friday
+        setShowStatusPrompt(dayOfWeek === 5);
         
         const startOfThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
         const statusForCurrentWeekExists = portfolio.some(item => item.type === 'status' && item.weekOf === startOfThisWeek.toISOString());
