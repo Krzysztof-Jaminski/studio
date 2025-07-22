@@ -8,6 +8,7 @@ import { Logo } from "@/components/icons";
 import React, { useState } from "react";
 import Login from "@/components/login";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: number }) => (
     <motion.div 
@@ -63,12 +64,16 @@ export default function WelcomePage() {
             initial="initial"
             animate="animate"
         >
+            <div className="absolute top-4 right-4 z-20">
+                <ThemeToggle />
+            </div>
+
             {/* Animated background elements */}
-            <AnimatedSquare size={50} initialX="10%" initialY="20%" duration={15} delay={0} />
-            <AnimatedSquare size={30} initialX="80%" initialY="15%" duration={12} delay={2} />
-            <AnimatedSquare size={60} initialX="15%" initialY="70%" duration={18} delay={4} />
-            <AnimatedSquare size={40} initialX="90%" initialY="80%" duration={10} delay={1} />
-            <AnimatedSquare size={20} initialX="50%" initialY="50%" duration={20} delay={3} />
+            <AnimatedSquare size={80} initialX="10%" initialY="20%" duration={15} delay={0} />
+            <AnimatedSquare size={50} initialX="80%" initialY="15%" duration={12} delay={0} />
+            <AnimatedSquare size={100} initialX="15%" initialY="70%" duration={18} delay={0} />
+            <AnimatedSquare size={60} initialX="90%" initialY="80%" duration={10} delay={0} />
+            <AnimatedSquare size={40} initialX="50%" initialY="50%" duration={20} delay={0} />
 
 
             <div className="container mx-auto px-4 py-12 z-10">
