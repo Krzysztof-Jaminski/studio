@@ -26,7 +26,7 @@ const FeatureCard = ({ icon, title, description, delay }: { icon: React.ReactNod
     </motion.div>
 );
 
-const AnimatedSquare = ({ size, initialX, initialY, duration, delay }: { size: number, initialX: string, initialY: string, duration: number, delay: number }) => (
+const AnimatedSquare = ({ size, initialX, initialY, duration }: { size: number, initialX: string, initialY: string, duration: number }) => (
     <motion.div
         style={{
             width: size,
@@ -34,8 +34,8 @@ const AnimatedSquare = ({ size, initialX, initialY, duration, delay }: { size: n
             position: 'absolute',
             top: initialY,
             left: initialX,
-            backgroundColor: 'rgba(124, 58, 237, 0.1)', // Fioletowy z przezroczystością
-            borderRadius: '10px',
+            backgroundColor: 'hsla(var(--primary) / 0.1)',
+            borderRadius: '15px',
         }}
         initial={{ opacity: 0, y: 50, rotate: 0 }}
         animate={{
@@ -49,7 +49,6 @@ const AnimatedSquare = ({ size, initialX, initialY, duration, delay }: { size: n
             repeat: Infinity,
             repeatType: 'mirror',
             ease: 'easeInOut',
-            delay: delay,
         }}
     />
 );
@@ -69,18 +68,20 @@ export default function WelcomePage() {
             </div>
 
             {/* Animated background elements */}
-            <AnimatedSquare size={120} initialX="10%" initialY="20%" duration={25} delay={0} />
-            <AnimatedSquare size={80} initialX="80%" initialY="15%" duration={22} delay={0} />
-            <AnimatedSquare size={150} initialX="15%" initialY="70%" duration={28} delay={0} />
-            <AnimatedSquare size={100} initialX="90%" initialY="80%" duration={20} delay={0} />
-            <AnimatedSquare size={60} initialX="50%" initialY="50%" duration={30} delay={0} />
+            <AnimatedSquare size={150} initialX="5%" initialY="15%" duration={25} />
+            <AnimatedSquare size={100} initialX="85%" initialY="10%" duration={22} />
+            <AnimatedSquare size={200} initialX="10%" initialY="70%" duration={28} />
+            <AnimatedSquare size={120} initialX="90%" initialY="80%" duration={20} />
+            <AnimatedSquare size={80} initialX="50%" initialY="50%" duration={30} />
+            <AnimatedSquare size={70} initialX="30%" initialY="30%" duration={18} />
+            <AnimatedSquare size={180} initialX="70%" initialY="60%" duration={26} />
 
 
             <div className="container mx-auto px-4 py-12 z-10">
                 <motion.div
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
+                    transition={{ duration: 0.7 }}
                     className="text-center mb-12"
                 >
                     <Logo className="h-20 w-20 mx-auto mb-4 text-primary drop-shadow-lg" />
@@ -93,32 +94,32 @@ export default function WelcomePage() {
                         icon={<Briefcase className="h-8 w-8" />}
                         title="Rezerwacje Obecności"
                         description="Zaplanuj swoje dni w biurze lub online. Zobacz, kto jeszcze będzie i zarezerwuj miejsce."
-                        delay={0.4}
+                        delay={0.2}
                     />
                     <FeatureCard
                         icon={<FileText className="h-8 w-8" />}
                         title="Statusy i Portfolio"
                         description="Dziel się tygodniowymi postępami i buduj swoje portfolio projektów, aby pokazać swoje osiągnięcia."
-                        delay={0.6}
+                        delay={0.4}
                     />
                     <FeatureCard
                         icon={<ShoppingCart className="h-8 w-8" />}
                         title="Zamówienia Jedzenia"
                         description="Organizuj grupowe zamówienia na lunch. Dołącz do istniejących lub twórz własne wydarzenia."
-                        delay={0.8}
+                        delay={0.6}
                     />
                     <FeatureCard
                         icon={<Users className="h-8 w-8" />}
                         title="Społeczność"
                         description="Przeglądaj profile innych praktykantów i bądź na bieżąco z życiem firmy."
-                        delay={1.0}
+                        delay={0.8}
                     />
                 </div>
                 
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.7, delay: 1.2 }}
+                    transition={{ duration: 0.7, delay: 1.0 }}
                     className="text-center"
                 >
                     <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
