@@ -148,15 +148,13 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             description: `Witaj z powrotem, ${user.name}!`,
         });
     }
-  }, [user?.id, toast]);
+  }, [user?.id]);
 
 
   const login = (userId: string, provider: 'google' | 'discord') => {
     let potentialUser = allUsers.find(u => u.id === userId);
 
     if (!potentialUser) {
-        // In a real OAuth scenario, we would get user info from the provider.
-        // For this prototype, we'll create a new user if not found.
         const newUser: User = {
             id: userId,
             name: `Użytkownik ${userId}`,
@@ -179,7 +177,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         setReservations(seedRandomReservations(allUsers));
     }
 
-    // Check for existing status for the current week
     const weekStartISO = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
     const existingStatus = userPortfolio.find(item => item.type === 'status' && item.weekOf === weekStartISO);
     
@@ -202,6 +199,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setWeeklyStatus(null);
     setPortfolio([]);
+    window.location.href = '/'; 
   };
 
   const toggleReservation = (date: Date, type: 'office' | 'online') => {
@@ -215,7 +213,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         if (res.online.includes(user.id)) userBooking = 'online';
     }
 
-    // Cancel if clicking the same booking type
     if (userBooking === type) {
         const updatedReservations = reservations.map(r => {
             if (r.date === dateString) {
@@ -235,7 +232,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         return;
     }
 
-    // If changing booking or new booking, first remove any existing booking for that day
     const reservationsWithoutUser = reservations.map(r => {
         if (r.date === dateString) {
             return {
@@ -255,7 +251,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           title: "Rezerwacja nieudana",
           description: `Przepraszamy, wszystkie miejsca w biurze na ${format(date, "d MMMM")} są zajęte.`,
         });
-        // Add back the original booking if it existed
         toggleReservation(date, userBooking as 'office' | 'online');
         return;
     }
@@ -358,11 +353,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     return { user: foundUser || null, portfolio: userPortfolio };
   };
 
-  // Food Order Functions
   const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
     if (!user) return;
     
-    // If creating a voting event, deactivate any other open voting events. Orders can co-exist.
     const updatedOrders = orderData.type === 'voting' 
         ? foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o)
         : foodOrders;
@@ -519,7 +512,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         name: optionData.name,
         link: optionData.link,
         imageUrl: optionData.imageUrl,
-        votes: [user.id], // The user who adds the option automatically votes for it
+        votes: [user.id], 
     };
 
     setFoodOrders(prev => prev.map(event => {

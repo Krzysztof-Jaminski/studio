@@ -17,7 +17,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // This check should be simple. If the user has seen the welcome page, we don't show it again.
     const welcomeSeen = localStorage.getItem('hasSeenWelcome');
     if (!welcomeSeen) {
       setShowWelcome(true);
@@ -34,7 +33,7 @@ export default function Home() {
     return <div className="min-h-screen bg-background" />; 
   }
 
-  if (showWelcome) {
+  if (showWelcome && !user) {
     return <WelcomePage onDone={handleWelcomeDone} />;
   }
   
