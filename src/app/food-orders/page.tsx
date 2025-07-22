@@ -11,7 +11,6 @@ import FoodOrderForm from '@/components/food-order-form';
 import type { FoodOrder } from '@/lib/types';
 import FoodOrderCard from '@/components/food-order-card';
 import VotingEventCard from '@/components/voting-event-card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Utensils } from 'lucide-react';
