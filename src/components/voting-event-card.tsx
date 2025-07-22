@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, User, VotingOption } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon } from 'lucide-react';
+import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
@@ -85,7 +85,8 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
 
     return (
         <Card className={cn(
-            "flex flex-col space-y-3 relative h-full bg-secondary/80 p-4 transition-all hover:shadow-md hover:border-primary",
+            "flex flex-col space-y-3 relative h-full bg-secondary/80 p-4 transition-all hover:shadow-md",
+            isClosed ? "hover:border-primary/50" : "hover:border-primary",
             hasVoted && "border-primary",
             isWinner && "border-yellow-400"
         )}>
@@ -112,7 +113,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                  <VoterList users={voters} />
              </div>
              
-            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary/80")} />}
+            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary")} />}
             
             {canVote && (
                 <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto text-white")} >
@@ -139,7 +140,6 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     const isClosed = !event.isOpen || isDeadlinePassed;
 
     const totalVotes = useMemo(() => {
-        // Since users can vote for multiple options, we count unique voters across all options.
         const allVoters = new Set<string>();
         event.votingOptions?.forEach(opt => opt.votes.forEach(voterId => allVoters.add(voterId)));
         return allVoters.size;
@@ -168,7 +168,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                         )}
                     </div>
                      {isClosed && (
-                        <Badge className="flex items-center gap-1 bg-red-500/80 text-white">
+                        <Badge className="flex items-center gap-1 bg-primary/80 text-white">
                             <Trophy className="h-3 w-3" /> Głosowanie zakończone
                         </Badge>
                     )}
@@ -221,12 +221,17 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                         </Button>
                      </div>
                 )}
-                 {isAdmin && (
+                 {(isCreator || isAdmin) && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary mt-2">
-                        <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
-                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(event.id)}>
-                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
-                        </Button>
+                        <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
+                        <div className="flex gap-2">
+                             <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(event.id)}>
+                                <Trash2 className="mr-2" /> Usuń
+                            </Button>
+                             <Button className="flex-1" variant="outline">
+                                <Pencil className="mr-2" /> Edytuj
+                            </Button>
+                        </div>
                     </div>
                 )}
             </CardFooter>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -113,7 +114,7 @@ export default function FoodOrderForm({ onSubmit, onCancel, storedDetails }: Foo
                                     >
                                         <FormItem className="flex items-center space-x-2 space-y-0">
                                             <FormControl><RadioGroupItem value="order" /></FormControl>
-                                            <FormLabel className="font-normal">Bezpośrednie zamówienie</FormLabel>
+                                            <FormLabel className="font-normal">Zamówienie grupowe</FormLabel>
                                         </FormItem>
                                         <FormItem className="flex items-center space-x-2 space-y-0">
                                             <FormControl><RadioGroupItem value="voting" /></FormControl>
@@ -263,7 +264,7 @@ export default function FoodOrderForm({ onSubmit, onCancel, storedDetails }: Foo
                                                         )}
                                                     />
                                                     {fields.length > 1 && (
-                                                        <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-accent/20 hover:text-accent" onClick={() => remove(index)}>
+                                                        <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-red-500/20 hover:text-red-400" onClick={() => remove(index)}>
                                                             <Trash2 />
                                                         </Button>
                                                     )}
@@ -300,5 +301,3 @@ export default function FoodOrderForm({ onSubmit, onCancel, storedDetails }: Foo
         </Form>
     );
 }
-
-    

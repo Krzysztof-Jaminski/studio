@@ -67,10 +67,10 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
                     <Button 
                         size="icon" 
                         variant="ghost" 
-                        className="h-7 w-7 text-muted-foreground hover:bg-red-500/20 hover:text-red-400"
+                        className="h-7 w-7 text-muted-foreground hover:bg-red-500/20 hover:text-red-400 relative"
                         onClick={() => removeOrderItem(orderId, item.id)}
                     >
-                         {isAdmin && user?.id !== item.userId && <ShieldCheck className="absolute h-3 w-3 -top-1 -right-1 text-primary" />}
+                         {isAdmin && user?.id !== item.userId && !isCreator && <ShieldCheck className="absolute h-3 w-3 -top-1 -right-1 text-primary" />}
                         <Trash2 />
                     </Button>
                  )}

@@ -167,19 +167,24 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                              <Button variant="secondary" className="flex-1" onClick={() => togglePaidStatus(order.id, 'all')}>
                                 <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
                             </Button>
-                            <Button variant="outline" className="flex-1" onClick={() => toggleOrderState(order.id)}>
+                             <Button variant="outline" className="flex-1" onClick={() => toggleOrderState(order.id)}>
                                 {order.isOpen ? <X className="mr-2"/> : <Check className="mr-2" />}
                                 {order.isOpen ? "Zamknij zamówienie" : "Otwórz ponownie"}
                             </Button>
                         </div>
                      </div>
                 )}
-                {isAdmin && (
+                {(isCreator || isAdmin) && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary">
-                        <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora</p>
-                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(order.id)}>
-                            <Trash2 className="mr-2" /> Usuń całe wydarzenie
-                        </Button>
+                        <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
+                        <div className="flex gap-2">
+                            <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(order.id)}>
+                                <Trash2 className="mr-2" /> Usuń
+                            </Button>
+                            <Button className="flex-1" variant="outline">
+                                <Pencil className="mr-2" /> Edytuj
+                            </Button>
+                        </div>
                     </div>
                 )}
             </CardFooter>
