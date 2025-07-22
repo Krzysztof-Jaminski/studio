@@ -154,7 +154,7 @@ export default function FoodOrdersPage() {
                 <div className="text-center mb-8">
                      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
-                            <Button className="btn-gradient">
+                            <Button variant="glass">
                                 <PlusCircle className="mr-2" /> Utwórz wydarzenie
                             </Button>
                         </DialogTrigger>

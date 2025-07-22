@@ -82,7 +82,7 @@ export default function WeeklyStatus() {
             <Button variant="outline" onClick={handleSave}>
               <Clock className="mr-2" /> Zapisz wersję roboczą
             </Button>
-            <Button onClick={handlePublish} className="btn-gradient">
+            <Button onClick={handlePublish} variant="glass">
               <CheckCircle className="mr-2" /> Opublikuj teraz
             </Button>
         </CardFooter>

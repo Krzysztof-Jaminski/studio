@@ -16,9 +16,12 @@ export default {
       },
     },
     extend: {
+      boxShadow: {
+        'primary-glow': '0 0 15px hsl(var(--primary))',
+      },
       fontFamily: {
-        body: ['"Russo One"', 'sans-serif'],
-        headline: ['"Russo One"', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+        headline: ['"Space Grotesk"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

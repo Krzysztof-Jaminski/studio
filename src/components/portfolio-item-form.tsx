@@ -133,7 +133,7 @@ export default function PortfolioItemForm({ item, onSubmit, onCancel }: Portfoli
         />
         <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onCancel}>Anuluj</Button>
-            <Button type="submit" className="btn-gradient">Zapisz projekt</Button>
+            <Button type="submit" variant="glass">Zapisz projekt</Button>
         </div>
       </form>
     </Form>

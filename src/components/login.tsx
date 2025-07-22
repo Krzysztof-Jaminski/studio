@@ -61,10 +61,10 @@ export default function Login() {
             <CardDescription>Zaloguj się, aby zarezerwować miejsce i dołączyć do społeczności.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button className="w-full btn-gradient" onClick={() => handleLogin('google')}>
+            <Button variant="glass" className="w-full" onClick={() => handleLogin('google')}>
               <GoogleIcon /> Zaloguj przez Google
             </Button>
-            <Button className="w-full btn-gradient" onClick={() => handleLogin('discord')}>
+            <Button variant="glass" className="w-full" onClick={() => handleLogin('discord')}>
               <DiscordIcon /> Zaloguj przez Discord
             </Button>
           </CardContent>

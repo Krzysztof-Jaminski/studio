@@ -16,6 +16,9 @@ export default {
       },
     },
     extend: {
+      boxShadow: {
+        'primary-glow': '0 0 15px hsl(var(--primary))',
+      },
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['"Space Grotesk"', 'sans-serif'],

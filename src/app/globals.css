@@ -39,13 +39,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-@layer components {
-  .btn-gradient {
-    @apply bg-card/50 backdrop-blur-sm text-foreground border-2 border-transparent transition-all duration-300;
-    @apply hover:border-primary hover:shadow-[0_0_15px_theme(colors.primary)];
-  }
-  .text-gradient {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text;
-  }
-}

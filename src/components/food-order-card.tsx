@@ -117,7 +117,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                 {canOrder ? (
                     <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="w-full btn-gradient"><ShoppingCart className="mr-2" /> Dodaj zamówienie</Button>
+                            <Button variant="glass" className="w-full"><ShoppingCart className="mr-2" /> Dodaj zamówienie</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
@@ -150,7 +150,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                                     <Label htmlFor="item-price">Cena</Label>
                                     <Input id="item-price" type="number" step="0.01" value={newItem.price} onChange={e => setNewItem(prev => ({ ...prev, price: e.target.value }))} required />
                                 </div>
-                                <Button type="submit" className="w-full btn-gradient">Dodaj zamówienie</Button>
+                                <Button type="submit" variant="glass" className="w-full">Dodaj zamówienie</Button>
                             </form>
                         </DialogContent>
                     </Dialog>

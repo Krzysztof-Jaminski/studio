@@ -85,7 +85,7 @@ export default function WelcomePage() {
                 >
                     <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                         <DialogTrigger asChild>
-                            <Button size="lg" className="btn-gradient shadow-lg transform hover:scale-105 transition-transform duration-300">
+                            <Button size="lg" variant="glass" className="shadow-lg transform hover:scale-105 transition-transform duration-300">
                                 <CheckCircle className="mr-2"/> Rozpocznij
                             </Button>
                         </DialogTrigger>

@@ -95,7 +95,7 @@ export default function PortfolioSection() {
                     <h3 className="text-xl font-bold font-headline text-white">Portfolio Projektów</h3>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild>
-                            <Button onClick={handleAddNew} className="btn-gradient">
+                            <Button onClick={handleAddNew} variant="glass">
                                 <PlusCircle className="mr-2" /> Dodaj Projekt
                             </Button>
                         </DialogTrigger>
