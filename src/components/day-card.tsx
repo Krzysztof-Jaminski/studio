@@ -52,6 +52,9 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
     }
   }
 
+  const dayName = format(date, "EEEE", { locale: pl });
+  const capitalizedDayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+
   return (
     <Card className={cn(
       "flex flex-col transition-all duration-150 bg-card",
@@ -60,7 +63,7 @@ export default function DayCard({ day, officeUsers, onlineUsers, isBookedByUser,
     )}>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle className="font-headline text-primary">{format(date, "EEEE", { locale: pl })}</CardTitle>
+          <CardTitle className="font-headline text-primary">{capitalizedDayName}</CardTitle>
           {isToday && isReservable && <Badge variant="default" className="bg-primary/20 text-primary">Dzisiaj</Badge>}
           {!isReservable && !isPast && <Badge variant="outline">Niedostępny</Badge>}
         </div>
