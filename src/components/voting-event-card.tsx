@@ -134,7 +134,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         event.votingOptions?.forEach(opt => opt.votes.forEach(voterId => allVoters.add(voterId)));
         return allVoters.size;
     }, [event.votingOptions]);
-
+    
     const winningVoteCount = useMemo(() => {
         if (isClosed) {
              return Math.max(...(event.votingOptions?.map(opt => opt.votes.length) || [0]));
@@ -143,7 +143,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     }, [isClosed, event.votingOptions]);
     
     return (
-        <Card className="flex flex-col border-orange-200 w-full">
+        <Card className="flex flex-col border-orange-200 w-full h-full">
             <CardHeader className="bg-orange-50 rounded-t-lg p-4 space-y-2">
                 <div className="flex justify-between items-start">
                     <div>
@@ -168,7 +168,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
             </CardHeader>
             <CardContent className="flex-grow flex flex-col min-h-0 p-4">
                  <ScrollArea className="flex-grow pr-4 -mr-4">
-                    <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {event.votingOptions.length > 0 ? (
                             event.votingOptions.map((opt) => (
                                 <VotingOptionCard
@@ -182,7 +182,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                 />
                             ))
                         ) : (
-                            <p className="text-sm text-muted-foreground text-center py-8">Brak opcji do głosowania.</p>
+                            <p className="text-sm text-muted-foreground text-center py-8 col-span-full">Brak opcji do głosowania. Dodaj pierwszą!</p>
                         )}
                     </div>
                 </ScrollArea>

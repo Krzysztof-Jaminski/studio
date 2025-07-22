@@ -24,7 +24,7 @@ type AppContextType = {
   allUsers: User[];
   getUserById: (userId: string) => { user: User | null; portfolio: PortfolioItem[] };
   foodOrders: FoodOrder[];
-  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => void;
+  addFoodOrder: (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'>) => void;
   removeFoodOrder: (orderId: string) => void;
   addOrderItem: (orderId: string, item: OrderItemData) => void;
   removeOrderItem: (orderId: string, itemId: string) => void;
@@ -110,7 +110,7 @@ const MOCK_FOOD_ORDERS: FoodOrder[] = [
         link: 'https://example.com',
         creatorPhoneNumber: '123-456-789',
         imageUrl: 'https://placehold.co/100x100.png',
-        isOpen: true,
+        isOpen: false,
         orders: [
             { id: 'item-1', userId: 'user-2', name: 'Margherita', details: 'Duża', price: 15.99, isPaid: true },
             { id: 'item-2', userId: 'user-3', name: 'Pepperoni', details: 'Średnia, dodatkowy ser', price: 17.50, isPaid: false },
@@ -285,7 +285,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           description: `Przepraszamy, wszystkie miejsca w biurze na ${format(date, "d MMMM")} są zajęte.`,
         });
         // Add back the original booking if it existed
-        toggleReservation(date, userBooking);
+        toggleReservation(date, userBooking as 'office' | 'online');
         return;
     }
     
@@ -391,6 +391,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const addFoodOrder = (orderData: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'> & { votingOptions?: { name: string, link?: string, imageUrl?: string }[] }) => {
     if (!user) return;
     
+    // Deactivate any other open events
+    const updatedOrders = foodOrders.map(o => ({...o, isOpen: false}));
+
     let newEvent: FoodOrder;
     const baseEvent = {
         id: `evt-${Date.now()}`,
@@ -424,7 +427,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         };
     }
 
-    setFoodOrders(prev => [newEvent, ...prev]);
+    setFoodOrders([newEvent, ...updatedOrders]);
     toast({ title: "Wydarzenie utworzone!", description: `Wydarzenie "${orderData.companyName}" jest już aktywne.` });
   };
 

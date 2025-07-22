@@ -13,21 +13,22 @@ import FoodOrderCard from '@/components/food-order-card';
 import VotingEventCard from '@/components/voting-event-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Utensils } from 'lucide-react';
 
 
 export default function FoodOrdersPage() {
     const { foodOrders, addFoodOrder } = useContext(AppContext);
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('votings');
 
     const handleFormSubmit = (order: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'votingOptions'>) => {
         addFoodOrder(order);
         setIsFormOpen(false);
     };
     
-    const activeVotings = foodOrders.filter(order => order.type === 'voting' && order.isOpen);
-    const activeOrders = foodOrders.filter(order => order.type === 'order' && order.isOpen);
-    const closedEvents = foodOrders.filter(order => !order.isOpen);
+    // For this new design, we assume one active event per day.
+    // We'll find the most recent active event to display.
+    const activeEvent = foodOrders.find(order => order.isOpen);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -47,99 +48,16 @@ export default function FoodOrdersPage() {
         }
     };
 
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'votings':
-                return (
-                    <motion.div
-                        key="votings"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <motion.div 
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
-                        >
-                            {activeVotings.length > 0 ? (
-                                activeVotings.map(order => <motion.div variants={itemVariants} key={`voting-${order.id}`}><VotingEventCard event={order} /></motion.div>)
-                            ) : (
-                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych głosowań.</p>
-                            )}
-                        </motion.div>
-                    </motion.div>
-                );
-            case 'orders':
-                 return (
-                    <motion.div
-                        key="orders"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <motion.div 
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
-                        >
-                            {activeOrders.length > 0 ? (
-                                activeOrders.map(order => <motion.div variants={itemVariants} key={`order-${order.id}`}><FoodOrderCard order={order} /></motion.div>)
-                            ) : (
-                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych zamówień.</p>
-                            )}
-                        </motion.div>
-                    </motion.div>
-                );
-            case 'history':
-                return (
-                    <motion.div
-                        key="history"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                         <motion.div 
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
-                         >
-                            {closedEvents.length > 0 ? (
-                                closedEvents.map(order => 
-                                    <motion.div variants={itemVariants} key={`history-${order.type}-${order.id}`}>
-                                        {order.type === 'voting' 
-                                        ? <VotingEventCard event={order} />
-                                        : <FoodOrderCard order={order} />}
-                                    </motion.div>
-                                )
-                            ) : (
-                                <p className="text-muted-foreground col-span-full text-center mt-8">Brak zakończonych wydarzeń.</p>
-                            )}
-                        </motion.div>
-                    </motion.div>
-                );
-            default:
-                return null;
-        }
-    };
-
-
     return (
         <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="min-h-screen bg-background text-foreground"
+            className="min-h-screen bg-background text-foreground flex flex-col"
         >
             <Header />
-            <main className="container mx-auto px-4 py-8">
-                <div className="flex justify-between items-center mb-8">
+            <main className="container mx-auto px-4 py-8 flex-grow flex flex-col">
+                <div className="flex justify-between items-center mb-6">
                     <div>
                         <h1 className="text-3xl font-bold font-headline">Wydarzenia jedzeniowe</h1>
                         <p className="text-muted-foreground">Organizuj grupowe zamówienia i głosuj na restauracje.</p>
@@ -162,16 +80,37 @@ export default function FoodOrdersPage() {
                     </Dialog>
                 </div>
                 
-                <Tabs defaultValue="votings" className="w-full" onValueChange={setActiveTab}>
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="votings">Głosowania ({activeVotings.length})</TabsTrigger>
-                        <TabsTrigger value="orders">Aktywne zamówienia ({activeOrders.length})</TabsTrigger>
-                        <TabsTrigger value="history">Historia wydarzeń ({closedEvents.length})</TabsTrigger>
-                    </TabsList>
-                    <AnimatePresence mode="wait">
-                       {renderContent()}
-                    </AnimatePresence>
-                </Tabs>
+                 <Alert className="mb-8 border-orange-200 bg-orange-50 text-orange-900">
+                    <Utensils className="h-4 w-4 !text-orange-500" />
+                    <AlertTitle>Jak to działa?</AlertTitle>
+                    <AlertDescription>
+                        Każdego dnia może być aktywne jedno wydarzenie: głosowanie na restaurację lub bezpośrednie zamówienie. Dołącz, dodaj swoje propozycje i bierz udział we wspólnych posiłkach!
+                    </AlertDescription>
+                </Alert>
+
+                <AnimatePresence mode="wait">
+                    <motion.div 
+                        key={activeEvent ? activeEvent.id : 'no-event'}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className="flex-grow flex items-center justify-center"
+                    >
+                        {activeEvent ? (
+                             <div className="w-full h-full max-w-5xl mx-auto">
+                                {activeEvent.type === 'voting' 
+                                    ? <VotingEventCard event={activeEvent} />
+                                    : <FoodOrderCard order={activeEvent} />}
+                            </div>
+                        ) : (
+                            <div className="text-center">
+                                <p className="text-xl font-semibold text-muted-foreground">Brak aktywnych wydarzeń na dziś.</p>
+                                <p className="text-muted-foreground">Może chcesz jakieś utworzyć?</p>
+                            </div>
+                        )}
+                    </motion.div>
+                </AnimatePresence>
             </main>
         </motion.div>
     );

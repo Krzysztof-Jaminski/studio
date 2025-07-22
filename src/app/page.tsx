@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@/contexts/app-context';
 import Login from '@/components/login';
 import Header from '@/components/header';
@@ -10,13 +10,33 @@ import WeeklyStatus from '@/components/weekly-status';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import WelcomePage from './welcome/page';
 
 export default function Home() {
   const { user } = useContext(AppContext);
   const router = useRouter();
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+        const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+        if (!hasSeenWelcome) {
+            setShowWelcome(true);
+        }
+    }
+  }, [user]);
+
+  const handleWelcomeDone = () => {
+    localStorage.setItem('hasSeenWelcome', 'true');
+    setShowWelcome(false);
+  }
 
   if (!user) {
     return <Login />;
+  }
+  
+  if (showWelcome) {
+      return <WelcomePage onDone={handleWelcomeDone} />
   }
 
   return (
