@@ -426,18 +426,19 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             orders: [] // Ensure orders is not undefined
         };
     } else { // 'order'
+        const { link, creatorPhoneNumber, imageUrl } = orderData;
         newEvent = {
             ...baseEvent,
             type: 'order',
-            link: orderData.link,
-            creatorPhoneNumber: orderData.creatorPhoneNumber,
-            imageUrl: orderData.imageUrl,
+            link,
+            creatorPhoneNumber,
+            imageUrl,
             orders: [],
         };
         const detailsToStore: StoredOrderDetails = {
-            link: orderData.link,
-            creatorPhoneNumber: orderData.creatorPhoneNumber,
-            imageUrl: orderData.imageUrl
+            link,
+            creatorPhoneNumber,
+            imageUrl
         };
         try {
             localStorage.setItem('lastOrderDetails', JSON.stringify(detailsToStore));
