@@ -14,21 +14,27 @@ import WelcomePage from './welcome/page';
 
 export default function Home() {
   const { user } = useContext(AppContext);
-  const [hasSeenWelcome, setHasSeenWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const welcomeSeen = localStorage.getItem('hasSeenWelcome');
     if (!welcomeSeen) {
-      setHasSeenWelcome(false);
+      setShowWelcome(true);
     }
+    setIsLoading(false);
   }, []);
 
   const handleWelcomeDone = () => {
     localStorage.setItem('hasSeenWelcome', 'true');
-    setHasSeenWelcome(true);
+    setShowWelcome(false);
+  }
+  
+  if (isLoading) {
+    return <div className="min-h-screen bg-background" />; 
   }
 
-  if (!hasSeenWelcome) {
+  if (showWelcome) {
     return <WelcomePage onDone={handleWelcomeDone} />;
   }
   
