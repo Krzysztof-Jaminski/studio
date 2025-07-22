@@ -20,6 +20,18 @@ import { cn } from '@/lib/utils';
 import { isPast } from 'date-fns';
 import CountdownTimer from './countdown-timer';
 import GroupOrderForm from './group-order-form';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 export default function FoodOrderCard({ order }: { order: FoodOrder }) {
     const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder, editFoodOrder } = useContext(AppContext);
@@ -186,16 +198,34 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary">
                         <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
                         <div className="flex gap-2">
-                            <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(order.id)}>
-                                <Trash2 className="mr-2" /> Usuń
-                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button className="flex-1" variant="destructive">
+                                        <Trash2 className="mr-2" /> Usuń
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Czy na pewno chcesz usunąć to wydarzenie?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Tej akcji nie można cofnąć. Spowoduje to trwałe usunięcie zamówienia
+                                            i wszystkich powiązanych z nim danych.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Anuluj</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => removeFoodOrder(order.id)}>Usuń</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
                              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                                 <DialogTrigger asChild>
                                     <Button className="flex-1" variant="outline">
                                         <Pencil className="mr-2" /> Edytuj
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[90vw] md:max-w-[50vw]">
+                                <DialogContent className="sm:max-w-xl">
                                     <DialogHeader>
                                         <DialogTitle>Edytuj zamówienie grupowe</DialogTitle>
                                         <DialogDescription>Zmień szczegóły istniejącego zamówienia.</DialogDescription>

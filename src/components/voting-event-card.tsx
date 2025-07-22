@@ -17,6 +17,17 @@ import CountdownTimer from './countdown-timer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import AddOptionForm from './add-option-form';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const VoterList = ({ users }: { users: User[] }) => (
     <div className="flex flex-wrap gap-1 -space-x-2">
@@ -81,14 +92,14 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
             {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary")} />}
             
             {canVote && (
-                <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto text-white")} >
+                <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto")} size="sm" >
                     {hasVoted ? <Check className="mr-2" /> : null}
                     {hasVoted ? 'Cofnij głos' : 'Głosuj'}
                 </Button>
             )}
 
             {isWinner && (
-                 <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="default" className="w-full mt-auto bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+                 <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="default" size="sm" className="w-full mt-auto bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
                     <ShoppingCart className="mr-2" /> Utwórz zamówienie z tej opcji
                 </Button>
             )}
@@ -196,10 +207,27 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary mt-2">
                         <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
                         <div className="flex gap-2">
-                             <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => removeFoodOrder(event.id)}>
-                                <Trash2 className="mr-2" /> Usuń
-                            </Button>
-                             <Button className="flex-1" variant="outline">
+                             <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button className="flex-1" variant="destructive">
+                                        <Trash2 className="mr-2" /> Usuń
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Czy na pewno chcesz usunąć to wydarzenie?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Tej akcji nie można cofnąć. Spowoduje to trwałe usunięcie głosowania
+                                            i wszystkich powiązanych z nim danych.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Anuluj</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => removeFoodOrder(event.id)}>Usuń</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                             <Button className="flex-1" variant="outline" disabled>
                                 <Pencil className="mr-2" /> Edytuj
                             </Button>
                         </div>
@@ -209,5 +237,3 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         </Card>
     );
 }
-
-    

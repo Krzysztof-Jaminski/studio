@@ -219,6 +219,12 @@ export default function FoodOrdersPage() {
             </>
         );
     }
+    
+    const getDialogClassName = () => {
+        if (selectedEventType === 'order') return 'sm:max-w-xl';
+        if (selectedEventType === 'voting') return 'sm:max-w-3xl';
+        return 'sm:max-w-lg';
+    }
 
     return (
         <motion.div 
@@ -242,7 +248,7 @@ export default function FoodOrdersPage() {
                                         <PlusCircle className="mr-2" /> Utwórz wydarzenie
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[90vw] md:max-w-[50vw]">
+                                <DialogContent className={getDialogClassName()}>
                                     {renderDialogContent()}
                                 </DialogContent>
                             </Dialog>
