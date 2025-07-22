@@ -95,7 +95,7 @@ export default function FoodOrdersPage() {
                                 className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
                              >
                                 {activeVotings.length > 0 ? (
-                                    activeVotings.map(order => <motion.div variants={itemVariants} key={order.id}><VotingEventCard event={order} /></motion.div>)
+                                    activeVotings.map(order => <motion.div variants={itemVariants} key={`voting-${order.id}`}><VotingEventCard event={order} /></motion.div>)
                                 ) : (
                                     <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych głosowań.</p>
                                 )}
@@ -110,7 +110,7 @@ export default function FoodOrdersPage() {
                                 className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6"
                              >
                                 {activeOrders.length > 0 ? (
-                                    activeOrders.map(order => <motion.div variants={itemVariants} key={order.id}><FoodOrderCard order={order} /></motion.div>)
+                                    activeOrders.map(order => <motion.div variants={itemVariants} key={`order-${order.id}`}><FoodOrderCard order={order} /></motion.div>)
                                 ) : (
                                     <p className="text-muted-foreground col-span-full text-center mt-8">Brak aktywnych zamówień.</p>
                                 )}
@@ -126,7 +126,7 @@ export default function FoodOrdersPage() {
                              >
                                 {closedEvents.length > 0 ? (
                                     closedEvents.map(order => 
-                                        <motion.div variants={itemVariants} key={`${order.type}-${order.id}`}>
+                                        <motion.div variants={itemVariants} key={`history-${order.type}-${order.id}`}>
                                             {order.type === 'voting' 
                                             ? <VotingEventCard event={order} />
                                             : <FoodOrderCard order={order} />}
