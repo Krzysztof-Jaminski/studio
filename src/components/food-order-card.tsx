@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 
-export default function FoodOrderCard({ order }: { order: FoodOrder }) {
+export default function FoodOrderCard({ order, isHistoric }: { order: FoodOrder, isHistoric: boolean }) {
     const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder, editFoodOrder } = useContext(AppContext);
     const [newItem, setNewItem] = useState<{ name: string; details: string; price: string }>({ name: '', details: '', price: '' });
     const [guestName, setGuestName] = useState('');
@@ -129,7 +129,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                      )}
                 </div>
 
-                {canOrder ? (
+                {!isHistoric && canOrder ? (
                     <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
                         <DialogTrigger asChild>
                             <Button variant="glass" className="w-full"><ShoppingCart className="mr-2" /> Dodaj zamówienie</Button>
@@ -171,13 +171,13 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             </form>
                         </DialogContent>
                     </Dialog>
-                ) : (
+                ) : !isHistoric && (
                      <Button className="w-full" disabled>
                         {isDeadlinePassed ? 'Zbiórka zamówień zakończona' : 'Wydarzenie zamknięte'}
                     </Button>
                 )}
                 
-                {(isCreator || isAdmin) && (
+                {!isHistoric && (isCreator || isAdmin) && (
                      <div className="w-full space-y-2 pt-2 border-t">
                         <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
                         <div className="flex flex-wrap gap-2">
@@ -193,7 +193,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                         </div>
                      </div>
                 )}
-                {(isCreator || isAdmin) && order.isOpen && (
+                {!isHistoric && (isCreator || isAdmin) && order.isOpen && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary">
                         <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
                         <div className="flex gap-2">
@@ -243,5 +243,3 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         </Card>
     );
 }
-
-    

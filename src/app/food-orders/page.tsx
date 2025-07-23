@@ -113,7 +113,7 @@ export default function FoodOrdersPage() {
                     <motion.div className="grid grid-cols-1 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {activeOrderEvents.map(order => (
                             <motion.div key={`active-order-${order.id}`} variants={itemVariants}>
-                                <FoodOrderCard order={order} />
+                                <FoodOrderCard order={order} isHistoric={false} />
                             </motion.div>
                         ))}
                     </motion.div>
@@ -172,7 +172,7 @@ export default function FoodOrdersPage() {
                     <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {historicOrders.map(order => (
                              <motion.div key={`hist-order-${order.id}`} variants={itemVariants}>
-                                <FoodOrderCard order={order} />
+                                <FoodOrderCard order={order} isHistoric={true} />
                              </motion.div>
                         ))}
                     </motion.div>
