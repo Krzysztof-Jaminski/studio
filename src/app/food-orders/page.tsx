@@ -205,12 +205,22 @@ export default function FoodOrdersPage() {
                     <DialogDescription>Wybierz typ wydarzenia, które chcesz utworzyć.</DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                    <Card onClick={() => setSelectedEventType('order')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
+                    <Card
+                        onClick={() => setSelectedEventType('order')}
+                        className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors focus:ring-2 focus:ring-primary outline-none"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && setSelectedEventType('order')}
+                    >
                         <UtensilsCrossed className="h-12 w-12 mb-4 text-primary" />
                         <h3 className="text-lg font-bold">Zamówienie grupowe</h3>
                         <p className="text-sm text-muted-foreground">Utwórz zamówienie z jednej, konkretnej restauracji.</p>
                     </Card>
-                    <Card onClick={() => setSelectedEventType('voting')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
+                    <Card
+                        onClick={() => setSelectedEventType('voting')}
+                        className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors focus:ring-2 focus:ring-primary outline-none"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && setSelectedEventType('voting')}
+                    >
                         <Vote className="h-12 w-12 mb-4 text-accent" />
                         <h3 className="text-lg font-bold">Głosowanie na restaurację</h3>
                         <p className="text-sm text-muted-foreground">Pozwól społeczności wybrać, skąd chcecie zamówić jedzenie.</p>
@@ -271,3 +281,5 @@ export default function FoodOrdersPage() {
         </motion.div>
     );
 }
+
+    
