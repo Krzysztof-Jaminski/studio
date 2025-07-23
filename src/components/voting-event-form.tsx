@@ -62,8 +62,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full">
-                <ScrollArea className="flex-grow p-1">
-                 <div className="space-y-6 pr-4">
+                <div className="flex-grow space-y-6 pr-4 overflow-hidden">
                     <FormField
                         control={form.control}
                         name="companyName"
@@ -98,51 +97,53 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                             </FormItem>
                         )}
                     />
-                     <div className="space-y-4">
+                    <div className="space-y-4">
                         <div className="flex justify-between items-center">
                             <FormLabel>Opcje do głosowania</FormLabel>
                             <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '' })}>
                                 <PlusCircle className="mr-2" /> Dodaj opcję
                             </Button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {fields.map((field, index) => (
-                                <Card key={field.id} className="relative w-full bg-card">
-                                     <CardHeader>
-                                        <CardTitle className="font-headline text-primary text-lg">Opcja {index + 1}</CardTitle>
-                                     </CardHeader>
-                                     <CardContent className="space-y-4">
-                                        <FormField
-                                            control={form.control}
-                                            name={`votingOptions.${index}.name`}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Nazwa</FormLabel>
-                                                    <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name={`votingOptions.${index}.link`}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Link do menu (opcjonalnie)</FormLabel>
-                                                    <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </CardContent>
-                                    {fields.length > 1 && (
-                                        <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-red-500/20 hover:text-red-400" onClick={() => remove(index)}>
-                                            <Trash2 />
-                                        </Button>
-                                    )}
-                                </Card>
-                            ))}
-                        </div>
+                        <ScrollArea className="h-60 w-full p-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
+                                {fields.map((field, index) => (
+                                    <Card key={field.id} className="relative w-full bg-card">
+                                        <CardHeader>
+                                            <CardTitle className="font-headline text-primary text-lg">Opcja {index + 1}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <FormField
+                                                control={form.control}
+                                                name={`votingOptions.${index}.name`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Nazwa</FormLabel>
+                                                        <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name={`votingOptions.${index}.link`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Link do menu (opcjonalnie)</FormLabel>
+                                                        <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </CardContent>
+                                        {fields.length > 1 && (
+                                            <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-red-500/20 hover:text-red-400" onClick={() => remove(index)}>
+                                                <Trash2 />
+                                            </Button>
+                                        )}
+                                    </Card>
+                                ))}
+                            </div>
+                        </ScrollArea>
                         <FormField
                             control={form.control}
                             name="votingOptions"
@@ -153,8 +154,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                             )}
                         />
                     </div>
-                 </div>
-                </ScrollArea>
+                </div>
                 <Separator className="my-4" />
                 <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={onCancel}>Anuluj</Button>
