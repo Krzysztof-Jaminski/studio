@@ -47,14 +47,9 @@ export default function FoodOrdersPage() {
     const activeOrderEvents = useMemo(() => foodOrders.filter(order => order.type === 'order' && order.isOpen), [foodOrders]);
     
     const justClosedVotingEvent = useMemo(() => {
-        // An event is "just closed" if it's not open, but doesn't yet have a derivative order created from it.
-        // For simplicity, we'll find any closed voting events that are not in the deep history.
-        // The real check should be more robust, maybe checking creation date or if an order was spawned.
         return foodOrders.find(order => 
             order.type === 'voting' && 
             !order.isOpen &&
-            // This is a simple way to check if an order has likely been created from it.
-            // A more robust system would have a direct link.
             !foodOrders.some(o => o.companyName === order.companyName && o.type === 'order' && !o.isOpen)
         );
     }, [foodOrders]);

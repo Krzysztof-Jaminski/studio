@@ -34,7 +34,7 @@ import {
 
 
 export default function FoodOrderCard({ order, isHistoric }: { order: FoodOrder, isHistoric: boolean }) {
-    const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder, editFoodOrder } = useContext(AppContext);
+    const { user, allUsers, addOrderItem, togglePaidStatus, toggleOrderState, removeFoodOrder, editFoodOrder } from useContext(AppContext);
     const [newItem, setNewItem] = useState<{ name: string; details: string; price: string }>({ name: '', details: '', price: '' });
     const [guestName, setGuestName] = useState('');
     const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
