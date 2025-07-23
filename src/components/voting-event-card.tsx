@@ -43,7 +43,7 @@ const VoterList = ({ users }: { users: User[] }) => (
     </div>
 );
 
-const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, canVote }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean, canVote: boolean }) => {
+const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, canVote, isHistoric }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean, canVote: boolean, isHistoric: boolean }) => {
     const { user, allUsers, toggleVote, createOrderFromVote } = useContext(AppContext);
     if (!user) return null;
 
@@ -65,7 +65,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                 </Badge>
             )}
             <CardHeader>
-                <CardTitle className="font-headline text-primary">{option.name}</CardTitle>
+                <CardTitle className="font-headline text-lg text-primary">{option.name}</CardTitle>
                 {addedByUser && (
                     <CardDescription className="flex items-center gap-2 text-xs">
                         <Avatar className="h-4 w-4">
@@ -111,7 +111,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                         {hasVoted ? 'Cofnij głos' : 'Głosuj'}
                     </Button>
                 )}
-                {isWinner && isClosed && (
+                {isWinner && isClosed && !isHistoric && (
                     <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="glass" className="w-full border-primary">
                         <ShoppingCart className="mr-2" /> Utwórz zamówienie z tej opcji
                     </Button>
@@ -121,7 +121,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
     );
 }
 
-export default function VotingEventCard({ event }: { event: FoodOrder }) {
+export default function VotingEventCard({ event, isHistoric }: { event: FoodOrder, isHistoric: boolean }) {
     const { user, allUsers, toggleOrderState, removeFoodOrder } = useContext(AppContext);
     const [isAddOptionOpen, setIsAddOptionOpen] = useState(false);
     
@@ -189,6 +189,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                                     isWinner={isClosed && winningVoteCount > 0 && opt.votes.length === winningVoteCount}
                                     isClosed={isClosed}
                                     canVote={canVote}
+                                    isHistoric={isHistoric}
                                 />
                             ))
                         ) : (
@@ -256,5 +257,3 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         </Card>
     );
 }
-
-    

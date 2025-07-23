@@ -43,10 +43,23 @@ export default function FoodOrdersPage() {
         setIsDialogOpen(open);
     }
 
-    const activeVotingEvent = useMemo(() => foodOrders.find(order => order.type === 'voting' && order.isOpen), [foodOrders]);
+    const activeVotingEvents = useMemo(() => foodOrders.filter(order => order.type === 'voting' && order.isOpen), [foodOrders]);
     const activeOrderEvents = useMemo(() => foodOrders.filter(order => order.type === 'order' && order.isOpen), [foodOrders]);
     
-    const historicEvents = useMemo(() => foodOrders.filter(order => !order.isOpen), [foodOrders]);
+    const justClosedVotingEvent = useMemo(() => {
+        // An event is "just closed" if it's not open, but doesn't yet have a derivative order created from it.
+        // For simplicity, we'll find any closed voting events that are not in the deep history.
+        // The real check should be more robust, maybe checking creation date or if an order was spawned.
+        return foodOrders.find(order => 
+            order.type === 'voting' && 
+            !order.isOpen &&
+            // This is a simple way to check if an order has likely been created from it.
+            // A more robust system would have a direct link.
+            !foodOrders.some(o => o.companyName === order.companyName && o.type === 'order' && !o.isOpen)
+        );
+    }, [foodOrders]);
+    
+    const historicEvents = useMemo(() => foodOrders.filter(order => !order.isOpen && order.id !== justClosedVotingEvent?.id), [foodOrders, justClosedVotingEvent]);
     const historicVotings = historicEvents.filter(o => o.type === 'voting');
     const historicOrders = historicEvents.filter(o => o.type === 'order');
 
@@ -78,8 +91,12 @@ export default function FoodOrdersPage() {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-8"
         >
-            {activeVotingEvent ? (
-                <VotingEventCard event={activeVotingEvent} />
+            {activeVotingEvents.length > 0 ? (
+                 activeVotingEvents.map(event => (
+                    <VotingEventCard key={event.id} event={event} isHistoric={false}/>
+                ))
+            ) : justClosedVotingEvent ? (
+                 <VotingEventCard event={justClosedVotingEvent} isHistoric={false} />
             ) : (
                 <Alert className="mb-8 border-primary/50 bg-primary/10 text-primary-foreground">
                     <Info className="h-4 w-4 !text-primary" />
@@ -122,14 +139,16 @@ export default function FoodOrdersPage() {
             className="space-y-8"
         >
             <div className="space-y-4">
-                <Card className="bg-card/50 border-border/20 p-4">
-                     <CardTitle className="text-xl font-bold font-headline text-white">Zakończone głosowania</CardTitle>
+                 <Card className="bg-card/50 border-border/20">
+                    <CardHeader>
+                        <CardTitle className="text-xl font-bold font-headline text-white">Zakończone głosowania</CardTitle>
+                    </CardHeader>
                 </Card>
                 {historicVotings.length > 0 ? (
                     <motion.div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {historicVotings.map(event => (
                             <motion.div key={`hist-vote-${event.id}`} variants={itemVariants}>
-                                <VotingEventCard event={event} />
+                                <VotingEventCard event={event} isHistoric={true} />
                             </motion.div>
                         ))}
                     </motion.div>
@@ -144,8 +163,10 @@ export default function FoodOrdersPage() {
                 )}
             </div>
             <div className="space-y-4">
-                <Card className="bg-card/50 border-border/20 p-4">
-                    <CardTitle className="text-xl font-bold font-headline text-white">Zakończone zamówienia</CardTitle>
+                <Card className="bg-card/50 border-border/20">
+                    <CardHeader>
+                         <CardTitle className="text-xl font-bold font-headline text-white">Zakończone zamówienia</CardTitle>
+                    </CardHeader>
                 </Card>
                 {historicOrders.length > 0 ? (
                     <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
@@ -281,6 +302,3 @@ export default function FoodOrdersPage() {
         </motion.div>
     );
 }
-
-    
-    
