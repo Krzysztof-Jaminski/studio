@@ -13,6 +13,7 @@ import { Separator } from "./ui/separator";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { ScrollArea } from "./ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     companyName: z.string().min(2, "Tytuł musi mieć co najmniej 2 znaki."),
@@ -107,17 +108,14 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                         <ScrollArea className="h-60 w-full p-1">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
                                 {fields.map((field, index) => (
-                                    <Card key={field.id} className="relative w-full bg-card">
-                                        <CardHeader>
-                                            <CardTitle className="font-headline text-primary text-lg">Opcja {index + 1}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
+                                    <Card key={field.id} className="relative w-full bg-card p-4">
+                                        <div className="space-y-4">
                                             <FormField
                                                 control={form.control}
                                                 name={`votingOptions.${index}.name`}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Nazwa</FormLabel>
+                                                        <FormLabel className="text-primary">Nazwa</FormLabel>
                                                         <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -134,7 +132,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                                                     </FormItem>
                                                 )}
                                             />
-                                        </CardContent>
+                                        </div>
                                         {fields.length > 1 && (
                                             <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-red-500/20 hover:text-red-400" onClick={() => remove(index)}>
                                                 <Trash2 />
