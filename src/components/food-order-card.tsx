@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, OrderItemData } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { UserCircle, Link as LinkIcon, Phone, ShoppingCart, Pencil, Trash2, Check, X, ShieldCheck, UserPlus } from 'lucide-react';
+import { UserCircle, Link as LinkIcon, Phone, ShoppingCart, Pencil, Trash2, Check, X, ShieldCheck, UserPlus, History } from 'lucide-react';
 import OrderItem from './order-item';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from './ui/dialog';
 import { Input } from './ui/input';
@@ -94,7 +94,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                     {!order.isOpen && <Badge variant="destructive" className="bg-red-500/80">Zamknięte</Badge>}
                 </div>
                  {order.description && <p className="text-sm text-muted-foreground pt-2 whitespace-pre-wrap">{order.description}</p>}
-                 {order.deadline && <CountdownTimer deadline={order.deadline} />}
+                 {order.deadline && order.isOpen && <CountdownTimer deadline={order.deadline} />}
             </CardHeader>
 
             <CardContent className="flex-grow space-y-4 flex flex-col min-h-0 p-4">
@@ -117,12 +117,16 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
 
             <CardFooter className="flex flex-col items-start gap-3 border-t p-4 bg-secondary/30">
                 <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
-                    <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary transition-colors">
-                        <LinkIcon /> Link do Menu
-                    </a>
-                    <span className="flex items-center gap-1">
-                        <Phone /> {order.creatorPhoneNumber}
-                    </span>
+                    {order.link ? (
+                        <a href={order.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary transition-colors">
+                            <LinkIcon /> Link do Menu
+                        </a>
+                    ) : <span></span>}
+                     {order.creatorPhoneNumber && (
+                        <span className="flex items-center gap-1">
+                            <Phone /> {order.creatorPhoneNumber}
+                        </span>
+                     )}
                 </div>
 
                 {canOrder ? (
@@ -135,9 +139,11 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                                 <DialogTitle>Dodaj do zamówienia "{order.companyName}"</DialogTitle>
                                 <DialogDescription>
                                     Możesz dodać zamówienie dla siebie lub dla gościa, który nie jest w aplikacji.
-                                    <Button variant="link" asChild className="p-0 h-auto ml-1 text-primary">
-                                        <a href={order.link} target="_blank" rel="noopener noreferrer">Zobacz menu</a>
-                                    </Button>
+                                    {order.link && (
+                                        <Button variant="link" asChild className="p-0 h-auto ml-1 text-primary">
+                                            <a href={order.link} target="_blank" rel="noopener noreferrer">Zobacz menu</a>
+                                        </Button>
+                                    )}
                                 </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleAddOrderItem} className="space-y-4">
@@ -166,7 +172,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                         </DialogContent>
                     </Dialog>
                 ) : (
-                    <Button className="w-full" disabled>
+                     <Button className="w-full" disabled>
                         {isDeadlinePassed ? 'Zbiórka zamówień zakończona' : 'Wydarzenie zamknięte'}
                     </Button>
                 )}
@@ -175,17 +181,19 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                      <div className="w-full space-y-2 pt-2 border-t">
                         <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
                         <div className="flex flex-wrap gap-2">
-                             <Button variant="secondary" onClick={() => togglePaidStatus(order.id, 'all')}>
-                                <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
-                            </Button>
+                            {order.isOpen && (
+                                <Button variant="secondary" onClick={() => togglePaidStatus(order.id, 'all')}>
+                                    <Check className="mr-2" /> Oznacz wszystkich jako opłaconych
+                                </Button>
+                            )}
                              <Button variant="outline" onClick={() => toggleOrderState(order.id)}>
-                                {order.isOpen ? <X className="mr-2"/> : <Check className="mr-2" />}
+                                {order.isOpen ? <X className="mr-2"/> : <History className="mr-2" />}
                                 {order.isOpen ? "Zakończ zbiórkę" : "Wznów zbiórkę"}
                             </Button>
                         </div>
                      </div>
                 )}
-                {(isCreator || isAdmin) && (
+                {(isCreator || isAdmin) && order.isOpen && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary">
                         <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
                         <div className="flex gap-2">

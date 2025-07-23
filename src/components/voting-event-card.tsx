@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, User, VotingOption } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil, ShoppingCart, Info } from 'lucide-react';
+import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil, ShoppingCart, Info, Vote, History } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
@@ -57,13 +57,12 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
         <Card className={cn(
             "flex flex-col relative h-full bg-card transition-all",
             hasVoted && "border-primary",
-            isWinner && "border-yellow-400",
             !canVote ? "opacity-70" : "hover:border-primary/80"
         )}>
-             {isWinner && (
-                <div className="absolute top-2 right-2 bg-yellow-400 p-1 rounded-full z-10 shadow-lg">
-                    <Trophy className="h-4 w-4 text-background" />
-                </div>
+             {isWinner && isClosed && (
+                <Badge variant="secondary" className="absolute top-2 right-2 z-10 flex items-center gap-1 bg-primary/80 text-white">
+                    <Trophy className="h-3 w-3" /> Zwycięzca
+                </Badge>
             )}
             <CardHeader>
                 <CardTitle className="font-headline text-primary">{option.name}</CardTitle>
@@ -96,7 +95,7 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                     </PopoverContent>
                 </Popover>
 
-                <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary")} />
+                <Progress value={votePercentage} indicatorClassName={"bg-primary"} />
 
             </CardContent>
             <CardFooter className="flex flex-col gap-2">
@@ -112,8 +111,8 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
                         {hasVoted ? 'Cofnij głos' : 'Głosuj'}
                     </Button>
                 )}
-                {isWinner && (
-                    <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="default" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+                {isWinner && isClosed && (
+                    <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="glass" className="w-full border-primary">
                         <ShoppingCart className="mr-2" /> Utwórz zamówienie z tej opcji
                     </Button>
                 )}
@@ -134,7 +133,7 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     const isDeadlinePassed = event.deadline ? isPast(new Date(event.deadline)) : false;
 
     const canVote = event.isOpen && !isDeadlinePassed;
-    const isClosed = !event.isOpen || isDeadlinePassed;
+    const isClosed = !event.isOpen;
 
     const totalVotes = useMemo(() => {
         if (!event.votingOptions) return 0;
@@ -153,8 +152,11 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
     return (
         <Card className="flex flex-col border-primary/30 w-full h-full bg-card">
             <CardHeader className="bg-secondary/50 rounded-t-lg p-4 space-y-2">
-                <div className="flex justify-between items-start">
-                    <div>
+                <div className="flex items-start gap-4">
+                     <div className="h-14 w-14 flex items-center justify-center bg-muted rounded-md border-2 border-border">
+                        <Vote className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
                         <CardTitle className="font-headline text-xl text-primary">{event.companyName}</CardTitle>
                         {creator && (
                             <CardDescription className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -166,13 +168,13 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                         )}
                     </div>
                      {isClosed && (
-                        <Badge className="flex items-center gap-1 bg-primary/80 text-white">
-                            <Trophy className="h-3 w-3" /> Głosowanie zakończone
+                        <Badge variant="destructive" className="bg-red-500/80">
+                            Zakończone
                         </Badge>
                     )}
                 </div>
                  {event.description && <p className="text-sm text-muted-foreground pt-2 whitespace-pre-wrap">{event.description}</p>}
-                {event.deadline && <CountdownTimer deadline={event.deadline} />}
+                {event.deadline && event.isOpen && <CountdownTimer deadline={event.deadline} />}
             </CardHeader>
             <CardContent className="flex-grow flex flex-col min-h-0 p-4">
                  <ScrollArea className="flex-grow pr-4 -mr-4">
@@ -211,15 +213,16 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
                         </DialogContent>
                     </Dialog>
                 )}
-                 {(isCreator || isAdmin) && event.isOpen && (
+                 {(isCreator || isAdmin) && (
                      <div className="w-full space-y-2 pt-2 border-t mt-2">
                         <p className="text-xs font-semibold text-muted-foreground">Akcje twórcy</p>
-                        <Button variant="secondary" className="w-full" onClick={() => toggleOrderState(event.id)}>
-                            <X className="mr-2"/> Zakończ głosowanie
+                        <Button variant="outline" className="w-full" onClick={() => toggleOrderState(event.id)}>
+                            {event.isOpen ? <X className="mr-2"/> : <History className="mr-2" />}
+                            {event.isOpen ? "Zakończ głosowanie" : "Wznów głosowanie"}
                         </Button>
                      </div>
                 )}
-                 {(isCreator || isAdmin) && (
+                 {(isCreator || isAdmin) && event.isOpen && (
                     <div className="w-full space-y-2 pt-2 border-t border-dashed border-primary mt-2">
                         <p className="text-xs font-semibold text-primary flex items-center gap-1"><ShieldCheck /> Akcje administratora / twórcy</p>
                         <div className="flex gap-2">

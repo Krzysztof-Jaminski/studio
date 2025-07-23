@@ -394,11 +394,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const addFoodOrder = (orderData: NewFoodOrderData) => {
     if (!user) return;
 
-    let currentOrders = [...foodOrders];
-    if (orderData.type === 'voting') {
-        currentOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
-    }
-    
     let deadlineDate: Date | undefined;
     if (orderData.deadline) {
         deadlineDate = new Date();
@@ -417,6 +412,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
     let newEvent: FoodOrder;
     if (orderData.type === 'voting') {
+        const currentOrders = foodOrders.map(o => o.type === 'voting' && o.isOpen ? {...o, isOpen: false} : o);
         newEvent = {
             ...baseEvent,
             type: 'voting',
@@ -429,6 +425,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             })),
             orders: [] // Ensure orders is not undefined for type consistency
         };
+         setFoodOrders([newEvent, ...currentOrders]);
     } else { // 'order'
         const { link, creatorPhoneNumber } = orderData;
         newEvent = {
@@ -445,9 +442,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         } catch (error) {
             console.error("Failed to write to localStorage", error);
         }
+        setFoodOrders([newEvent, ...foodOrders]);
     }
 
-    setFoodOrders([newEvent, ...currentOrders]);
     toast({ title: "Wydarzenie utworzone!", description: `Wydarzenie "${orderData.companyName}" jest już aktywne.` });
   };
   
@@ -556,16 +553,28 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleOrderState = (orderId: string) => {
-      setFoodOrders(prev => prev.map(order => {
-          if (order.id === orderId) {
-               if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  return order;
-              }
-              return { ...order, isOpen: !order.isOpen };
+    setFoodOrders(prev =>
+      prev.map(order => {
+        if (order.id === orderId) {
+          if (user?.id !== order.creatorId && user?.role !== 'admin') {
+            toast({ variant: 'destructive', title: 'Brak uprawnień', description: 'Tylko twórca lub administrator może zmienić status wydarzenia.' });
+            return order;
           }
-          return order;
-      }));
-  };
+          const newState = !order.isOpen;
+          // When resuming a voting event, close any other active voting events
+          if (newState && order.type === 'voting') {
+              return prev.map(o => {
+                  if(o.id === orderId) return { ...o, isOpen: true };
+                  if(o.type === 'voting' && o.isOpen) return { ...o, isOpen: false };
+                  return o;
+              }).find(o => o.id === orderId)!;
+          }
+          return { ...order, isOpen: newState };
+        }
+        return order;
+      })
+    );
+};
 
   const toggleVote = (eventId: string, optionId: string) => {
       if (!user) return;
@@ -669,4 +678,5 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
 
