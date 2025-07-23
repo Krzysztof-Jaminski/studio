@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { AppContext } from '@/contexts/app-context';
 import type { FoodOrder, User, VotingOption } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil, ShoppingCart } from 'lucide-react';
+import { UserCircle, Check, X, ShieldCheck, Trash2, Trophy, Users, PlusCircle, Link as LinkIcon, Pencil, ShoppingCart, Info } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
@@ -28,26 +28,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 const VoterList = ({ users }: { users: User[] }) => (
-    <div className="flex flex-wrap gap-1 -space-x-2">
+    <div className="space-y-2">
         {users.length > 0 ? users.map(user => (
-            <TooltipProvider key={user.id} delayDuration={100}>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                         <Avatar className="h-8 w-8 border-2 border-background">
-                            {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>}
-                        </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{user.name}</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        )) : <p className="text-xs text-muted-foreground pl-2">Brak głosów.</p>}
+            <div key={user.id} className="flex items-center gap-2 text-sm">
+                <Avatar className="h-6 w-6">
+                    {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt={user.name} /> : <AvatarFallback className="text-muted-foreground text-xs"><UserCircle /></AvatarFallback>}
+                </Avatar>
+                <span>{user.name}</span>
+            </div>
+        )) : <p className="text-xs text-muted-foreground">Brak głosów.</p>}
     </div>
 );
-
 
 const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, canVote }: { option: VotingOption, eventId: string, totalVotes: number, isWinner: boolean, isClosed: boolean, canVote: boolean }) => {
     const { user, allUsers, toggleVote, createOrderFromVote } = useContext(AppContext);
@@ -61,58 +55,69 @@ const VotingOptionCard = ({ option, eventId, totalVotes, isWinner, isClosed, can
 
     return (
         <Card className={cn(
-            "flex flex-col space-y-3 relative h-full bg-secondary/80 p-4 transition-all hover:shadow-md",
-            isClosed ? "hover:border-primary/50" : "hover:border-primary",
+            "flex flex-col relative h-full bg-card transition-all",
             hasVoted && "border-primary",
-            isWinner && "border-yellow-400"
+            isWinner && "border-yellow-400",
+            !canVote ? "opacity-70" : "hover:border-primary/80"
         )}>
              {isWinner && (
-                <div className="absolute -top-3 -right-3 bg-yellow-400 p-1 rounded-full z-10 shadow-lg">
-                    <Trophy className="h-5 w-5 text-background" />
+                <div className="absolute top-2 right-2 bg-yellow-400 p-1 rounded-full z-10 shadow-lg">
+                    <Trophy className="h-4 w-4 text-background" />
                 </div>
             )}
-            <div className="flex items-start gap-4">
-                <div className={cn("h-16 w-16 flex items-center justify-center bg-background/20 rounded-md border-2 border-border", option.link && "text-primary")}>
-                    <LinkIcon className="h-8 w-8 " />
-                </div>
-                <div className="flex-1">
-                    <p className="font-bold text-lg text-primary">{option.name}</p>
-                     {option.link && (
-                        <Button variant="link" asChild className="p-0 h-auto -ml-1 text-primary/80 hover:text-primary">
-                           <a href={option.link} target="_blank" rel="noopener noreferrer">
-                               <LinkIcon className="mr-1" /> Zobacz menu
-                           </a>
-                       </Button>
-                    )}
-                     {addedByUser && (
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                            <Avatar className="h-4 w-4">
-                                {addedByUser.avatarUrl ? <AvatarImage src={addedByUser.avatarUrl} alt={addedByUser.name} /> : <AvatarFallback className="text-xs"><UserCircle /></AvatarFallback>}
-                            </Avatar>
-                            <span>Dodane przez {addedByUser.name}</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-             <div className="space-y-2 flex-grow">
-                 <p className="text-sm font-semibold flex items-center gap-2"><Users className="text-muted-foreground"/>Głosy ({option.votes.length})</p>
-                 <VoterList users={voters} />
-             </div>
-             
-            {isClosed && <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary")} />}
-            
-            {canVote && (
-                <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className={cn("w-full mt-auto")} size="sm" >
-                    {hasVoted ? <Check className="mr-2" /> : null}
-                    {hasVoted ? 'Cofnij głos' : 'Głosuj'}
-                </Button>
-            )}
+            <CardHeader>
+                <CardTitle className="font-headline text-primary">{option.name}</CardTitle>
+                {addedByUser && (
+                    <CardDescription className="flex items-center gap-2 text-xs">
+                        <Avatar className="h-4 w-4">
+                            {addedByUser.avatarUrl ? <AvatarImage src={addedByUser.avatarUrl} alt={addedByUser.name} /> : <AvatarFallback className="text-xs"><UserCircle /></AvatarFallback>}
+                        </Avatar>
+                        Dodane przez {addedByUser.name}
+                    </CardDescription>
+                )}
+            </CardHeader>
+            <CardContent className="flex-grow space-y-4">
+                 {hasVoted && (
+                    <Badge variant="default" className="w-full justify-center bg-primary/20 text-primary border border-primary/50">
+                        <Check className="mr-2"/> Twój głos
+                    </Badge>
+                )}
+                
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start">
+                            <Users className="mr-2 text-primary" /> 
+                            Głosy ({voters.length})
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56">
+                        <p className="font-semibold mb-2 text-sm">Głosujący</p>
+                        <VoterList users={voters} />
+                    </PopoverContent>
+                </Popover>
 
-            {isWinner && (
-                 <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="default" size="sm" className="w-full mt-auto bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
-                    <ShoppingCart className="mr-2" /> Utwórz zamówienie z tej opcji
-                </Button>
-            )}
+                <Progress value={votePercentage} indicatorClassName={cn(isWinner ? "bg-yellow-400" : "bg-primary")} />
+
+            </CardContent>
+            <CardFooter className="flex flex-col gap-2">
+                 {option.link && (
+                    <Button variant="outline" asChild className="w-full">
+                        <a href={option.link} target="_blank" rel="noopener noreferrer">
+                            <LinkIcon className="mr-2" /> Zobacz menu
+                        </a>
+                    </Button>
+                )}
+                {canVote && (
+                    <Button onClick={() => toggleVote(eventId, option.id)} variant="glass" className="w-full" >
+                        {hasVoted ? 'Cofnij głos' : 'Głosuj'}
+                    </Button>
+                )}
+                {isWinner && (
+                    <Button onClick={() => createOrderFromVote(eventId, option.id)} variant="default" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+                        <ShoppingCart className="mr-2" /> Utwórz zamówienie z tej opcji
+                    </Button>
+                )}
+            </CardFooter>
         </Card>
     );
 }
@@ -133,9 +138,9 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
 
     const totalVotes = useMemo(() => {
         if (!event.votingOptions) return 0;
-        const allVoters = new Set<string>();
-        event.votingOptions.forEach(opt => opt.votes.forEach(voterId => allVoters.add(voterId)));
-        return allVoters.size;
+        let total = 0;
+        event.votingOptions.forEach(opt => total += opt.votes.length);
+        return total;
     }, [event.votingOptions]);
     
     const winningVoteCount = useMemo(() => {
@@ -248,3 +253,5 @@ export default function VotingEventCard({ event }: { event: FoodOrder }) {
         </Card>
     );
 }
+
+    
