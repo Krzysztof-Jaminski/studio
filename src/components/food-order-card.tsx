@@ -75,19 +75,9 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         <Card className="flex flex-col border-primary/30 bg-card h-full">
             <CardHeader className="bg-secondary/50 rounded-t-lg p-4">
                 <div className="flex items-start gap-4">
-                    {order.imageUrl ? (
-                         <Image
-                            src={order.imageUrl}
-                            alt={`${order.companyName} logo`}
-                            width={56}
-                            height={56}
-                            className="rounded-md border-2 border-border object-cover h-14 w-14"
-                        />
-                    ) : (
-                        <div className="h-14 w-14 flex items-center justify-center bg-muted rounded-md border-2 border-border">
-                            <ShoppingCart className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                    )}
+                    <div className="h-14 w-14 flex items-center justify-center bg-muted rounded-md border-2 border-border">
+                        <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+                    </div>
                     <div className="flex-1">
                         <CardTitle className="font-headline text-xl text-primary">{order.companyName}</CardTitle>
                          {creator ? (
@@ -189,7 +179,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                             </Button>
                              <Button variant="outline" onClick={() => toggleOrderState(order.id)}>
                                 {order.isOpen ? <X className="mr-2"/> : <Check className="mr-2" />}
-                                {order.isOpen ? "Zamknij zamówienie" : "Otwórz ponownie"}
+                                {order.isOpen ? "Zakończ zbiórkę" : "Wznów zbiórkę"}
                             </Button>
                         </div>
                      </div>

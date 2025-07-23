@@ -72,7 +72,6 @@ export type FoodOrder = {
     // Order specific
     link?: string;
     creatorPhoneNumber?: string;
-    imageUrl?: string;
     orders: OrderItem[];
     // Voting specific
     votingOptions?: VotingOption[];

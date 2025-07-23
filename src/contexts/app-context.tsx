@@ -178,14 +178,14 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }, [weeklyStatus, portfolio, user]);
 
   useEffect(() => {
-    if (isMounted.current && user) {
-        toast({
-            title: "Zalogowano",
-            description: `Witaj z powrotem, ${user.name}!`,
-        });
-    } else {
-        isMounted.current = true;
-    }
+      if (isMounted.current && user) {
+          toast({
+              title: "Zalogowano",
+              description: `Witaj z powrotem, ${user.name}!`,
+          });
+      } else {
+          isMounted.current = true;
+      }
   }, [user]);
 
 
@@ -534,10 +534,12 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId && order.type === 'order') {
               if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Brak uprawnień", description: "Tylko twórca lub administrator może zarządzać płatnościami." });
                   return order;
               }
-              const newOrders = order.orders?.map(item => {
+              if (!order.orders || order.orders.length === 0) {
+                  return order;
+              }
+              const newOrders = order.orders.map(item => {
                   if (itemId === 'all') {
                       return { ...item, isPaid: true };
                   }
@@ -556,10 +558,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
       setFoodOrders(prev => prev.map(order => {
           if (order.id === orderId) {
                if (user?.id !== order.creatorId && user?.role !== 'admin') {
-                  toast({ variant: 'destructive', title: "Brak uprawnień", description: "Tylko twórca lub administrator może zamknąć wydarzenie." });
                   return order;
               }
-              toast({ title: "Zmieniono stan wydarzenia", description: `Wydarzenie jest teraz ${!order.isOpen ? 'otwarte' : 'zamknięte'}.` });
               return { ...order, isOpen: !order.isOpen };
           }
           return order;
@@ -668,5 +668,3 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
-
-    
