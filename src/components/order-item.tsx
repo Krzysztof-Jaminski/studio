@@ -39,10 +39,10 @@ export default function OrderItem({ item, orderId, isCreator, isAdmin }: OrderIt
             </Avatar>
             <div className="flex-1">
                 <div className="flex justify-between items-start">
-                    <p className="font-semibold text-sm flex items-center gap-2">
+                    <span className="font-semibold text-sm flex items-center gap-2">
                         {displayName}
                         {item.guestName && <Badge variant="outline">Gość</Badge>}
-                    </p>
+                    </span>
                     <p className="font-bold text-sm text-primary">{item.price.toFixed(2)} zł</p>
                 </div>
                 <p className="text-xs text-foreground/80">{item.name}</p>
