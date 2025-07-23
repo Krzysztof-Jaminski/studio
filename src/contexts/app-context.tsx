@@ -176,15 +176,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     }
   }, [weeklyStatus, portfolio, user]);
 
-  useEffect(() => {
-    if (user) {
-        toast({
-            title: "Zalogowano",
-            description: `Witaj z powrotem, ${user.name}!`,
-        });
-    }
-  }, [user?.id]);
-
 
   const login = (userId: string, provider: 'google' | 'discord' | 'microsoft') => {
     let potentialUser = allUsers.find(u => u.id === userId);
@@ -228,6 +219,11 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     } else {
         setWeeklyStatus({ week: currentWeekNumber, content: '', status: 'draft' });
     }
+    
+    toast({
+        title: "Zalogowano",
+        description: `Witaj z powrotem, ${loggedInUser.name}!`,
+    });
   };
 
   const logout = () => {
@@ -665,3 +661,5 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
+    
