@@ -289,7 +289,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           title: "Rezerwacja nieudana",
           description: `Przepraszamy, wszystkie miejsca w biurze na ${format(date, "d MMMM")} są zajęte.`,
         });
-        toggleReservation(date, userBooking as 'office' | 'online');
+        if (userBooking) { // Revert to previous booking if any
+          toggleReservation(date, userBooking as 'office' | 'online');
+        }
         return;
     }
     
@@ -679,4 +681,4 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   );
 }
 
-
+    
