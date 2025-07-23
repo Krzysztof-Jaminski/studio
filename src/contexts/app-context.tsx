@@ -154,6 +154,17 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (user && isMounted.current) {
+        toast({
+            title: "Zalogowano",
+            description: `Witaj z powrotem, ${user.name}!`,
+        });
+    } else {
+        isMounted.current = true;
+    }
+  }, [user]);
+
+  useEffect(() => {
     const checkDate = () => {
         const now = new Date();
         const dayOfWeek = getDay(now); // 0 (Sunday) to 6 (Saturday), 5 is Friday
@@ -176,17 +187,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         return () => clearInterval(interval);
     }
   }, [weeklyStatus, portfolio, user]);
-
-  useEffect(() => {
-      if (isMounted.current && user) {
-          toast({
-              title: "Zalogowano",
-              description: `Witaj z powrotem, ${user.name}!`,
-          });
-      } else {
-          isMounted.current = true;
-      }
-  }, [user]);
 
 
   const login = (userId: string, provider: 'google' | 'discord' | 'microsoft') => {
@@ -394,9 +394,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const addFoodOrder = (orderData: NewFoodOrderData) => {
     if (!user) return;
 
-    let updatedOrders = [...foodOrders];
+    let currentOrders = [...foodOrders];
     if (orderData.type === 'voting') {
-        updatedOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
+        currentOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
     }
     
     let deadlineDate: Date | undefined;
@@ -447,7 +447,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    setFoodOrders([newEvent, ...updatedOrders]);
+    setFoodOrders([newEvent, ...currentOrders]);
     toast({ title: "Wydarzenie utworzone!", description: `Wydarzenie "${orderData.companyName}" jest już aktywne.` });
   };
   
@@ -669,3 +669,4 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     </AppContext.Provider>
   );
 }
+
