@@ -15,10 +15,12 @@ import { Textarea } from "./ui/textarea";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 
+const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
 const formSchema = z.object({
     companyName: z.string().min(2, "Tytuł musi mieć co najmniej 2 znaki."),
     description: z.string().optional(),
-    deadline: z.string().optional(),
+    deadline: z.string().regex(timeRegex, "Nieprawidłowy format czasu (HH:MM).").optional().or(z.literal('')),
     votingOptions: z.array(z.object({
         name: z.string().min(1, "Nazwa firmy jest wymagana."),
         link: z.string().url("Proszę wprowadzić prawidłowy adres URL.").optional().or(z.literal('')),
@@ -26,7 +28,7 @@ const formSchema = z.object({
 });
 
 type VotingEventFormProps = {
-    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'voting', votingOptions: { name: string, link?: string }[] }) => void;
+    onSubmit: (data: Omit<FoodOrder, 'id' | 'creatorId' | 'orders' | 'isOpen' | 'type' | 'votingOptions'> & { type: 'voting', votingOptions: { name: string, link?: string }[], deadline?: string }) => void;
     onCancel: () => void;
 };
 
@@ -47,15 +49,9 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
     });
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        const deadlineDate = values.deadline ? new Date() : undefined;
-        if (deadlineDate && values.deadline) {
-            const [hours, minutes] = values.deadline.split(':').map(Number);
-            deadlineDate.setHours(hours, minutes, 0, 0);
-        }
-
         onSubmit({
             ...values,
-            deadline: deadlineDate?.toISOString(),
+            deadline: values.deadline || undefined,
             type: 'voting'
         });
     };
@@ -63,7 +59,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full">
-                <div className="flex-grow space-y-6 pr-4 overflow-hidden">
+                <div className="flex-grow space-y-6 pr-4 overflow-hidden flex flex-col">
                     <FormField
                         control={form.control}
                         name="companyName"
@@ -98,18 +94,18 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                             </FormItem>
                         )}
                     />
-                    <div className="space-y-4">
+                    <div className="space-y-4 flex-grow flex flex-col min-h-0">
                         <div className="flex justify-between items-center">
                             <FormLabel>Opcje do głosowania</FormLabel>
                             <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', link: '' })}>
                                 <PlusCircle className="mr-2" /> Dodaj opcję
                             </Button>
                         </div>
-                        <ScrollArea className="h-60 w-full p-1">
+                        <ScrollArea className="flex-grow p-1">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
                                 {fields.map((field, index) => (
-                                    <Card key={field.id} className="relative w-full bg-card p-4">
-                                        <div className="space-y-4">
+                                     <Card key={field.id} className="relative w-full bg-card">
+                                        <CardContent className="p-4 space-y-4">
                                             <FormField
                                                 control={form.control}
                                                 name={`votingOptions.${index}.name`}
@@ -132,7 +128,7 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                                                     </FormItem>
                                                 )}
                                             />
-                                        </div>
+                                        </CardContent>
                                         {fields.length > 1 && (
                                             <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-red-500/20 hover:text-red-400" onClick={() => remove(index)}>
                                                 <Trash2 />

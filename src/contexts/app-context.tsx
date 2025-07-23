@@ -398,9 +398,10 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     if (orderData.type === 'voting') {
         updatedOrders = foodOrders.map(o => o.type === 'voting' ? {...o, isOpen: false} : o);
     }
-
-    const deadlineDate = orderData.deadline ? new Date() : undefined;
-    if (deadlineDate && orderData.deadline) {
+    
+    let deadlineDate: Date | undefined;
+    if (orderData.deadline) {
+        deadlineDate = new Date();
         const [hours, minutes] = orderData.deadline.split(':').map(Number);
         deadlineDate.setHours(hours, minutes, 0, 0);
     }
