@@ -134,8 +134,8 @@ export default function FoodOrdersPage() {
                         ))}
                     </motion.div>
                 ) : (
-                    <Alert className="border-secondary-foreground/20 bg-secondary/30">
-                        <Info className="h-4 w-4 !text-muted-foreground" />
+                    <Alert className="border-primary/50 bg-primary/10 text-primary-foreground">
+                        <Info className="h-4 w-4 !text-primary" />
                         <AlertTitle>Brak zakończonych głosowań</AlertTitle>
                         <AlertDescription>
                             Wszystkie zakończone głosowania pojawią się w tym miejscu.
@@ -156,8 +156,8 @@ export default function FoodOrdersPage() {
                         ))}
                     </motion.div>
                 ) : (
-                     <Alert className="border-secondary-foreground/20 bg-secondary/30">
-                        <Info className="h-4 w-4 !text-muted-foreground" />
+                     <Alert className="border-primary/50 bg-primary/10 text-primary-foreground">
+                        <Info className="h-4 w-4 !text-primary" />
                         <AlertTitle>Brak zakończonych zamówień</AlertTitle>
                         <AlertDescription>
                             Wszystkie zakończone zamówienia pojawią się w tym miejscu.
@@ -205,12 +205,12 @@ export default function FoodOrdersPage() {
                     <DialogDescription>Wybierz typ wydarzenia, które chcesz utworzyć.</DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                    <Card onClick={() => handleOpenDialog('order')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
+                    <Card onClick={() => setSelectedEventType('order')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
                         <UtensilsCrossed className="h-12 w-12 mb-4 text-primary" />
                         <h3 className="text-lg font-bold">Zamówienie grupowe</h3>
                         <p className="text-sm text-muted-foreground">Utwórz zamówienie z jednej, konkretnej restauracji.</p>
                     </Card>
-                    <Card onClick={() => handleOpenDialog('voting')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
+                    <Card onClick={() => setSelectedEventType('voting')} className="p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-secondary transition-colors">
                         <Vote className="h-12 w-12 mb-4 text-accent" />
                         <h3 className="text-lg font-bold">Głosowanie na restaurację</h3>
                         <p className="text-sm text-muted-foreground">Pozwól społeczności wybrać, skąd chcecie zamówić jedzenie.</p>

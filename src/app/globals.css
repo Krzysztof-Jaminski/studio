@@ -43,12 +43,15 @@
 
 @layer utilities {
     .animate-pulse {
-        animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        animation: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     @keyframes pulse {
         50% {
             opacity: .5;
         }
+    }
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
     }
 }

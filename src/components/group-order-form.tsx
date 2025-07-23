@@ -20,7 +20,6 @@ type FormValues = {
     description?: string;
     link?: string;
     creatorPhoneNumber?: string;
-    imageUrl?: string;
     deadline?: string;
 };
 
@@ -29,7 +28,6 @@ const formSchema = z.object({
     description: z.string().optional(),
     link: z.string().url("Proszę wprowadzić prawidłowy adres URL.").optional().or(z.literal('')),
     creatorPhoneNumber: z.string().min(5, "Proszę wprowadzić prawidłowy numer telefonu.").optional().or(z.literal('')),
-    imageUrl: z.string().url("Proszę wprowadzić prawidłowy adres URL obrazu.").optional().or(z.literal('')),
     deadline: z.string().optional(),
 });
 
@@ -54,7 +52,6 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails, exis
             description: "",
             link: storedDetails?.link || "",
             creatorPhoneNumber: storedDetails?.creatorPhoneNumber || "",
-            imageUrl: storedDetails?.imageUrl || "",
             deadline: "",
         },
     });
@@ -65,7 +62,6 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails, exis
                 ...form.getValues(),
                 link: storedDetails.link,
                 creatorPhoneNumber: storedDetails.creatorPhoneNumber,
-                imageUrl: storedDetails.imageUrl,
             });
         }
     }, [storedDetails, form, existingOrder]);
@@ -139,18 +135,6 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails, exis
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="imageUrl"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>URL logo/obrazka (opcjonalnie)</FormLabel>
-                                    <FormControl><Input placeholder="https://przyklad.com/logo.png" {...field} /></FormControl>
-                                    <FormDescription>Bezpośredni link do obrazka z logo firmy.</FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                     </div>
                 </ScrollArea>
                 <Separator className="my-4" />
@@ -162,5 +146,3 @@ export default function GroupOrderForm({ onSubmit, onCancel, storedDetails, exis
         </Form>
     );
 }
-
-    

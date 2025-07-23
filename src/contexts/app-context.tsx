@@ -11,7 +11,6 @@ import { MAX_SPOTS } from "@/lib/utils";
 export type StoredOrderDetails = {
     link?: string;
     creatorPhoneNumber?: string;
-    imageUrl?: string;
 };
 
 type NewFoodOrderData = {
@@ -19,7 +18,7 @@ type NewFoodOrderData = {
     description?: string;
     deadline?: string;
 } & (
-    | { type: 'order', link?: string, creatorPhoneNumber?: string, imageUrl?: string }
+    | { type: 'order', link?: string, creatorPhoneNumber?: string }
     | { type: 'voting', votingOptions: { name: string, link?: string }[] }
 );
 
@@ -87,11 +86,11 @@ const INTERNSHIP_END_DATE = new Date('2025-10-01');
 
 
 const INITIAL_USERS: User[] = [
-    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user" },
-    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user" },
-    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user" },
-    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user" },
-    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin" },
+    { id: "user-1", name: "Jan Kowalski", email: "jan.kowalski@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-2", name: "Anna Nowak", email: "anna.nowak@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-3", name: "Piotr Zieliński", email: "piotr.zielinski@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "user-4", name: "Maria Wiśniewska", email: "maria.wisniewska@example.com", role: "user", avatarUrl: "https://placehold.co/100x100.png" },
+    { id: "admin1", name: "Użytkownik Admin", email: "admin@example.com", role: "admin", avatarUrl: "https://placehold.co/100x100.png" },
 ];
 
 const seedRandomReservations = (users: User[]): Reservation[] => {
@@ -427,16 +426,15 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
             orders: [] // Ensure orders is not undefined for type consistency
         };
     } else { // 'order'
-        const { link, creatorPhoneNumber, imageUrl } = orderData;
+        const { link, creatorPhoneNumber } = orderData;
         newEvent = {
             ...baseEvent,
             type: 'order',
             link,
             creatorPhoneNumber,
-            imageUrl,
             orders: [],
         };
-        const detailsToStore: StoredOrderDetails = { link, creatorPhoneNumber, imageUrl };
+        const detailsToStore: StoredOrderDetails = { link, creatorPhoneNumber };
         try {
             localStorage.setItem('lastOrderDetails', JSON.stringify(detailsToStore));
             setStoredOrderDetails(detailsToStore);
@@ -470,7 +468,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
                 description: editedData.description,
                 link: editedData.link,
                 creatorPhoneNumber: editedData.creatorPhoneNumber,
-                imageUrl: editedData.imageUrl,
                 deadline: deadlineDate?.toISOString(),
             };
         }
@@ -626,7 +623,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
         type: 'order',
         orders: [],
         creatorPhoneNumber: storedOrderDetails?.creatorPhoneNumber,
-        imageUrl: storedOrderDetails?.imageUrl,
     };
 
     setFoodOrders(prev => [newOrder, ...prev]);
