@@ -1,7 +1,7 @@
 
 "use client";
 
-import { createContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useState, useEffect, type ReactNode, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { type User, type Reservation, type WeeklyStatus, type PortfolioItem, type FoodOrder, type OrderItem, type OrderItemData, type VotingOption } from "@/lib/types";
 import { format, startOfWeek, getDay, isAfter, endOfDay, differenceInWeeks, addDays, eachDayOfInterval } from "date-fns";
@@ -130,6 +130,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { toast } = useToast();
   const router = useRouter();
+  const isMounted = useRef(false);
 
   const [weeklyStatus, setWeeklyStatus] = useState<WeeklyStatus | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
@@ -176,6 +177,17 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     }
   }, [weeklyStatus, portfolio, user]);
 
+  useEffect(() => {
+    if (isMounted.current && user) {
+        toast({
+            title: "Zalogowano",
+            description: `Witaj z powrotem, ${user.name}!`,
+        });
+    } else {
+        isMounted.current = true;
+    }
+  }, [user]);
+
 
   const login = (userId: string, provider: 'google' | 'discord' | 'microsoft') => {
     let potentialUser = allUsers.find(u => u.id === userId);
@@ -219,11 +231,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     } else {
         setWeeklyStatus({ week: currentWeekNumber, content: '', status: 'draft' });
     }
-    
-    toast({
-        title: "Zalogowano",
-        description: `Witaj z powrotem, ${loggedInUser.name}!`,
-    });
   };
 
   const logout = () => {
