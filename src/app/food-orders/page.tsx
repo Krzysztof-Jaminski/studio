@@ -93,7 +93,7 @@ export default function FoodOrdersPage() {
             {activeOrderEvents.length > 0 ? (
                 <div className="space-y-4">
                     <h2 className="text-2xl font-bold font-headline text-white">Aktywne zamówienia</h2>
-                    <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" variants={containerVariants} initial="hidden" animate="visible">
+                    <motion.div className="grid grid-cols-1 gap-6" variants={containerVariants} initial="hidden" animate="visible">
                         {activeOrderEvents.map(order => (
                             <motion.div key={`active-order-${order.id}`} variants={itemVariants}>
                                 <FoodOrderCard order={order} />
@@ -282,4 +282,5 @@ export default function FoodOrdersPage() {
     );
 }
 
+    
     

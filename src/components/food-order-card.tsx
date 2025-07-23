@@ -73,7 +73,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
 
     return (
         <Card className="flex flex-col border-primary/30 bg-card h-full">
-            <CardHeader className="bg-secondary/50 rounded-t-lg p-4">
+            <CardHeader className="bg-secondary/50 rounded-t-lg p-4 space-y-2">
                 <div className="flex items-start gap-4">
                     <div className="h-14 w-14 flex items-center justify-center bg-muted rounded-md border-2 border-border">
                         <ShoppingCart className="h-8 w-8 text-muted-foreground" />
@@ -93,6 +93,7 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
                     </div>
                     {!order.isOpen && <Badge variant="destructive" className="bg-red-500/80">Zamknięte</Badge>}
                 </div>
+                 {order.description && <p className="text-sm text-muted-foreground pt-2 whitespace-pre-wrap">{order.description}</p>}
                  {order.deadline && <CountdownTimer deadline={order.deadline} />}
             </CardHeader>
 
@@ -234,3 +235,5 @@ export default function FoodOrderCard({ order }: { order: FoodOrder }) {
         </Card>
     );
 }
+
+    
