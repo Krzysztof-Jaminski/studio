@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import type { FoodOrder } from "@/lib/types";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { Card } from "./ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -107,30 +107,34 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {fields.map((field, index) => (
-                                <Card key={field.id} className="p-4 space-y-3 relative w-full bg-secondary">
-                                    <h4 className="font-semibold text-white">Opcja {index + 1}</h4>
-                                    <FormField
-                                        control={form.control}
-                                        name={`votingOptions.${index}.name`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs">Nazwa</FormLabel>
-                                                <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name={`votingOptions.${index}.link`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-xs">Link do menu (opcjonalnie)</FormLabel>
-                                                <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                <Card key={field.id} className="relative w-full bg-card">
+                                     <CardHeader>
+                                        <CardTitle className="font-headline text-primary text-lg">Opcja {index + 1}</CardTitle>
+                                     </CardHeader>
+                                     <CardContent className="space-y-4">
+                                        <FormField
+                                            control={form.control}
+                                            name={`votingOptions.${index}.name`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Nazwa</FormLabel>
+                                                    <FormControl><Input placeholder="np. Sushi World" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name={`votingOptions.${index}.link`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Link do menu (opcjonalnie)</FormLabel>
+                                                    <FormControl><Input placeholder="https://sushiworld.com/menu" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </CardContent>
                                     {fields.length > 1 && (
                                         <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:bg-red-500/20 hover:text-red-400" onClick={() => remove(index)}>
                                             <Trash2 />
@@ -160,5 +164,3 @@ export default function VotingEventForm({ onSubmit, onCancel }: VotingEventFormP
         </Form>
     );
 }
-
-    
